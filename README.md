@@ -100,10 +100,10 @@ curl ifconfig.me
 
 ```bash
 # Connect
-sudo wg-quick up ~/WireVPN/client.conf
+sudo wg-quick up /etc/wireguard/client.conf
 
 # Disconnect
-sudo wg-quick down ~/WireVPN/client.conf
+sudo wg-quick down /etc/wireguard/client.conf
 
 # Check status
 sudo wg show
@@ -111,8 +111,11 @@ sudo wg show
 # Check your exit IP
 curl ifconfig.me
 
-# View logs
+# View logs (macOS)
 cat /var/log/wirevpn.log
+
+# View logs (Linux)
+sudo journalctl -u wg-quick@client
 ```
 
 ---
@@ -130,6 +133,14 @@ Self-hosted:      You → your server → internet
                   You own the keys. You own the logs (there are none).
                   Zero trust required.
 ```
+
+---
+
+## Limitations
+
+- Single client per server (add more `[Peer]` blocks to `/etc/wireguard/wg0.conf` manually for more devices)
+- IPv4 only — no IPv6 support
+- macOS and Linux client only — no Windows support
 
 ---
 

@@ -20,7 +20,6 @@ printf "${CYAN}"
 cat << 'EOF'
   ╔══════════════════════════════════════════════╗
   ║         WireVPN — Server Setup               ║
-  ║         linkvectorized                       ║
   ╚══════════════════════════════════════════════╝
 EOF
 printf "${NC}\n"
@@ -34,8 +33,13 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # ── Detect public IP ──────────────────────────────────────────────────────────
-SERVER_IP=$(curl -s ifconfig.me)
-printf "${BOLD}  Server IP detected: ${CYAN}$SERVER_IP${NC}\n\n"
+printf "${BOLD}==> Detecting public IP...${NC}\n"
+SERVER_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
+if [ -z "$SERVER_IP" ] || ! echo "$SERVER_IP" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
+  printf "${RED}Failed to detect public IP. Check your network and try again.${NC}\n"
+  exit 1
+fi
+printf "   $PASS Server IP: ${CYAN}$SERVER_IP${NC}\n\n"
 
 # ── Update system ─────────────────────────────────────────────────────────────
 printf "${BOLD}==> Updating system...${NC}\n"
@@ -44,16 +48,22 @@ printf "   $PASS System updated\n\n"
 
 # ── Install WireGuard ─────────────────────────────────────────────────────────
 printf "${BOLD}==> Installing WireGuard...${NC}\n"
-apt-get install -y -qq wireguard
+apt-get install -y -qq wireguard ufw
 printf "   $PASS WireGuard installed\n\n"
 
 # ── Generate server keys ──────────────────────────────────────────────────────
 printf "${BOLD}==> Generating server keys...${NC}\n"
+mkdir -p /etc/wireguard
+# Back up existing config if present
+if [ -f /etc/wireguard/wg0.conf ]; then
+  cp /etc/wireguard/wg0.conf /etc/wireguard/wg0.conf.bak
+  printf "   ${YELLOW}Existing wg0.conf backed up to wg0.conf.bak${NC}\n"
+fi
 wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key
 chmod 600 /etc/wireguard/server_private.key
 SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
 SERVER_PUBLIC=$(cat /etc/wireguard/server_public.key)
-printf "   $PASS Keys generated\n\n"
+printf "   $PASS Server keys generated\n\n"
 
 # ── Generate client keys ──────────────────────────────────────────────────────
 printf "${BOLD}==> Generating client keys...${NC}\n"
@@ -64,8 +74,13 @@ CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
 printf "   $PASS Client keys generated\n\n"
 
 # ── Detect network interface ──────────────────────────────────────────────────
+printf "${BOLD}==> Detecting network interface...${NC}\n"
 NET_IF=$(ip route | grep default | awk '{print $5}' | head -1)
-printf "   $PASS Network interface: ${CYAN}$NET_IF${NC}\n\n"
+if [ -z "$NET_IF" ]; then
+  printf "${RED}Could not detect network interface. No default route found.${NC}\n"
+  exit 1
+fi
+printf "   $PASS Interface: ${CYAN}$NET_IF${NC}\n\n"
 
 # ── Write server config ───────────────────────────────────────────────────────
 printf "${BOLD}==> Writing server config...${NC}\n"
@@ -75,12 +90,12 @@ Address = 10.0.0.1/24
 ListenPort = 51820
 PrivateKey = $SERVER_PRIVATE
 
-# Enable routing
+# NAT — routes client traffic out through $NET_IF
 PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o $NET_IF -j MASQUERADE
 PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o $NET_IF -j MASQUERADE
 
 [Peer]
-# Client
+# Client — add more [Peer] blocks for additional devices
 PublicKey = $CLIENT_PUBLIC
 AllowedIPs = 10.0.0.2/32
 EOF
@@ -89,14 +104,23 @@ printf "   $PASS Server config written\n\n"
 
 # ── Enable IP forwarding ──────────────────────────────────────────────────────
 printf "${BOLD}==> Enabling IP forwarding...${NC}\n"
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+if ! grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf; then
+  echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+fi
 sysctl -p -q
 printf "   $PASS IP forwarding enabled\n\n"
 
 # ── Start WireGuard ───────────────────────────────────────────────────────────
 printf "${BOLD}==> Starting WireGuard...${NC}\n"
 systemctl enable wg-quick@wg0 -q
-systemctl start wg-quick@wg0
+if ! systemctl start wg-quick@wg0; then
+  printf "${RED}WireGuard failed to start. Check: systemctl status wg-quick@wg0${NC}\n"
+  exit 1
+fi
+if ! systemctl is-active --quiet wg-quick@wg0; then
+  printf "${RED}WireGuard started but is not active. Check: systemctl status wg-quick@wg0${NC}\n"
+  exit 1
+fi
 printf "   $PASS WireGuard running\n\n"
 
 # ── Open firewall port ────────────────────────────────────────────────────────
@@ -112,14 +136,17 @@ cat > /etc/wireguard/client.conf <<CLIENTCONF
 [Interface]
 PrivateKey = $CLIENT_PRIVATE
 Address = 10.0.0.2/24
+# DNS = 1.1.1.1 (Cloudflare) — change to 9.9.9.9 (Quad9) or your preferred DNS
 DNS = 1.1.1.1
 
 [Peer]
 PublicKey = $SERVER_PUBLIC
 Endpoint = $SERVER_IP:51820
 AllowedIPs = 0.0.0.0/0
+# PersistentKeepalive keeps tunnel alive through NAT (25s is standard)
 PersistentKeepalive = 25
 CLIENTCONF
+chmod 600 /etc/wireguard/client.conf
 printf "   $PASS Client config written\n\n"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
@@ -131,6 +158,8 @@ cat << 'EOF'
 EOF
 printf "${NC}\n"
 
-printf "  ${BOLD}Next step — copy client config to your Mac:${NC}\n\n"
-printf "  ${CYAN}scp root@$SERVER_IP:/etc/wireguard/client.conf ~/Desktop/WireVPN/client.conf${NC}\n\n"
+printf "  ${BOLD}Next step — on your local machine run:${NC}\n\n"
+printf "  ${CYAN}mkdir -p ~/WireVPN${NC}\n"
+printf "  ${CYAN}scp root@$SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf${NC}\n"
+printf "  ${CYAN}bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh)${NC}\n\n"
 printf "${YELLOW}  Stay private. Question everything.${NC}\n\n"

@@ -24,7 +24,10 @@ if [ "$OS" = "Darwin" ]; then
   PLIST_DEST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
 elif [ "$OS" = "Linux" ]; then
   PLATFORM="linux"
-  # Detect package manager
+  if ! command -v systemctl &>/dev/null; then
+    printf "${RED}systemd not found — only systemd-based Linux distros are supported.${NC}\n"
+    exit 1
+  fi
   if command -v apt-get &>/dev/null; then
     PKG_MGR="apt"
   elif command -v dnf &>/dev/null; then
@@ -54,6 +57,10 @@ printf "${YELLOW}     Route around surveillance. Stay sovereign.${NC}\n\n"
 printf "  Platform detected: ${CYAN}$PLATFORM${NC}\n\n"
 sleep 1
 
+# ── Check sudo ────────────────────────────────────────────────────────────────
+printf "${BOLD}  This script requires sudo. You may be prompted for your password.${NC}\n\n"
+sudo -v
+
 # ── Pre-flight check ──────────────────────────────────────────────────────────
 printf "${BOLD}── Pre-flight check ──${NC}\n\n"
 
@@ -71,7 +78,7 @@ fi
 
 echo ""
 
-# 2. WireGuard tools
+# 2. WireGuard
 printf "2. WireGuard tools\n"
 if command -v wg &>/dev/null; then
   printf "   $PASS wg installed\n"
@@ -91,8 +98,8 @@ printf "3. Client config\n"
 if [ -f "$CONF_SRC" ]; then
   printf "   $PASS client.conf found at $CONF_SRC\n"
 else
-  printf "   $FAIL client.conf not found at $CONF_SRC\n"
-  printf "\n   ${RED}Run this first:${NC}\n"
+  printf "   $FAIL client.conf not found at $CONF_SRC\n\n"
+  printf "   ${RED}Run these commands first, then re-run this script:${NC}\n\n"
   printf "   mkdir -p ~/WireVPN\n"
   printf "   scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf\n\n"
   exit 1
@@ -121,7 +128,7 @@ echo ""
 # 5. VPN connection
 printf "5. VPN connection\n"
 if sudo wg show 2>/dev/null | grep -q "interface"; then
-  printf "   $PASS VPN tunnel active\n"
+  printf "   $PASS VPN tunnel already active\n"
 else
   printf "   $FAIL VPN not connected — will connect\n"
 fi
@@ -134,11 +141,8 @@ if [ "$PLATFORM" = "macos" ]; then
   if ! command -v brew &>/dev/null; then
     echo "==> Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  else
-    printf "   $PASS Homebrew already installed\n"
-    eval "$(brew shellenv)"
   fi
+  eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
 
   if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
     echo "==> Installing WireGuard tools..."
@@ -173,6 +177,11 @@ fi
 echo ""
 echo "==> Installing client config..."
 sudo mkdir -p /etc/wireguard
+# Back up existing config if present
+if [ -f "$CONF_DEST" ]; then
+  sudo cp "$CONF_DEST" "${CONF_DEST}.bak"
+  printf "   ${YELLOW}Existing client.conf backed up to client.conf.bak${NC}\n"
+fi
 sudo cp "$CONF_SRC" "$CONF_DEST"
 sudo chmod 600 "$CONF_DEST"
 printf "   $PASS client.conf installed to $CONF_DEST\n"
@@ -182,7 +191,7 @@ echo ""
 echo "==> Installing auto-connect on startup..."
 
 if [ "$PLATFORM" = "macos" ]; then
-  WG_QUICK_PATH=$(which wg-quick)
+  WG_QUICK_PATH="$(which wg-quick)"
   sudo tee "$PLIST_DEST" > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -192,9 +201,9 @@ if [ "$PLATFORM" = "macos" ]; then
     <string>com.wirevpn.startup</string>
     <key>ProgramArguments</key>
     <array>
-        <string>$WG_QUICK_PATH</string>
+        <string>${WG_QUICK_PATH}</string>
         <string>up</string>
-        <string>$CONF_DEST</string>
+        <string>${CONF_DEST}</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -210,15 +219,20 @@ EOF
   sudo chmod 644 "$PLIST_DEST"
   sudo chown root:wheel "$PLIST_DEST"
   if sudo launchctl list | grep -q "com.wirevpn.startup" 2>/dev/null; then
-    sudo launchctl unload "$PLIST_DEST" 2>/dev/null || true
+    sudo launchctl unload "$PLIST_DEST" 2>/dev/null || printf "   ${YELLOW}Warning: could not unload old daemon${NC}\n"
   fi
   sudo launchctl load "$PLIST_DEST"
   printf "   $PASS launchd daemon installed and loaded\n"
 
 else
-  # systemd — wg-quick@client uses /etc/wireguard/client.conf by convention
-  sudo systemctl enable wg-quick@client
-  sudo systemctl start wg-quick@client
+  if ! sudo systemctl enable wg-quick@client; then
+    printf "${RED}Failed to enable systemd service.${NC}\n"
+    exit 1
+  fi
+  if ! sudo systemctl start wg-quick@client; then
+    printf "${RED}Failed to start WireGuard. Check: sudo journalctl -u wg-quick@client${NC}\n"
+    exit 1
+  fi
   printf "   $PASS systemd service enabled and started\n"
 fi
 
@@ -226,9 +240,13 @@ fi
 echo ""
 echo "==> Verifying connection..."
 sleep 2
-MY_IP=$(curl -s ifconfig.me)
-printf "   $PASS Exit IP: ${CYAN}$MY_IP${NC}\n"
-printf "   ${YELLOW}If this matches your VPS IP, you're routing through the tunnel.${NC}\n"
+MY_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
+if [ -z "$MY_IP" ]; then
+  printf "   ${YELLOW}Could not verify exit IP — check your connection and run: curl ifconfig.me${NC}\n"
+else
+  printf "   $PASS Exit IP: ${CYAN}$MY_IP${NC}\n"
+  printf "   ${YELLOW}If this matches your VPS IP, you're routing through the tunnel.${NC}\n"
+fi
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
