@@ -18,8 +18,12 @@ World sees: your VPS, not you
 ```
 server_setup.sh             — run on your VPS (Ubuntu 24.04)
 client_setup.sh             — run on your Mac
-com.wirevpn.startup.plist   — auto-connects VPN on Mac boot
+com.wirevpn.startup.plist   — launchd daemon, persists VPN across reboots
 ```
+
+### Persistence — how it works
+
+`com.wirevpn.startup.plist` is a macOS launchd daemon. It lives in `/Library/LaunchDaemons/` and tells macOS to run `wg-quick up` automatically every time the machine boots — before any user logs in. Without it, your VPN dies on restart and you're exposed until you manually reconnect. The `client_setup.sh` script installs it for you automatically.
 
 ---
 
