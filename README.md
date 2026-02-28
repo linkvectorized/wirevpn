@@ -1,0 +1,132 @@
+# WireVPN
+
+> ⚠️ Your traffic belongs to you. Not your ISP. Not your government. Not big tech.
+> Route around surveillance. Stay sovereign. Question everything.
+
+Self-hosted WireGuard VPN — spin up your own private tunnel on any VPS in minutes. No subscriptions. No third party logging your data. No trust required.
+
+```
+You → encrypted tunnel → YOUR server → internet
+ISP sees: encrypted gibberish to one IP
+World sees: your VPS, not you
+```
+
+---
+
+## What's in here
+
+```
+server_setup.sh             — run on your VPS (Ubuntu 24.04)
+client_setup.sh             — run on your Mac
+com.wirevpn.startup.plist   — auto-connects VPN on Mac boot
+```
+
+---
+
+## What you need
+
+- A VPS running Ubuntu 24.04 (Vultr, Hetzner, DigitalOcean — ~$5/month)
+- A Mac running macOS
+- 20 minutes
+
+---
+
+## Setup
+
+### 1. Spin up a VPS
+Get a cheap Ubuntu 24.04 VPS anywhere. Vultr CX11 or similar is plenty.
+Pay with crypto if you want to keep it clean.
+
+### 2. Run the server script on your VPS
+```bash
+ssh root@YOUR_SERVER_IP
+bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/server_setup.sh)
+```
+
+It will:
+- Install WireGuard
+- Generate server + client keys
+- Configure routing and firewall
+- Print your client config
+
+### 3. Pull the client config to your Mac
+```bash
+scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/Desktop/WireVPN/client.conf
+```
+
+### 4. Run the client script on your Mac
+```bash
+bash client_setup.sh
+```
+
+It will:
+- Install WireGuard tools via Homebrew
+- Fix config permissions
+- Install a launchd daemon so VPN auto-connects on boot
+- Connect the tunnel
+- Verify your exit IP
+
+### 5. Verify
+```bash
+curl ifconfig.me
+# should return your VPS IP, not your home IP
+```
+
+---
+
+## Useful commands
+
+```bash
+# Connect
+sudo wg-quick up ~/Desktop/WireVPN/client.conf
+
+# Disconnect
+sudo wg-quick down ~/Desktop/WireVPN/client.conf
+
+# Check status
+sudo wg show
+
+# Check your exit IP
+curl ifconfig.me
+
+# View logs
+cat /var/log/wirevpn.log
+```
+
+---
+
+## Why self-host?
+
+Commercial VPNs ask you to trust them. Why would you?
+
+```
+Commercial VPN:   You → their server → internet
+                  They log everything. They comply with subpoenas.
+                  You're paying someone else to surveil you.
+
+Self-hosted:      You → your server → internet
+                  You own the keys. You own the logs (there are none).
+                  Zero trust required.
+```
+
+---
+
+## Threat model
+
+This protects you from:
+- ✓ ISP seeing your browsing traffic
+- ✓ Network-level surveillance on public WiFi
+- ✓ Ad networks correlating your IP
+- ✓ Basic geo-restrictions
+
+This does NOT protect you from:
+- ✗ Your VPS provider (pick one you trust, pay anonymously if needed)
+- ✗ Browser fingerprinting
+- ✗ Being logged in to accounts that identify you
+- ✗ Nation-state level adversaries
+
+---
+
+*Stay private. Question narratives. Build cool things.*
+
+— [linkvectorized](https://github.com/linkvectorized)
