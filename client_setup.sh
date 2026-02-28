@@ -210,6 +210,28 @@ echo "==> Installing auto-connect on startup..."
 
 if [ "$PLATFORM" = "macos" ]; then
   WG_QUICK_PATH="$(which wg-quick)"
+
+  # Install wrapper script that waits for network before connecting
+  sudo tee /usr/local/bin/wirevpn-connect.sh > /dev/null << EOF
+#!/bin/bash
+# Wait for network before starting WireGuard (up to 30s)
+MAX=30
+COUNT=0
+until ping -c1 -W1 1.1.1.1 &>/dev/null 2>&1 || [ \$COUNT -ge \$MAX ]; do
+  sleep 1
+  COUNT=\$((COUNT + 1))
+done
+
+if [ \$COUNT -ge \$MAX ]; then
+  echo "\$(date): Network not available after \${MAX}s — skipping WireGuard" >> /var/log/wirevpn.log
+  exit 1
+fi
+
+echo "\$(date): Network ready — starting WireGuard" >> /var/log/wirevpn.log
+${WG_QUICK_PATH} up ${CONF_DEST} >> /var/log/wirevpn.log 2>&1
+EOF
+  sudo chmod 755 /usr/local/bin/wirevpn-connect.sh
+
   sudo tee "$PLIST_DEST" > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -219,9 +241,8 @@ if [ "$PLATFORM" = "macos" ]; then
     <string>com.wirevpn.startup</string>
     <key>ProgramArguments</key>
     <array>
-        <string>${WG_QUICK_PATH}</string>
-        <string>up</string>
-        <string>${CONF_DEST}</string>
+        <string>/bin/bash</string>
+        <string>/usr/local/bin/wirevpn-connect.sh</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -241,8 +262,11 @@ EOF
   fi
   sudo launchctl load "$PLIST_DEST"
   printf "   $PASS launchd daemon installed and loaded\n"
+  printf "   $PASS Network-wait wrapper installed at /usr/local/bin/wirevpn-connect.sh\n"
 
 else
+  # Enable network-online.target so systemd waits for network before starting WireGuard
+  sudo systemctl enable systemd-networkd-wait-online.service 2>/dev/null || true
   if ! sudo systemctl enable wg-quick@client; then
     printf "${RED}Failed to enable systemd service.${NC}\n"
     exit 1
@@ -251,7 +275,7 @@ else
     printf "${RED}Failed to start WireGuard. Check: sudo journalctl -u wg-quick@client${NC}\n"
     exit 1
   fi
-  printf "   $PASS systemd service enabled and started\n"
+  printf "   $PASS systemd service enabled and started (waits for network-online.target)\n"
 fi
 
 # ── 4. Verify ─────────────────────────────────────────────────────────────────
