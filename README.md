@@ -125,18 +125,6 @@ cat /var/log/wirevpn.log
 sudo journalctl -u wg-quick@client
 ```
 
-## "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
-
-If your VPS provider reused the same IP for your new server you'll get this SSH error. Safe to fix — just remove the old key:
-
-```bash
-ssh-keygen -R YOUR_SERVER_IP
-```
-
-Then SSH in again normally.
-
----
-
 ## Internet not working?
 
 If you destroyed your VPS while the VPN was still connected, all traffic is tunneling into nothing. Run:
@@ -150,6 +138,18 @@ sudo killall wireguard-go
 ```
 
 Your internet will come back immediately. Reconnect once your new VPS is ready.
+
+---
+
+## "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
+
+If your VPS provider reused the same IP for your new server you'll get this SSH error. Safe to fix — just remove the old key:
+
+```bash
+ssh-keygen -R YOUR_SERVER_IP
+```
+
+Then SSH in again normally.
 
 ---
 
