@@ -212,6 +212,7 @@ if [ "$PLATFORM" = "macos" ]; then
   WG_QUICK_PATH="$(which wg-quick)"
 
   # Install wrapper script that waits for network before connecting
+  sudo mkdir -p /usr/local/bin
   sudo tee /usr/local/bin/wirevpn-connect.sh > /dev/null << EOF
 #!/bin/bash
 # Wait for network before starting WireGuard (up to 30s)
