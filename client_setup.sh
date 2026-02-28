@@ -14,8 +14,26 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
-CONF_SRC="$HOME/WireVPN/client.conf"
 CONF_DEST="/etc/wireguard/client.conf"
+
+# ── Find client.conf ──────────────────────────────────────────────────────────
+# Search common locations, then fall back to a full user directory search
+CONF_SRC=""
+for candidate in \
+  "$HOME/WireVPN/client.conf" \
+  "$HOME/Desktop/WireVPN/client.conf" \
+  "$HOME/Documents/WireVPN/client.conf" \
+  "$HOME/Downloads/WireVPN/client.conf"; do
+  if [ -f "$candidate" ]; then
+    CONF_SRC="$candidate"
+    break
+  fi
+done
+
+# If not found in common locations, search the whole home directory
+if [ -z "$CONF_SRC" ]; then
+  CONF_SRC=$(find "$HOME" -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1)
+fi
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
 OS=$(uname -s)
@@ -95,10 +113,10 @@ echo ""
 
 # 3. Client config
 printf "3. Client config\n"
-if [ -f "$CONF_SRC" ]; then
+if [ -n "$CONF_SRC" ] && [ -f "$CONF_SRC" ]; then
   printf "   $PASS client.conf found at $CONF_SRC\n"
 else
-  printf "   $FAIL client.conf not found at $CONF_SRC\n\n"
+  printf "   $FAIL client.conf not found anywhere under $HOME\n\n"
   printf "   ${RED}Run these commands first, then re-run this script:${NC}\n\n"
   printf "   mkdir -p ~/WireVPN\n"
   printf "   scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf\n\n"
