@@ -39,8 +39,16 @@ com.wirevpn.startup.plist   — launchd daemon, persists VPN across reboots
 ## What you need
 
 - A VPS running Ubuntu 24.04 (Vultr, Hetzner, DigitalOcean — ~$5/month)
-- A Mac running macOS
+- A Mac or Linux machine as your client
 - 20 minutes
+
+## Client OS support
+
+```
+macOS    ✓   auto-start via launchd
+Linux    ✓   auto-start via systemd (apt / dnf / pacman)
+Windows  ✗   not supported
+```
 
 ---
 

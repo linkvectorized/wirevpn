@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# client_setup.sh — WireGuard VPN client setup for macOS
-# Run this on your Mac after running server_setup.sh on your VPS
+# client_setup.sh — WireGuard VPN client setup for macOS and Linux
+# Run this on your machine after running server_setup.sh on your VPS
 
 set -e
 
@@ -14,9 +14,31 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
-CONF_SRC="$HOME/WireVPN/client.conf"       # where user drops their client.conf
-CONF_DEST="/etc/wireguard/client.conf"      # system-wide stable path for plist
-PLIST_DEST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
+CONF_SRC="$HOME/WireVPN/client.conf"
+CONF_DEST="/etc/wireguard/client.conf"
+
+# ── Detect OS ─────────────────────────────────────────────────────────────────
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+  PLATFORM="macos"
+  PLIST_DEST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
+elif [ "$OS" = "Linux" ]; then
+  PLATFORM="linux"
+  # Detect package manager
+  if command -v apt-get &>/dev/null; then
+    PKG_MGR="apt"
+  elif command -v dnf &>/dev/null; then
+    PKG_MGR="dnf"
+  elif command -v pacman &>/dev/null; then
+    PKG_MGR="pacman"
+  else
+    printf "${RED}Unsupported Linux distro — no apt, dnf, or pacman found.${NC}\n"
+    exit 1
+  fi
+else
+  printf "${RED}Unsupported OS: $OS${NC}\n"
+  exit 1
+fi
 
 # ── Intro ─────────────────────────────────────────────────────────────────────
 clear
@@ -29,17 +51,22 @@ EOF
 printf "${NC}\n"
 printf "${YELLOW}  ⚠  Your traffic belongs to you. Not your ISP. Not big tech.${NC}\n"
 printf "${YELLOW}     Route around surveillance. Stay sovereign.${NC}\n\n"
+printf "  Platform detected: ${CYAN}$PLATFORM${NC}\n\n"
 sleep 1
 
 # ── Pre-flight check ──────────────────────────────────────────────────────────
 printf "${BOLD}── Pre-flight check ──${NC}\n\n"
 
-# 1. Homebrew
-printf "1. Homebrew\n"
-if command -v brew &>/dev/null; then
-  printf "   $PASS installed — $(brew --version | head -1)\n"
+# 1. Package manager
+printf "1. Package manager\n"
+if [ "$PLATFORM" = "macos" ]; then
+  if command -v brew &>/dev/null; then
+    printf "   $PASS homebrew installed\n"
+  else
+    printf "   $FAIL homebrew not installed — will install\n"
+  fi
 else
-  printf "   $FAIL not installed — will install\n"
+  printf "   $PASS $PKG_MGR detected\n"
 fi
 
 echo ""
@@ -51,7 +78,6 @@ if command -v wg &>/dev/null; then
 else
   printf "   $FAIL wg not installed — will install\n"
 fi
-
 if command -v wg-quick &>/dev/null; then
   printf "   $PASS wg-quick installed\n"
 else
@@ -74,12 +100,20 @@ fi
 
 echo ""
 
-# 4. LaunchDaemon plist
+# 4. Auto-start
 printf "4. Auto-connect on startup\n"
-if [ -f "$PLIST_DEST" ]; then
-  printf "   $PASS launchd plist installed\n"
+if [ "$PLATFORM" = "macos" ]; then
+  if [ -f "$PLIST_DEST" ]; then
+    printf "   $PASS launchd plist installed\n"
+  else
+    printf "   $FAIL launchd plist not installed — will install\n"
+  fi
 else
-  printf "   $FAIL launchd plist not installed — will install\n"
+  if systemctl is-enabled wg-quick@client &>/dev/null 2>&1; then
+    printf "   $PASS systemd service enabled\n"
+  else
+    printf "   $FAIL systemd service not enabled — will install\n"
+  fi
 fi
 
 echo ""
@@ -95,26 +129,47 @@ fi
 echo ""
 printf "${BOLD}── Starting setup ──${NC}\n\n"
 
-# ── 1. Homebrew ───────────────────────────────────────────────────────────────
-if ! command -v brew &>/dev/null; then
-  echo "==> Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+# ── 1. Install WireGuard ──────────────────────────────────────────────────────
+if [ "$PLATFORM" = "macos" ]; then
+  if ! command -v brew &>/dev/null; then
+    echo "==> Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  else
+    printf "   $PASS Homebrew already installed\n"
+    eval "$(brew shellenv)"
+  fi
+
+  if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
+    echo "==> Installing WireGuard tools..."
+    brew install wireguard-tools
+    printf "   $PASS WireGuard tools installed\n"
+  else
+    printf "   $PASS WireGuard tools already installed\n"
+  fi
+
 else
-  printf "   $PASS Homebrew already installed\n"
-  eval "$(brew shellenv)"
+  if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
+    echo "==> Installing WireGuard..."
+    case "$PKG_MGR" in
+      apt)
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq wireguard
+        ;;
+      dnf)
+        sudo dnf install -y wireguard-tools
+        ;;
+      pacman)
+        sudo pacman -Sy --noconfirm wireguard-tools
+        ;;
+    esac
+    printf "   $PASS WireGuard installed\n"
+  else
+    printf "   $PASS WireGuard already installed\n"
+  fi
 fi
 
-# ── 2. WireGuard tools ────────────────────────────────────────────────────────
-if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
-  echo "==> Installing WireGuard tools..."
-  brew install wireguard-tools
-  printf "   $PASS WireGuard tools installed\n"
-else
-  printf "   $PASS WireGuard tools already installed\n"
-fi
-
-# ── 3. Install client config to system-wide location ──────────────────────────
+# ── 2. Install client config ───────────────────────────────────────────────────
 echo ""
 echo "==> Installing client config..."
 sudo mkdir -p /etc/wireguard
@@ -122,10 +177,13 @@ sudo cp "$CONF_SRC" "$CONF_DEST"
 sudo chmod 600 "$CONF_DEST"
 printf "   $PASS client.conf installed to $CONF_DEST\n"
 
-# ── 4. Install launchd plist ──────────────────────────────────────────────────
+# ── 3. Install auto-start ─────────────────────────────────────────────────────
 echo ""
-echo "==> Installing auto-connect daemon..."
-sudo tee "$PLIST_DEST" > /dev/null << EOF
+echo "==> Installing auto-connect on startup..."
+
+if [ "$PLATFORM" = "macos" ]; then
+  WG_QUICK_PATH=$(which wg-quick)
+  sudo tee "$PLIST_DEST" > /dev/null << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -134,7 +192,7 @@ sudo tee "$PLIST_DEST" > /dev/null << EOF
     <string>com.wirevpn.startup</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/wg-quick</string>
+        <string>$WG_QUICK_PATH</string>
         <string>up</string>
         <string>$CONF_DEST</string>
     </array>
@@ -149,28 +207,25 @@ sudo tee "$PLIST_DEST" > /dev/null << EOF
 </dict>
 </plist>
 EOF
-sudo chmod 644 "$PLIST_DEST"
-sudo chown root:wheel "$PLIST_DEST"
+  sudo chmod 644 "$PLIST_DEST"
+  sudo chown root:wheel "$PLIST_DEST"
+  if sudo launchctl list | grep -q "com.wirevpn.startup" 2>/dev/null; then
+    sudo launchctl unload "$PLIST_DEST" 2>/dev/null || true
+  fi
+  sudo launchctl load "$PLIST_DEST"
+  printf "   $PASS launchd daemon installed and loaded\n"
 
-if sudo launchctl list | grep -q "com.wirevpn.startup" 2>/dev/null; then
-  sudo launchctl unload "$PLIST_DEST" 2>/dev/null || true
-fi
-sudo launchctl load "$PLIST_DEST"
-printf "   $PASS Auto-connect daemon installed and loaded\n"
-
-# ── 5. Connect VPN ────────────────────────────────────────────────────────────
-echo ""
-echo "==> Connecting to VPN..."
-if sudo wg show 2>/dev/null | grep -q "interface"; then
-  printf "   $PASS VPN already connected\n"
 else
-  sudo wg-quick up "$CONF_DEST"
-  printf "   $PASS VPN connected\n"
+  # systemd — wg-quick@client uses /etc/wireguard/client.conf by convention
+  sudo systemctl enable wg-quick@client
+  sudo systemctl start wg-quick@client
+  printf "   $PASS systemd service enabled and started\n"
 fi
 
-# ── 6. Verify ─────────────────────────────────────────────────────────────────
+# ── 4. Verify ─────────────────────────────────────────────────────────────────
 echo ""
 echo "==> Verifying connection..."
+sleep 2
 MY_IP=$(curl -s ifconfig.me)
 printf "   $PASS Exit IP: ${CYAN}$MY_IP${NC}\n"
 printf "   ${YELLOW}If this matches your VPS IP, you're routing through the tunnel.${NC}\n"
@@ -189,7 +244,11 @@ printf "  ${BOLD}Useful commands:${NC}\n"
 printf "    Connect:     ${CYAN}sudo wg-quick up /etc/wireguard/client.conf${NC}\n"
 printf "    Disconnect:  ${CYAN}sudo wg-quick down /etc/wireguard/client.conf${NC}\n"
 printf "    Check IP:    ${CYAN}curl ifconfig.me${NC}\n"
-printf "    VPN logs:    ${CYAN}cat /var/log/wirevpn.log${NC}\n"
 printf "    VPN status:  ${CYAN}sudo wg show${NC}\n"
+if [ "$PLATFORM" = "macos" ]; then
+  printf "    VPN logs:    ${CYAN}cat /var/log/wirevpn.log${NC}\n"
+else
+  printf "    VPN logs:    ${CYAN}sudo journalctl -u wg-quick@client${NC}\n"
+fi
 echo ""
 printf "${YELLOW}  Stay private. Question narratives. Build cool things.${NC}\n\n"
