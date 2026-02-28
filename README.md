@@ -141,6 +141,37 @@ Your internet will come back immediately. Reconnect once your new VPS is ready.
 
 ---
 
+## Harden SSH access (recommended)
+
+By default your VPS uses password auth. Switch to SSH keys — much harder to brute force.
+
+**1. Generate a key on your local machine (if you don't have one):**
+```bash
+ssh-keygen -t ed25519 -C "your-label"
+```
+Use a passphrase when prompted — if your key file is ever stolen, the attacker still can't use it.
+
+**2. Copy your public key to the server:**
+```bash
+ssh-copy-id root@YOUR_SERVER_IP
+```
+
+**3. Test that key auth works:**
+```bash
+ssh root@YOUR_SERVER_IP
+# should log in without asking for password
+```
+
+**4. Disable password auth entirely:**
+```bash
+sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+systemctl restart sshd
+```
+
+After this, no one gets in without your private key — even if they know the root password.
+
+---
+
 ## "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
 
 If your VPS provider reused the same IP for your new server you'll get this SSH error. Safe to fix — just remove the old key:
