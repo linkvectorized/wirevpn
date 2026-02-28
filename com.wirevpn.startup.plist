@@ -20,7 +20,7 @@
     <array>
         <string>/opt/homebrew/bin/wg-quick</string>
         <string>up</string>
-        <string>/Users/vectorious/Desktop/WireVPN/client.conf</string>
+        <string>/Users/Shared/WireVPN/client.conf</string>
     </array>
 
     <key>RunAtLoad</key>

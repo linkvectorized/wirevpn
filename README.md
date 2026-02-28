@@ -1,6 +1,13 @@
 # WireVPN
 
-![WireVPN Banner](banner.svg)
+```
+  ██╗    ██╗██╗██████╗ ███████╗██╗   ██╗██████╗ ███╗   ██╗
+  ██║    ██║██║██╔══██╗██╔════╝██║   ██║██╔══██╗████╗  ██║
+  ██║ █╗ ██║██║██████╔╝█████╗  ██║   ██║██████╔╝██╔██╗ ██║
+  ██║███╗██║██║██╔══██╗██╔══╝  ╚██╗ ██╔╝██╔═══╝ ██║╚██╗██║
+  ╚███╔███╔╝██║██║  ██║███████╗ ╚████╔╝ ██║     ██║ ╚████║
+   ╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚══════╝  ╚═══╝  ╚═╝     ╚═╝  ╚═══╝
+```
 
 > ⚠️ Your traffic belongs to you. Not your ISP. Not your government. Not big tech.
 > Route around surveillance. Stay sovereign. Question everything.
@@ -40,7 +47,7 @@ com.wirevpn.startup.plist   — launchd daemon, persists VPN across reboots
 ## Setup
 
 ### 1. Spin up a VPS
-Get a cheap Ubuntu 24.04 VPS anywhere. Vultr CX11 or similar is plenty.
+Get a cheap Ubuntu 24.04 VPS anywhere. Vultr VC2-1C-1GB or similar is plenty.
 Pay with crypto if you want to keep it clean.
 
 ### 2. Run the server script on your VPS
@@ -53,11 +60,11 @@ It will:
 - Install WireGuard
 - Generate server + client keys
 - Configure routing and firewall
-- Print your client config
+- Write your client config to `/etc/wireguard/client.conf`
 
 ### 3. Pull the client config to your Mac
 ```bash
-scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/Desktop/WireVPN/client.conf
+scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf
 ```
 
 ### 4. Run the client script on your Mac
@@ -84,10 +91,10 @@ curl ifconfig.me
 
 ```bash
 # Connect
-sudo wg-quick up ~/Desktop/WireVPN/client.conf
+sudo wg-quick up ~/WireVPN/client.conf
 
 # Disconnect
-sudo wg-quick down ~/Desktop/WireVPN/client.conf
+sudo wg-quick down ~/WireVPN/client.conf
 
 # Check status
 sudo wg show
