@@ -27,14 +27,19 @@ World sees: your VPS, not you
 ## What's in here
 
 ```
-server_setup.sh             — run on your VPS (Ubuntu 24.04)
-client_setup.sh             — run on your Mac
-com.wirevpn.startup.plist   — launchd daemon, persists VPN across reboots
+server_setup.sh   — run on your VPS (Ubuntu 24.04)
+client_setup.sh   — run on your Mac or Linux machine
 ```
 
 ### Persistence — how it works
 
-`com.wirevpn.startup.plist` is a macOS launchd daemon. It lives in `/Library/LaunchDaemons/` and tells macOS to run `wg-quick up` automatically every time the machine boots — before any user logs in. Without it, your VPN dies on restart and you're exposed until you manually reconnect. The `client_setup.sh` script installs it for you automatically.
+The `client_setup.sh` script automatically installs a boot daemon so your VPN reconnects every time your machine starts — no manual intervention needed.
+
+**macOS** — installs a launchd daemon (`/Library/LaunchDaemons/com.wirevpn.startup.plist`) with a network-wait wrapper that holds off until your internet is up before connecting.
+
+**Linux** — enables a systemd service (`wg-quick@client`) with `network-online.target` so WireGuard waits for network before starting.
+
+Without this, your VPN dies on restart and you're exposed until you manually reconnect.
 
 ---
 
