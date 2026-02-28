@@ -118,6 +118,20 @@ cat /var/log/wirevpn.log
 sudo journalctl -u wg-quick@client
 ```
 
+## Internet not working?
+
+If you destroyed your VPS while the VPN was still connected, all traffic is tunneling into nothing. Run:
+
+```bash
+# Try this first
+sudo wg-quick down /etc/wireguard/client.conf
+
+# If that doesn't work, kill the process directly
+sudo killall wireguard-go
+```
+
+Your internet will come back immediately. Reconnect once your new VPS is ready.
+
 ---
 
 ## Why self-host?
