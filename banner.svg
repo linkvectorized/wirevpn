@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300">
+  <defs>
+    <radialGradient id="globeGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a2a0a"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00ff41" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#00ff41" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="tunnelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00ff41" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#00ff41" stop-opacity="1"/>
+      <stop offset="80%" stop-color="#00ff41" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#00ff41" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="100%" stop-color="#020d02"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="300" fill="url(#bgGrad)"/>
+
+  <!-- Scanlines -->
+  <rect width="800" height="300" fill="url(#scanlines)" opacity="0.05"/>
+
+  <!-- Grid lines -->
+  <g stroke="#00ff41" stroke-opacity="0.06" stroke-width="0.5">
+    <line x1="0" y1="50" x2="800" y2="50"/>
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="150" x2="800" y2="150"/>
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="250" x2="800" y2="250"/>
+    <line x1="100" y1="0" x2="100" y2="300"/>
+    <line x1="200" y1="0" x2="200" y2="300"/>
+    <line x1="300" y1="0" x2="300" y2="300"/>
+    <line x1="400" y1="0" x2="400" y2="300"/>
+    <line x1="500" y1="0" x2="500" y2="300"/>
+    <line x1="600" y1="0" x2="600" y2="300"/>
+    <line x1="700" y1="0" x2="700" y2="300"/>
+  </g>
+
+  <!-- Globe (left) -->
+  <g transform="translate(160, 150)">
+    <circle r="90" fill="url(#globeGrad)" stroke="#00ff41" stroke-width="1" stroke-opacity="0.6" filter="url(#glow)"/>
+    <!-- Latitude lines -->
+    <ellipse rx="90" ry="20" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="90" ry="50" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="90" ry="75" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.2"/>
+    <!-- Longitude lines -->
+    <ellipse rx="30" ry="90" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="60" ry="90" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="-90" y1="0" x2="90" y2="0" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="0" y1="-90" x2="0" y2="90" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <!-- Glow overlay -->
+    <circle r="90" fill="url(#glowGrad)"/>
+    <!-- ISP label -->
+    <text x="0" y="-105" text-anchor="middle" font-family="monospace" font-size="11" fill="#00ff41" fill-opacity="0.7">YOUR ISP</text>
+    <text x="0" y="115" text-anchor="middle" font-family="monospace" font-size="9" fill="#ff4444" fill-opacity="0.8">👁  sees nothing</text>
+  </g>
+
+  <!-- Globe (right) -->
+  <g transform="translate(640, 150)">
+    <circle r="90" fill="url(#globeGrad)" stroke="#00ff41" stroke-width="1" stroke-opacity="0.6" filter="url(#glow)"/>
+    <!-- Latitude lines -->
+    <ellipse rx="90" ry="20" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="90" ry="50" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="90" ry="75" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.2"/>
+    <!-- Longitude lines -->
+    <ellipse rx="30" ry="90" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <ellipse rx="60" ry="90" fill="none" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="-90" y1="0" x2="90" y2="0" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <line x1="0" y1="-90" x2="0" y2="90" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.3"/>
+    <!-- Glow overlay -->
+    <circle r="90" fill="url(#glowGrad)"/>
+    <!-- Internet label -->
+    <text x="0" y="-105" text-anchor="middle" font-family="monospace" font-size="11" fill="#00ff41" fill-opacity="0.7">INTERNET</text>
+    <text x="0" y="115" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.8">✓ sees your VPS</text>
+  </g>
+
+  <!-- Encrypted tunnel -->
+  <g filter="url(#strongGlow)">
+    <!-- Tunnel border top -->
+    <path d="M 250 125 Q 400 100 550 125" fill="none" stroke="#00ff41" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6,4"/>
+    <!-- Tunnel border bottom -->
+    <path d="M 250 175 Q 400 200 550 175" fill="none" stroke="#00ff41" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="6,4"/>
+    <!-- Main tunnel wire -->
+    <line x1="250" y1="150" x2="550" y2="150" stroke="url(#tunnelGrad)" stroke-width="3"/>
+    <!-- Pulse dots -->
+    <circle cx="310" cy="150" r="3" fill="#00ff41" opacity="0.9"/>
+    <circle cx="370" cy="150" r="3" fill="#00ff41" opacity="0.7"/>
+    <circle cx="430" cy="150" r="3" fill="#00ff41" opacity="0.9"/>
+    <circle cx="490" cy="150" r="3" fill="#00ff41" opacity="0.7"/>
+  </g>
+
+  <!-- Lock icon in center -->
+  <g transform="translate(400, 150)" filter="url(#glow)">
+    <rect x="-14" y="-8" width="28" height="22" rx="3" fill="#000" stroke="#00ff41" stroke-width="1.5"/>
+    <path d="M -8 -8 L -8 -16 Q 0 -24 8 -16 L 8 -8" fill="none" stroke="#00ff41" stroke-width="1.5"/>
+    <circle cx="0" cy="5" r="4" fill="#00ff41"/>
+    <line x1="0" y1="5" x2="0" y2="11" stroke="#00ff41" stroke-width="1.5"/>
+    <!-- Encrypted label -->
+    <text x="0" y="-30" text-anchor="middle" font-family="monospace" font-size="8" fill="#00ff41" fill-opacity="0.6">ENCRYPTED</text>
+  </g>
+
+  <!-- Title -->
+  <text x="400" y="38" text-anchor="middle" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff41" filter="url(#glow)">WireVPN</text>
+  <text x="400" y="58" text-anchor="middle" font-family="monospace" font-size="10" fill="#00ff41" fill-opacity="0.5">your traffic. your rules. no exceptions.</text>
+
+  <!-- Bottom tagline -->
+  <text x="400" y="278" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.35">⚠  question everything. especially the government.</text>
+
+  <!-- Corner decorations -->
+  <text x="12" y="20" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.3">linkvectorized</text>
+  <text x="788" y="20" text-anchor="end" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.3">github.com/linkvectorized/wirevpn</text>
+</svg>

@@ -1,5 +1,7 @@
 # WireVPN
 
+![WireVPN Banner](banner.svg)
+
 > ⚠️ Your traffic belongs to you. Not your ISP. Not your government. Not big tech.
 > Route around surveillance. Stay sovereign. Question everything.
 
