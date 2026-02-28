@@ -14,8 +14,8 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
-CONF_PATH="$HOME/Desktop/WireVPN/client.conf"
-PLIST_SRC="$HOME/Desktop/WireVPN/com.wirevpn.startup.plist"
+CONF_SRC="$HOME/WireVPN/client.conf"       # where user drops their client.conf
+CONF_DEST="/etc/wireguard/client.conf"      # system-wide stable path for plist
 PLIST_DEST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
 
 # ── Intro ─────────────────────────────────────────────────────────────────────
@@ -24,7 +24,6 @@ printf "${CYAN}"
 cat << 'EOF'
   ╔══════════════════════════════════════════════╗
   ║         WireVPN — Client Setup               ║
-  ║         linkvectorized                       ║
   ╚══════════════════════════════════════════════╝
 EOF
 printf "${NC}\n"
@@ -48,13 +47,13 @@ echo ""
 # 2. WireGuard tools
 printf "2. WireGuard tools\n"
 if command -v wg &>/dev/null; then
-  printf "   $PASS wg installed — $(which wg)\n"
+  printf "   $PASS wg installed\n"
 else
   printf "   $FAIL wg not installed — will install\n"
 fi
 
 if command -v wg-quick &>/dev/null; then
-  printf "   $PASS wg-quick installed — $(which wg-quick)\n"
+  printf "   $PASS wg-quick installed\n"
 else
   printf "   $FAIL wg-quick not installed — will install\n"
 fi
@@ -63,11 +62,14 @@ echo ""
 
 # 3. Client config
 printf "3. Client config\n"
-if [ -f "$CONF_PATH" ]; then
-  printf "   $PASS client.conf found at $CONF_PATH\n"
+if [ -f "$CONF_SRC" ]; then
+  printf "   $PASS client.conf found at $CONF_SRC\n"
 else
-  printf "   $FAIL client.conf not found at $CONF_PATH\n"
-  printf "   ${RED}    You need to create client.conf before running this script.${NC}\n"
+  printf "   $FAIL client.conf not found at $CONF_SRC\n"
+  printf "\n   ${RED}Run this first:${NC}\n"
+  printf "   mkdir -p ~/WireVPN\n"
+  printf "   scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf\n\n"
+  exit 1
 fi
 
 echo ""
@@ -75,23 +77,17 @@ echo ""
 # 4. LaunchDaemon plist
 printf "4. Auto-connect on startup\n"
 if [ -f "$PLIST_DEST" ]; then
-  printf "   $PASS launchd plist installed at $PLIST_DEST\n"
+  printf "   $PASS launchd plist installed\n"
 else
   printf "   $FAIL launchd plist not installed — will install\n"
-fi
-
-if sudo launchctl list | grep -q "com.wirevpn.startup" 2>/dev/null; then
-  printf "   $PASS launchd daemon loaded\n"
-else
-  printf "   $FAIL launchd daemon not loaded — will load\n"
 fi
 
 echo ""
 
 # 5. VPN connection
 printf "5. VPN connection\n"
-if ifconfig utun3 &>/dev/null 2>&1; then
-  printf "   $PASS VPN tunnel active (utun3)\n"
+if sudo wg show 2>/dev/null | grep -q "interface"; then
+  printf "   $PASS VPN tunnel active\n"
 else
   printf "   $FAIL VPN not connected — will connect\n"
 fi
@@ -118,20 +114,41 @@ else
   printf "   $PASS WireGuard tools already installed\n"
 fi
 
-# ── 3. Fix client.conf permissions ────────────────────────────────────────────
-if [ -f "$CONF_PATH" ]; then
-  chmod 600 "$CONF_PATH"
-  printf "   $PASS client.conf permissions fixed (600)\n"
-else
-  printf "   ${RED}client.conf not found at $CONF_PATH — aborting.${NC}\n"
-  printf "   Create your client.conf first then re-run this script.\n"
-  exit 1
-fi
+# ── 3. Install client config to system-wide location ──────────────────────────
+echo ""
+echo "==> Installing client config..."
+sudo mkdir -p /etc/wireguard
+sudo cp "$CONF_SRC" "$CONF_DEST"
+sudo chmod 600 "$CONF_DEST"
+printf "   $PASS client.conf installed to $CONF_DEST\n"
 
 # ── 4. Install launchd plist ──────────────────────────────────────────────────
 echo ""
 echo "==> Installing auto-connect daemon..."
-sudo cp "$PLIST_SRC" "$PLIST_DEST"
+sudo tee "$PLIST_DEST" > /dev/null << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.wirevpn.startup</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/wg-quick</string>
+        <string>up</string>
+        <string>$CONF_DEST</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <false/>
+    <key>StandardOutPath</key>
+    <string>/var/log/wirevpn.log</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/wirevpn.log</string>
+</dict>
+</plist>
+EOF
 sudo chmod 644 "$PLIST_DEST"
 sudo chown root:wheel "$PLIST_DEST"
 
@@ -144,10 +161,10 @@ printf "   $PASS Auto-connect daemon installed and loaded\n"
 # ── 5. Connect VPN ────────────────────────────────────────────────────────────
 echo ""
 echo "==> Connecting to VPN..."
-if ifconfig utun3 &>/dev/null 2>&1; then
+if sudo wg show 2>/dev/null | grep -q "interface"; then
   printf "   $PASS VPN already connected\n"
 else
-  sudo wg-quick up "$CONF_PATH"
+  sudo wg-quick up "$CONF_DEST"
   printf "   $PASS VPN connected\n"
 fi
 
@@ -169,8 +186,8 @@ EOF
 printf "${NC}\n"
 
 printf "  ${BOLD}Useful commands:${NC}\n"
-printf "    Connect:     ${CYAN}sudo wg-quick up ~/Desktop/WireVPN/client.conf${NC}\n"
-printf "    Disconnect:  ${CYAN}sudo wg-quick down ~/Desktop/WireVPN/client.conf${NC}\n"
+printf "    Connect:     ${CYAN}sudo wg-quick up /etc/wireguard/client.conf${NC}\n"
+printf "    Disconnect:  ${CYAN}sudo wg-quick down /etc/wireguard/client.conf${NC}\n"
 printf "    Check IP:    ${CYAN}curl ifconfig.me${NC}\n"
 printf "    VPN logs:    ${CYAN}cat /var/log/wirevpn.log${NC}\n"
 printf "    VPN status:  ${CYAN}sudo wg show${NC}\n"

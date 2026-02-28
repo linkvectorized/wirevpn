@@ -64,12 +64,13 @@ It will:
 
 ### 3. Pull the client config to your Mac
 ```bash
+mkdir -p ~/WireVPN
 scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf
 ```
 
 ### 4. Run the client script on your Mac
 ```bash
-bash client_setup.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh)
 ```
 
 It will:
