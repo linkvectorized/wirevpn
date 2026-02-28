@@ -14,6 +14,8 @@
 
 Self-hosted WireGuard VPN — spin up your own private tunnel on any VPS in minutes. No subscriptions. No third party logging your data. No trust required.
 
+![WireVPN Tunnel Diagram](tunnel.svg)
+
 ```
 You → encrypted tunnel → YOUR server → internet
 ISP sees: encrypted gibberish to one IP
