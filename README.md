@@ -234,11 +234,28 @@ Self-hosted:      You → your server → internet
 
 ---
 
+## Mobile setup (iOS / Android)
+
+1. Install the **WireGuard** app (free, by WireGuard Development Team)
+2. On your Mac run: `bash add_peer.sh phone` — it prints a QR code
+3. In the app tap `+` → **Create from QR code** → scan → done
+
+**Enable On-Demand (auto-connect without toggling manually):**
+
+In the WireGuard iOS app:
+- Open the tunnel → tap **Edit**
+- Toggle on **On-Demand Activation**
+- Choose: WiFi, cellular, or both
+
+With On-Demand enabled your phone connects automatically whenever it's on the networks you selected — no manual toggle needed.
+
+---
+
 ## Limitations
 
-- Single client per server (add more `[Peer]` blocks to `/etc/wireguard/wg0.conf` manually for more devices)
 - IPv4 only — no IPv6 support
 - macOS and Linux client only — no Windows support
+- Multiple devices: use `bash add_peer.sh <name>` — each gets its own keys and IP
 
 ---
 
@@ -255,6 +272,12 @@ This does NOT protect you from:
 - ✗ Browser fingerprinting
 - ✗ Being logged in to accounts that identify you
 - ✗ Nation-state level adversaries
+
+---
+
+## License
+
+MIT — free for everyone, forever. Use it, fork it, modify it, share it.
 
 ---
 
