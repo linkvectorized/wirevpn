@@ -131,82 +131,97 @@ if ! systemctl is-enabled AdGuardHome &>/dev/null 2>&1; then
 fi
 printf "   $PASS Service registered\n\n"
 
-# ── Start in setup mode (no config = setup wizard API available) ──────────────
-echo "==> Starting AdGuard Home (setup mode)..."
-# Remove any existing config so AGH enters setup mode
-rm -f "$AGH_CONF"
-systemctl restart AdGuardHome
-sleep 3
-
-# Wait for setup API to become available
-printf "   Waiting for setup API"
-for i in $(seq 1 30); do
-  if curl -sf http://127.0.0.1:3000/control/install/get_addresses >/dev/null 2>&1; then
-    printf "\n   $PASS Setup API ready\n\n"
-    break
-  fi
-  if [ "$i" -eq 30 ]; then
-    printf "\n   ${RED}Setup API not available after 30s. Check: journalctl -u AdGuardHome${NC}\n"
+# ── Fresh install vs re-run ───────────────────────────────────────────────────
+if [ -f "$AGH_CONF" ]; then
+  # Config exists — preserve it, just restart with the new binary
+  echo "==> Existing config found — preserving settings and password..."
+  systemctl restart AdGuardHome
+  sleep 3
+  if ! systemctl is-active --quiet AdGuardHome; then
+    printf "${RED}AdGuardHome failed to restart. Check: journalctl -u AdGuardHome${NC}\n"
     exit 1
   fi
-  printf "."
-  sleep 1
-done
+  printf "   $PASS AdGuard Home restarted with existing config\n"
+  printf "   ${YELLOW}Password and blocklists unchanged — manage via http://10.0.0.1:3000${NC}\n\n"
+  FRESH_INSTALL=false
+else
+  # No config — run full setup via install API
+  FRESH_INSTALL=true
 
-# ── Configure via install API ─────────────────────────────────────────────────
-echo "==> Configuring AdGuard Home..."
-SETUP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/control/install/configure \
-  -H "Content-Type: application/json" \
-  -d "{\"web\":{\"ip\":\"0.0.0.0\",\"port\":3000},\"dns\":{\"ip\":\"0.0.0.0\",\"port\":53},\"username\":\"${AGH_USER}\",\"password\":\"${AGH_PASS}\"}")
-if [ "$SETUP_CODE" != "200" ]; then
-  printf "${RED}Setup API call failed (HTTP $SETUP_CODE). Check: journalctl -u AdGuardHome${NC}\n"
-  exit 1
-fi
-printf "   $PASS Initial setup complete\n"
+  echo "==> Starting AdGuard Home (setup mode)..."
+  systemctl restart AdGuardHome
+  sleep 3
 
-# AGH restarts itself after configure — wait for it to come back
-printf "   Waiting for AdGuard to restart"
-sleep 4
-for i in $(seq 1 20); do
-  if curl -sf -u "$AGH_USER:$AGH_PASS" http://127.0.0.1:3000/control/status >/dev/null 2>&1; then
-    printf "\n   $PASS AdGuard Home running\n\n"
-    break
-  fi
-  if [ "$i" -eq 20 ]; then
-    printf "\n   ${RED}AdGuard didn't restart cleanly. Check: journalctl -u AdGuardHome${NC}\n"
+  # Wait for setup API to become available
+  printf "   Waiting for setup API"
+  for i in $(seq 1 30); do
+    if curl -sf http://127.0.0.1:3000/control/install/get_addresses >/dev/null 2>&1; then
+      printf "\n   $PASS Setup API ready\n\n"
+      break
+    fi
+    if [ "$i" -eq 30 ]; then
+      printf "\n   ${RED}Setup API not available after 30s. Check: journalctl -u AdGuardHome${NC}\n"
+      exit 1
+    fi
+    printf "."
+    sleep 1
+  done
+
+  # ── Configure via install API ───────────────────────────────────────────────
+  echo "==> Configuring AdGuard Home..."
+  SETUP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/control/install/configure \
+    -H "Content-Type: application/json" \
+    -d "{\"web\":{\"ip\":\"0.0.0.0\",\"port\":3000},\"dns\":{\"ip\":\"0.0.0.0\",\"port\":53},\"username\":\"${AGH_USER}\",\"password\":\"${AGH_PASS}\"}")
+  if [ "$SETUP_CODE" != "200" ]; then
+    printf "${RED}Setup API call failed (HTTP $SETUP_CODE). Check: journalctl -u AdGuardHome${NC}\n"
     exit 1
   fi
-  printf "."
-  sleep 1
-done
+  printf "   $PASS Initial setup complete\n"
 
-# ── Set upstream DNS ──────────────────────────────────────────────────────────
-echo "==> Setting upstream DNS (1.1.1.1, 9.9.9.9 — parallel)..."
-curl -s -X POST http://127.0.0.1:3000/control/dns_config \
-  -u "$AGH_USER:$AGH_PASS" \
-  -H "Content-Type: application/json" \
-  -d '{"upstream_dns":["1.1.1.1","9.9.9.9"],"bootstrap_dns":["1.1.1.1:53"],"upstream_mode":"parallel"}' >/dev/null
-printf "   $PASS Upstream DNS configured\n\n"
+  # AGH restarts itself after configure — wait for it to come back
+  printf "   Waiting for AdGuard to restart"
+  sleep 4
+  for i in $(seq 1 20); do
+    if curl -sf -u "$AGH_USER:$AGH_PASS" http://127.0.0.1:3000/control/status >/dev/null 2>&1; then
+      printf "\n   $PASS AdGuard Home running\n\n"
+      break
+    fi
+    if [ "$i" -eq 20 ]; then
+      printf "\n   ${RED}AdGuard didn't restart cleanly. Check: journalctl -u AdGuardHome${NC}\n"
+      exit 1
+    fi
+    printf "."
+    sleep 1
+  done
 
-# ── Add blocklists ────────────────────────────────────────────────────────────
-echo "==> Adding blocklists..."
-for entry in \
-  "AdGuard DNS filter|https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt" \
-  "EasyList|https://easylist.to/easylist/easylist.txt" \
-  "EasyPrivacy|https://easylist.to/easylist/easyprivacy.txt"; do
-  LIST_NAME="${entry%%|*}"
-  LIST_URL="${entry##*|}"
-  curl -s -X POST http://127.0.0.1:3000/control/filtering/add_url \
+  # ── Set upstream DNS ────────────────────────────────────────────────────────
+  echo "==> Setting upstream DNS (1.1.1.1, 9.9.9.9 — parallel)..."
+  curl -s -X POST http://127.0.0.1:3000/control/dns_config \
     -u "$AGH_USER:$AGH_PASS" \
     -H "Content-Type: application/json" \
-    -d "{\"name\":\"$LIST_NAME\",\"url\":\"$LIST_URL\",\"whitelist\":false}" >/dev/null
-  printf "   $PASS $LIST_NAME\n"
-done
+    -d '{"upstream_dns":["1.1.1.1","9.9.9.9"],"bootstrap_dns":["1.1.1.1:53"],"upstream_mode":"parallel"}' >/dev/null
+  printf "   $PASS Upstream DNS configured\n\n"
 
-# Trigger filter download
-curl -s -X POST "http://127.0.0.1:3000/control/filtering/refresh?force=true" \
-  -u "$AGH_USER:$AGH_PASS" >/dev/null
-printf "\n"
+  # ── Add blocklists ──────────────────────────────────────────────────────────
+  echo "==> Adding blocklists..."
+  for entry in \
+    "AdGuard DNS filter|https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt" \
+    "EasyList|https://easylist.to/easylist/easylist.txt" \
+    "EasyPrivacy|https://easylist.to/easylist/easyprivacy.txt"; do
+    LIST_NAME="${entry%%|*}"
+    LIST_URL="${entry##*|}"
+    curl -s -X POST http://127.0.0.1:3000/control/filtering/add_url \
+      -u "$AGH_USER:$AGH_PASS" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\":\"$LIST_NAME\",\"url\":\"$LIST_URL\",\"whitelist\":false}" >/dev/null
+    printf "   $PASS $LIST_NAME\n"
+  done
+
+  # Trigger filter download
+  curl -s -X POST "http://127.0.0.1:3000/control/filtering/refresh?force=true" \
+    -u "$AGH_USER:$AGH_PASS" >/dev/null
+  printf "\n"
+fi
 
 # ── Firewall: allow DNS only on wg0, not public internet ─────────────────────
 echo "==> Configuring firewall (DNS on wg0 only)..."
@@ -239,13 +254,15 @@ cat << 'EOF'
 EOF
 printf "${NC}\n"
 
-printf "  ${BOLD}Web UI credentials — save these:${NC}\n"
-printf "    Username: ${CYAN}$AGH_USER${NC}\n"
-printf "    Password: ${CYAN}$AGH_PASS${NC}\n\n"
+if [ "$FRESH_INSTALL" = true ]; then
+  printf "  ${BOLD}Web UI credentials — save these:${NC}\n"
+  printf "    Username: ${CYAN}$AGH_USER${NC}\n"
+  printf "    Password: ${CYAN}$AGH_PASS${NC}\n\n"
+  printf "  ${BOLD}Next step — on your Mac, run:${NC}\n\n"
+  printf "  ${CYAN}bash adguard_client.sh${NC}\n\n"
+fi
 printf "  ${BOLD}Web UI (while connected to VPN):${NC}\n"
 printf "  ${CYAN}http://10.0.0.1:3000${NC}\n\n"
-printf "  ${BOLD}Next step — on your Mac, run:${NC}\n\n"
-printf "  ${CYAN}bash adguard_client.sh${NC}\n\n"
 printf "  ${BOLD}Verify blocking:${NC}\n"
 printf "    ${CYAN}dig @10.0.0.1 doubleclick.net${NC}   # should return NXDOMAIN\n\n"
 printf "${YELLOW}  Stay private. Block the noise. Question everything. Never trust your government. Stand against the machine.${NC}\n\n"
