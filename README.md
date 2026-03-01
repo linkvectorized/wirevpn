@@ -1,4 +1,4 @@
-# WireVPN
+# WireVPN + AdGuard
 
 ```
   ██╗    ██╗██╗██████╗ ███████╗██╗   ██╗██████╗ ███╗   ██╗
@@ -10,16 +10,17 @@
 ```
 
 > ⚠️ Your traffic belongs to you. Not your ISP. Not your government. Not big tech.
-> Route around surveillance. Stay sovereign. Question everything.
+> Route around surveillance. Block the noise. Stay sovereign. Question everything.
 
-Self-hosted WireGuard VPN — spin up your own private tunnel on any VPS in minutes. No subscriptions. No third party logging your data. No trust required.
+Self-hosted WireGuard VPN + AdGuard Home DNS blocking — spin up your own private, ad-free tunnel on any VPS in minutes. No subscriptions. No third party logging your data. No trust required.
 
-![WireVPN Tunnel Diagram](tunnel.svg)
+![WireVPN + AdGuard Diagram](tunnel.svg)
 
 ```
 You → encrypted tunnel → YOUR server → internet
 ISP sees: encrypted gibberish to one IP
 World sees: your VPS, not you
+Ads and trackers: blocked before they load
 ```
 
 ---
