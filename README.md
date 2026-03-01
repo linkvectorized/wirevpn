@@ -27,9 +27,11 @@ World sees: your VPS, not you
 ## What's in here
 
 ```
-server_setup.sh   — run on your VPS (Ubuntu 24.04)
-client_setup.sh   — run on your Mac or Linux machine
-add_peer.sh       — add or remove devices from your VPN (run on your Mac)
+server_setup.sh     — run on your VPS (Ubuntu 24.04)
+client_setup.sh     — run on your Mac or Linux machine
+add_peer.sh         — add or remove devices from your VPN (run on your Mac)
+adguard_setup.sh    — install AdGuard Home on your VPS for DNS-level ad blocking
+adguard_client.sh   — update Mac configs to use AdGuard DNS
 ```
 
 ### Persistence — how it works
