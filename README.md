@@ -137,6 +137,84 @@ Removing a peer revokes access instantly — they're kicked off the live tunnel 
 
 ---
 
+## AdGuard Home — DNS-level ad and tracker blocking
+
+Block ads, trackers, and malware domains before they load — for every device already on your tunnel. No per-device changes needed.
+
+AdGuard Home runs on your VPS and intercepts all DNS queries at `10.0.0.1`. When your iPhone or Mac asks "what's the IP for doubleclick.net?" AdGuard answers NXDOMAIN before the request ever leaves your network.
+
+```
+server_setup.sh     — install WireGuard
+adguard_setup.sh    — install AdGuard Home (run after server_setup.sh)
+adguard_client.sh   — update Mac configs to use AdGuard DNS
+```
+
+### 1. Run on your VPS (after server_setup.sh)
+```bash
+ssh root@YOUR_SERVER_IP
+bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_setup.sh)
+```
+
+It will:
+- Download and install AdGuard Home binary
+- Write a config with ad/tracker/malware blocklists
+- Lock DNS to the WireGuard interface only — port 53 is never exposed publicly
+- Start AdGuard as a systemd service
+
+### 2. Run on your Mac
+```bash
+cd ~/Desktop/WireVPN
+bash adguard_client.sh
+```
+
+It will:
+- Update DNS in all your `.conf` files (client.conf, phone.conf, etc.) from `1.1.1.1` to `10.0.0.1`
+- Back up originals before editing
+- Reinstall configs to `/etc/wireguard/`
+- Bounce the tunnel to pick up the new DNS
+- Verify blocking is working
+
+### 3. For other devices (iPhone, etc.)
+Edit the WireGuard config on each device and change:
+```
+DNS = 1.1.1.1
+```
+to:
+```
+DNS = 10.0.0.1
+```
+
+Or use `bash add_peer.sh <name>` — after running `adguard_client.sh`, new peer configs will automatically use AdGuard DNS.
+
+### Web UI
+While connected to your VPN, open:
+```
+http://10.0.0.1:3000
+```
+
+The UI is only reachable through the tunnel — it's not exposed to the public internet.
+
+### Verify it's working
+```bash
+# Should return NXDOMAIN (blocked)
+dig @10.0.0.1 doubleclick.net
+
+# Should still return your VPS IP
+curl ifconfig.me
+
+# Open web UI in browser (while on VPN)
+open http://10.0.0.1:3000
+```
+
+### Blocklists included by default
+- **AdGuard DNS filter** — ads, trackers, malware
+- **EasyList** — display ads
+- **EasyPrivacy** — tracking scripts
+
+You can add more via the web UI under Filters → DNS blocklists.
+
+---
+
 ## Useful commands
 
 ```bash
