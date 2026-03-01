@@ -117,7 +117,9 @@ fi
 # Generate keypair
 PRIVATE=\$(wg genkey)
 PUBLIC=\$(echo "\$PRIVATE" | wg pubkey)
-SERVER_PUBLIC=\$(cat /etc/wireguard/server_public.key)
+SERVER_PUBLIC=\$(wg show wg0 public-key)
+# Keep server_public.key in sync with reality
+echo "\$SERVER_PUBLIC" > /etc/wireguard/server_public.key
 SERVER_IP=\$(curl -s --max-time 5 ifconfig.me)
 
 # Save keys to disk
