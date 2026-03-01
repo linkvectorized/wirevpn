@@ -1,4 +1,4 @@
-# WireVPN + AdGuard
+# WireGuard + AdGuard = WireVPN
 
 ```
   ██╗    ██╗██╗██████╗ ███████╗██╗   ██╗██████╗ ███╗   ██╗
