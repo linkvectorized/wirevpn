@@ -54,7 +54,7 @@ Self-hosted:      You → your server → internet
                   Zero trust required.
 ```
 
-One caveat: you're still trusting your VPS provider. They can see your IP, connection times, and traffic volume — not the contents, but the metadata is real. This is an honest tradeoff, not zero trust.
+One caveat: you're still trusting your VPS provider. They can see your IP, connection times, and traffic volume — not the contents, but the metadata is real. That's an honest tradeoff worth knowing upfront.
 
 Pick a provider that accepts anonymous payment, operates outside your jurisdiction, and has a no-logs policy. Mullvad VPS (pay with Monero, no account required) and 1984 Hosting (Iceland, strong privacy laws) get you much closer to zero trust than any commercial VPN can offer. See the provider table below.
 
