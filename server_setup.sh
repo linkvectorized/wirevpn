@@ -59,19 +59,35 @@ if [ -f /etc/wireguard/wg0.conf ]; then
   cp /etc/wireguard/wg0.conf /etc/wireguard/wg0.conf.bak
   printf "   ${YELLOW}Existing wg0.conf backed up to wg0.conf.bak${NC}\n"
 fi
-wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key
-chmod 600 /etc/wireguard/server_private.key
-SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
-SERVER_PUBLIC=$(cat /etc/wireguard/server_public.key)
-printf "   $PASS Server keys generated\n\n"
+# Preserve existing server keys — regenerating breaks all connected clients
+if [ -f /etc/wireguard/server_private.key ]; then
+  SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
+  SERVER_PUBLIC=$(cat /etc/wireguard/server_public.key)
+  printf "   ${YELLOW}Server keys already exist — reusing (regenerating would break existing clients)${NC}\n"
+else
+  wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key
+  chmod 600 /etc/wireguard/server_private.key
+  SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
+  SERVER_PUBLIC=$(cat /etc/wireguard/server_public.key)
+  printf "   $PASS Server keys generated\n"
+fi
+printf "\n"
 
 # ── Generate client keys ──────────────────────────────────────────────────────
 printf "${BOLD}==> Generating client keys...${NC}\n"
-wg genkey | tee /etc/wireguard/client_private.key | wg pubkey > /etc/wireguard/client_public.key
-chmod 600 /etc/wireguard/client_private.key
-CLIENT_PRIVATE=$(cat /etc/wireguard/client_private.key)
-CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
-printf "   $PASS Client keys generated\n\n"
+# Preserve existing client keys if present
+if [ -f /etc/wireguard/client_private.key ]; then
+  CLIENT_PRIVATE=$(cat /etc/wireguard/client_private.key)
+  CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
+  printf "   ${YELLOW}Client keys already exist — reusing${NC}\n"
+else
+  wg genkey | tee /etc/wireguard/client_private.key | wg pubkey > /etc/wireguard/client_public.key
+  chmod 600 /etc/wireguard/client_private.key
+  CLIENT_PRIVATE=$(cat /etc/wireguard/client_private.key)
+  CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
+  printf "   $PASS Client keys generated\n"
+fi
+printf "\n"
 
 # ── Detect network interface ──────────────────────────────────────────────────
 printf "${BOLD}==> Detecting network interface...${NC}\n"

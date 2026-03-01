@@ -300,6 +300,39 @@ After this, no one gets in without your private key — even if they know the ro
 
 ---
 
+## Peer connected but no internet / tunnel not handshaking
+
+If a device shows as connected in the WireGuard app but has no internet, or `wg show` on the VPS shows no handshake for a peer, the most likely cause is a **stale server public key** in the peer's config.
+
+This happens if `server_setup.sh` was run more than once — it regenerates the server keypair, but any peer configs generated before that point still have the old public key. The client encrypts traffic for a key the server no longer holds, so the handshake never completes.
+
+**Diagnose:**
+```bash
+# On VPS — check what key the server is actually using
+wg show wg0 public-key
+
+# Compare against what's in server_public.key
+cat /etc/wireguard/server_public.key
+```
+
+If they differ, the key file is stale.
+
+**Fix:**
+```bash
+# On VPS — sync the key file to reality
+wg show wg0 public-key > /etc/wireguard/server_public.key
+
+# On Mac — remove and re-add the affected peer
+bash add_peer.sh remove <name>
+bash add_peer.sh <name>
+```
+
+Then rescan the QR on the device. The new config will have the correct server public key.
+
+`add_peer.sh` always reads the live key from `wg show` so newly generated configs are always correct.
+
+---
+
 ## "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
 
 If your VPS provider reused the same IP for your new server you'll get this SSH error. Safe to fix — just remove the old key:
