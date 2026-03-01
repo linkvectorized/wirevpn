@@ -1,148 +1,177 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#000000"/>
       <stop offset="100%" stop-color="#020d02"/>
     </linearGradient>
-    <radialGradient id="globeGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00ff41" stop-opacity="0.2"/>
+    <linearGradient id="tunnelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00aaff" stop-opacity="0"/>
+      <stop offset="10%" stop-color="#00aaff"/>
+      <stop offset="90%" stop-color="#00ff41"/>
       <stop offset="100%" stop-color="#00ff41" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="deviceGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00aaff" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#00aaff" stop-opacity="0"/>
-    </radialGradient>
+    </linearGradient>
     <filter id="glow">
       <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
     <filter id="strongGlow">
       <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="orangeGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
     <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
       <path d="M0,0 L0,6 L8,3 z" fill="#00ff41"/>
     </marker>
-    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#00aaff"/>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ff6600"/>
     </marker>
-    <linearGradient id="tunnelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00aaff" stop-opacity="0"/>
-      <stop offset="15%" stop-color="#00aaff" stop-opacity="1"/>
-      <stop offset="85%" stop-color="#00ff41" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#00ff41" stop-opacity="0"/>
-    </linearGradient>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#ff3333"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#666666"/>
+    </marker>
   </defs>
 
   <!-- Background -->
-  <rect width="900" height="400" fill="url(#bgGrad)"/>
+  <rect width="900" height="520" fill="url(#bgGrad)"/>
 
   <!-- Grid -->
-  <g stroke="#00ff41" stroke-opacity="0.04" stroke-width="0.5">
-    <line x1="0" y1="80" x2="900" y2="80"/>
-    <line x1="0" y1="160" x2="900" y2="160"/>
-    <line x1="0" y1="240" x2="900" y2="240"/>
-    <line x1="0" y1="320" x2="900" y2="320"/>
-    <line x1="150" y1="0" x2="150" y2="400"/>
-    <line x1="300" y1="0" x2="300" y2="400"/>
-    <line x1="450" y1="0" x2="450" y2="400"/>
-    <line x1="600" y1="0" x2="600" y2="400"/>
-    <line x1="750" y1="0" x2="750" y2="400"/>
+  <g stroke="#00ff41" stroke-opacity="0.035" stroke-width="0.5">
+    <line x1="0" y1="100" x2="900" y2="100"/>
+    <line x1="0" y1="200" x2="900" y2="200"/>
+    <line x1="0" y1="300" x2="900" y2="300"/>
+    <line x1="0" y1="400" x2="900" y2="400"/>
+    <line x1="150" y1="0" x2="150" y2="520"/>
+    <line x1="300" y1="0" x2="300" y2="520"/>
+    <line x1="450" y1="0" x2="450" y2="520"/>
+    <line x1="600" y1="0" x2="600" y2="520"/>
+    <line x1="750" y1="0" x2="750" y2="520"/>
   </g>
-
-  <!-- ── YOUR DEVICE (left) ── -->
-  <g transform="translate(130, 200)">
-    <!-- Glow -->
-    <circle r="75" fill="url(#deviceGlow)"/>
-    <!-- Laptop screen -->
-    <rect x="-45" y="-55" width="90" height="62" rx="4" fill="#050510" stroke="#00aaff" stroke-width="1.5" filter="url(#glow)"/>
-    <!-- Screen content -->
-    <rect x="-38" y="-48" width="76" height="48" rx="2" fill="#0a0a1a"/>
-    <text x="-30" y="-32" font-family="monospace" font-size="7" fill="#00aaff" fill-opacity="0.8">$ curl ifconfig.me</text>
-    <text x="-30" y="-20" font-family="monospace" font-size="7" fill="#00ff41">YOUR_VPS_IP</text>
-    <text x="-30" y="-8" font-family="monospace" font-size="7" fill="#00aaff" fill-opacity="0.5">tunnel: active ✓</text>
-    <!-- Laptop base -->
-    <rect x="-50" y="8" width="100" height="6" rx="2" fill="#050510" stroke="#00aaff" stroke-width="1" stroke-opacity="0.6"/>
-    <rect x="-20" y="14" width="40" height="3" rx="1" fill="#00aaff" fill-opacity="0.2"/>
-    <!-- Label -->
-    <text x="0" y="38" text-anchor="middle" font-family="monospace" font-size="11" fill="#00aaff" filter="url(#glow)">YOUR DEVICE</text>
-    <text x="0" y="54" text-anchor="middle" font-family="monospace" font-size="9" fill="#00aaff" fill-opacity="0.5">Mac / Linux</text>
-  </g>
-
-  <!-- ── ISP BLOCK (top center) ── -->
-  <g transform="translate(450, 90)">
-    <rect x="-90" y="-30" width="180" height="55" rx="4" fill="#0d0000" stroke="#ff3333" stroke-width="1" stroke-opacity="0.7"/>
-    <text x="0" y="-10" text-anchor="middle" font-family="monospace" font-size="11" fill="#ff3333" filter="url(#glow)">YOUR ISP</text>
-    <text x="0" y="8" text-anchor="middle" font-family="monospace" font-size="9" fill="#ff3333" fill-opacity="0.6">sees: encrypted blob</text>
-    <text x="0" y="20" text-anchor="middle" font-family="monospace" font-size="9" fill="#ff3333" fill-opacity="0.4">cannot read contents</text>
-  </g>
-
-  <!-- ── ENCRYPTED TUNNEL (middle) ── -->
-  <!-- Tunnel tube top -->
-  <path d="M 205 185 Q 450 155 695 185" fill="none" stroke="#00ff41" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,4"/>
-  <!-- Tunnel tube bottom -->
-  <path d="M 205 215 Q 450 245 695 215" fill="none" stroke="#00ff41" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,4"/>
-  <!-- Main tunnel line -->
-  <line x1="205" y1="200" x2="695" y2="200" stroke="url(#tunnelGrad)" stroke-width="2.5" filter="url(#glow)"/>
-  <!-- Animated dots -->
-  <circle cx="290" cy="200" r="3" fill="#00aaff" filter="url(#glow)" opacity="0.9"/>
-  <circle cx="370" cy="200" r="3" fill="#00aaff" filter="url(#glow)" opacity="0.7"/>
-  <circle cx="450" cy="200" r="3" fill="#00ff41" filter="url(#glow)" opacity="0.9"/>
-  <circle cx="530" cy="200" r="3" fill="#00ff41" filter="url(#glow)" opacity="0.7"/>
-  <circle cx="610" cy="200" r="3" fill="#00ff41" filter="url(#glow)" opacity="0.9"/>
-
-  <!-- Lock icon center -->
-  <g transform="translate(450, 200)" filter="url(#glow)">
-    <rect x="-13" y="-6" width="26" height="20" rx="3" fill="#000" stroke="#00ff41" stroke-width="1.5"/>
-    <path d="M -7 -6 L -7 -14 Q 0 -20 7 -14 L 7 -6" fill="none" stroke="#00ff41" stroke-width="1.5"/>
-    <circle cx="0" cy="5" r="3.5" fill="#00ff41"/>
-    <line x1="0" y1="5" x2="0" y2="10" stroke="#00ff41" stroke-width="1.5"/>
-    <text x="0" y="-26" text-anchor="middle" font-family="monospace" font-size="8" fill="#00ff41" fill-opacity="0.7">ENCRYPTED</text>
-  </g>
-
-  <!-- ── VPS SERVER (right) ── -->
-  <g transform="translate(770, 200)">
-    <!-- Glow -->
-    <circle r="75" fill="url(#globeGlow)"/>
-    <!-- Server box -->
-    <rect x="-42" y="-52" width="84" height="90" rx="4" fill="#050f05" stroke="#00ff41" stroke-width="1.5" filter="url(#glow)"/>
-    <!-- Server rack lines -->
-    <rect x="-34" y="-44" width="68" height="10" rx="2" fill="#0a1a0a" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.5"/>
-    <rect x="-34" y="-30" width="68" height="10" rx="2" fill="#0a1a0a" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.5"/>
-    <rect x="-34" y="-16" width="68" height="10" rx="2" fill="#0a1a0a" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.5"/>
-    <rect x="-34" y="-2" width="68" height="10" rx="2" fill="#0a1a0a" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.5"/>
-    <rect x="-34" y="12" width="68" height="10" rx="2" fill="#0a1a0a" stroke="#00ff41" stroke-width="0.5" stroke-opacity="0.5"/>
-    <!-- LEDs -->
-    <circle cx="22" cy="-39" r="2" fill="#00ff41" filter="url(#glow)"/>
-    <circle cx="22" cy="-25" r="2" fill="#00ff41" filter="url(#glow)"/>
-    <circle cx="22" cy="-11" r="2" fill="#ffaa00" filter="url(#glow)"/>
-    <circle cx="22" cy="3" r="2" fill="#00ff41" filter="url(#glow)"/>
-    <circle cx="22" cy="17" r="2" fill="#00ff41" filter="url(#glow)"/>
-    <!-- WireGuard label -->
-    <text x="0" y="48" text-anchor="middle" font-family="monospace" font-size="11" fill="#00ff41" filter="url(#glow)">YOUR VPS</text>
-    <text x="0" y="64" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.5">WireGuard server</text>
-  </g>
-
-  <!-- ── INTERNET (bottom right) ── -->
-  <g transform="translate(770, 330)">
-    <text x="0" y="0" text-anchor="middle" font-family="monospace" font-size="10" fill="#00ff41" fill-opacity="0.5">↓</text>
-    <text x="0" y="18" text-anchor="middle" font-family="monospace" font-size="10" fill="#00ff41" fill-opacity="0.4">INTERNET</text>
-    <text x="0" y="34" text-anchor="middle" font-family="monospace" font-size="8" fill="#00ff41" fill-opacity="0.3">exits here</text>
-  </g>
-
-  <!-- ISP arrow down to tunnel -->
-  <line x1="450" y1="116" x2="450" y2="172" stroke="#ff3333" stroke-width="1" stroke-opacity="0.4" stroke-dasharray="3,3"/>
-  <text x="460" y="148" font-family="monospace" font-size="8" fill="#ff3333" fill-opacity="0.5">blocked</text>
 
   <!-- Title -->
-  <text x="450" y="36" text-anchor="middle" font-family="monospace" font-size="18" font-weight="bold" fill="#00ff41" filter="url(#strongGlow)">HOW WIREVPN WORKS</text>
+  <text x="450" y="42" text-anchor="middle" font-family="monospace" font-size="17" font-weight="bold" fill="#00ff41" filter="url(#strongGlow)">HOW WIREVPN + ADGUARD WORKS</text>
 
-  <!-- Bottom tagline -->
-  <text x="450" y="385" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.25">⚠  your keys. your server. zero trust required.</text>
+  <!-- ── YOUR DEVICES (left) ── -->
+
+  <!-- Mac -->
+  <g transform="translate(90, 185)">
+    <rect x="-44" y="-50" width="88" height="62" rx="4" fill="#050510" stroke="#00aaff" stroke-width="1.5" filter="url(#glow)"/>
+    <rect x="-37" y="-43" width="74" height="46" rx="2" fill="#080818"/>
+    <text x="-28" y="-28" font-family="monospace" font-size="6.5" fill="#00aaff" fill-opacity="0.9">$ curl ifconfig.me</text>
+    <text x="-28" y="-16" font-family="monospace" font-size="6.5" fill="#00ff41">VPS_IP</text>
+    <text x="-28" y="-4" font-family="monospace" font-size="6" fill="#00aaff" fill-opacity="0.5">dns: 10.0.0.1 ✓</text>
+    <rect x="-49" y="13" width="98" height="6" rx="2" fill="#050510" stroke="#00aaff" stroke-width="1" stroke-opacity="0.5"/>
+    <rect x="-18" y="19" width="36" height="3" rx="1" fill="#00aaff" fill-opacity="0.15"/>
+    <text x="0" y="40" text-anchor="middle" font-family="monospace" font-size="10" fill="#00aaff" filter="url(#glow)">Mac</text>
+  </g>
+
+  <!-- iPhone -->
+  <g transform="translate(90, 345)">
+    <rect x="-23" y="-56" width="46" height="82" rx="7" fill="#050510" stroke="#00aaff" stroke-width="1.5" filter="url(#glow)"/>
+    <rect x="-16" y="-48" width="32" height="60" rx="2" fill="#080818"/>
+    <rect x="-5" y="-52" width="10" height="3" rx="1.5" fill="#050510" stroke="#00aaff" stroke-width="0.5" stroke-opacity="0.5"/>
+    <text x="0" y="-32" text-anchor="middle" font-family="monospace" font-size="5.5" fill="#00ff41">vpn: on</text>
+    <text x="0" y="-19" text-anchor="middle" font-family="monospace" font-size="5.5" fill="#00aaff" fill-opacity="0.6">10.0.0.3</text>
+    <text x="0" y="-7" text-anchor="middle" font-family="monospace" font-size="5" fill="#00ff41" fill-opacity="0.5">ads: blocked</text>
+    <circle cx="0" cy="24" r="5" fill="none" stroke="#00aaff" stroke-width="1" stroke-opacity="0.4"/>
+    <text x="0" y="46" text-anchor="middle" font-family="monospace" font-size="10" fill="#00aaff" filter="url(#glow)">iPhone</text>
+  </g>
+
+  <text x="90" y="430" text-anchor="middle" font-family="monospace" font-size="8.5" fill="#00aaff" fill-opacity="0.35">YOUR DEVICES</text>
+
+  <!-- ── ISP (top center) ── -->
+  <g transform="translate(355, 88)">
+    <rect x="-100" y="-30" width="200" height="52" rx="4" fill="#0d0000" stroke="#ff3333" stroke-width="1" stroke-opacity="0.65"/>
+    <text x="0" y="-9" text-anchor="middle" font-family="monospace" font-size="10" fill="#ff3333" filter="url(#glow)">YOUR ISP</text>
+    <text x="0" y="7" text-anchor="middle" font-family="monospace" font-size="8" fill="#ff3333" fill-opacity="0.6">sees: ████████████ (encrypted)</text>
+    <text x="0" y="19" text-anchor="middle" font-family="monospace" font-size="7" fill="#ff3333" fill-opacity="0.35">cannot read — only sees one destination</text>
+  </g>
+  <line x1="355" y1="115" x2="355" y2="168" stroke="#ff3333" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="3,4"/>
+  <text x="365" y="144" font-family="monospace" font-size="7" fill="#ff3333" fill-opacity="0.35">blocked</text>
+
+  <!-- ── ENCRYPTED TUNNELS ── -->
+
+  <!-- Mac tunnel -->
+  <path d="M 152 178 Q 355 158 578 178" fill="none" stroke="#00aaff" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="5,4"/>
+  <line x1="152" y1="185" x2="578" y2="185" stroke="url(#tunnelGrad)" stroke-width="2.5" filter="url(#glow)"/>
+  <path d="M 152 192 Q 355 212 578 192" fill="none" stroke="#00aaff" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="5,4"/>
+  <circle cx="240" cy="185" r="2.5" fill="#00aaff" fill-opacity="0.8" filter="url(#glow)"/>
+  <circle cx="310" cy="185" r="2.5" fill="#00aaff" fill-opacity="0.6" filter="url(#glow)"/>
+  <circle cx="390" cy="185" r="2.5" fill="#00ff41" fill-opacity="0.8" filter="url(#glow)"/>
+  <circle cx="468" cy="185" r="2.5" fill="#00ff41" fill-opacity="0.6" filter="url(#glow)"/>
+  <circle cx="545" cy="185" r="2.5" fill="#00ff41" fill-opacity="0.8" filter="url(#glow)"/>
+  <text x="255" y="175" font-family="monospace" font-size="7" fill="#00ff41" fill-opacity="0.45">encrypted</text>
+
+  <!-- Lock icon Mac tunnel -->
+  <g transform="translate(355, 185)" filter="url(#glow)">
+    <rect x="-11" y="-5" width="22" height="17" rx="2.5" fill="#000" stroke="#00ff41" stroke-width="1.3"/>
+    <path d="M-6,-5 L-6,-12 Q0,-17 6,-12 L6,-5" fill="none" stroke="#00ff41" stroke-width="1.3"/>
+    <circle cx="0" cy="4.5" r="3" fill="#00ff41"/>
+    <line x1="0" y1="4.5" x2="0" y2="9" stroke="#00ff41" stroke-width="1.3"/>
+  </g>
+
+  <!-- iPhone tunnel -->
+  <path d="M 152 338 Q 355 318 578 338" fill="none" stroke="#00aaff" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="5,4"/>
+  <line x1="152" y1="345" x2="578" y2="345" stroke="url(#tunnelGrad)" stroke-width="2.5" filter="url(#glow)"/>
+  <path d="M 152 352 Q 355 372 578 352" fill="none" stroke="#00aaff" stroke-width="1" stroke-opacity="0.2" stroke-dasharray="5,4"/>
+  <circle cx="240" cy="345" r="2.5" fill="#00aaff" fill-opacity="0.8" filter="url(#glow)"/>
+  <circle cx="310" cy="345" r="2.5" fill="#00aaff" fill-opacity="0.6" filter="url(#glow)"/>
+  <circle cx="390" cy="345" r="2.5" fill="#00ff41" fill-opacity="0.8" filter="url(#glow)"/>
+  <circle cx="468" cy="345" r="2.5" fill="#00ff41" fill-opacity="0.6" filter="url(#glow)"/>
+  <circle cx="545" cy="345" r="2.5" fill="#00ff41" fill-opacity="0.8" filter="url(#glow)"/>
+  <text x="255" y="335" font-family="monospace" font-size="7" fill="#00ff41" fill-opacity="0.45">encrypted</text>
+
+  <!-- Lock icon iPhone tunnel -->
+  <g transform="translate(355, 345)" filter="url(#glow)">
+    <rect x="-11" y="-5" width="22" height="17" rx="2.5" fill="#000" stroke="#00ff41" stroke-width="1.3"/>
+    <path d="M-6,-5 L-6,-12 Q0,-17 6,-12 L6,-5" fill="none" stroke="#00ff41" stroke-width="1.3"/>
+    <circle cx="0" cy="4.5" r="3" fill="#00ff41"/>
+    <line x1="0" y1="4.5" x2="0" y2="9" stroke="#00ff41" stroke-width="1.3"/>
+  </g>
+
+  <!-- ── VPS BOX ── -->
+  <rect x="578" y="110" width="300" height="360" rx="6" fill="#030f03" stroke="#00ff41" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="728" y="132" text-anchor="middle" font-family="monospace" font-size="11" font-weight="bold" fill="#00ff41" filter="url(#glow)">YOUR VPS</text>
+  <text x="728" y="146" text-anchor="middle" font-family="monospace" font-size="8" fill="#00ff41" fill-opacity="0.4">10.0.0.1</text>
+
+  <!-- WireGuard section -->
+  <rect x="594" y="156" width="268" height="68" rx="4" fill="#051505" stroke="#00ff41" stroke-width="0.8" stroke-opacity="0.55"/>
+  <text x="728" y="175" text-anchor="middle" font-family="monospace" font-size="9.5" fill="#00ff41" fill-opacity="0.9">⬡  WireGuard Server</text>
+  <text x="728" y="190" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#00ff41" fill-opacity="0.5">decrypts tunnel traffic</text>
+  <text x="728" y="204" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#00ff41" fill-opacity="0.5">routes DNS → AdGuard   web → internet</text>
+  <text x="728" y="216" text-anchor="middle" font-family="monospace" font-size="7" fill="#00aaff" fill-opacity="0.35">:51820 udp</text>
+
+  <!-- Arrow WireGuard → AdGuard -->
+  <line x1="728" y1="225" x2="728" y2="248" stroke="#ff6600" stroke-width="1.5" marker-end="url(#arrowOrange)" filter="url(#orangeGlow)"/>
+  <text x="736" y="240" font-family="monospace" font-size="7" fill="#ff6600" fill-opacity="0.75">DNS queries</text>
+
+  <!-- AdGuard section -->
+  <rect x="594" y="250" width="268" height="108" rx="4" fill="#150800" stroke="#ff6600" stroke-width="1.2" filter="url(#orangeGlow)"/>
+  <text x="728" y="270" text-anchor="middle" font-family="monospace" font-size="9.5" fill="#ff6600" filter="url(#orangeGlow)">⬡  AdGuard Home</text>
+  <text x="728" y="284" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#ff6600" fill-opacity="0.55">intercepts every DNS query</text>
+  <text x="728" y="298" text-anchor="middle" font-family="monospace" font-size="7" fill="#ff6600" fill-opacity="0.35">:53 udp/tcp (wg0 only)</text>
+
+  <!-- Blocked domains -->
+  <text x="604" y="316" font-family="monospace" font-size="7.5" fill="#ff3333" fill-opacity="0.9">✗  doubleclick.net  →  0.0.0.0</text>
+  <text x="604" y="330" font-family="monospace" font-size="7.5" fill="#ff3333" fill-opacity="0.9">✗  googleadservices  →  0.0.0.0</text>
+  <!-- Allowed domain -->
+  <text x="604" y="348" font-family="monospace" font-size="7.5" fill="#00ff41" fill-opacity="0.9">✓  google.com  →  1.1.1.1 / 9.9.9.9</text>
+
+  <!-- Arrow AdGuard → Internet -->
+  <line x1="728" y1="359" x2="728" y2="382" stroke="#00ff41" stroke-width="1.5" marker-end="url(#arrowGreen)" filter="url(#glow)"/>
+  <text x="736" y="374" font-family="monospace" font-size="7" fill="#00ff41" fill-opacity="0.6">web traffic</text>
+
+  <!-- Internet section -->
+  <rect x="594" y="384" width="268" height="70" rx="4" fill="#051505" stroke="#00ff41" stroke-width="0.7" stroke-opacity="0.45"/>
+  <text x="728" y="404" text-anchor="middle" font-family="monospace" font-size="9" fill="#00ff41" fill-opacity="0.75">INTERNET</text>
+  <text x="728" y="420" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#00ff41" fill-opacity="0.4">all traffic exits here</text>
+  <text x="728" y="434" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#00ff41" fill-opacity="0.4">world sees: VPS IP — not you</text>
+  <text x="728" y="447" text-anchor="middle" font-family="monospace" font-size="7" fill="#00aaff" fill-opacity="0.3">upstream DNS: 1.1.1.1 · 9.9.9.9</text>
+
+  <!-- Tagline -->
+  <text x="450" y="505" text-anchor="middle" font-family="monospace" font-size="8.5" fill="#00ff41" fill-opacity="0.22">⚠  your keys. your server. your DNS. zero trust required.</text>
 </svg>
