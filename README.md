@@ -72,6 +72,20 @@ This does NOT protect you from:
 - ✗ Being logged in to accounts that identify you
 - ✗ Nation-state level adversaries
 
+## What makes this different
+
+Most WireGuard setup scripts on GitHub are one-shot installers — they run once, generate a config, and leave you to figure out everything else. They break on re-run, wipe your peers, have no error handling, and assume you already know what you're doing.
+
+This is a complete managed system:
+
+- **Re-entrant** — every script can be re-run safely without breaking existing state. Keys are preserved, peers aren't wiped, live config is backed up before any change.
+- **AdGuard fully automated** — deployed and configured via REST API with no web UI wizard, no manual steps.
+- **Peer management** — add or remove devices live with no WireGuard restart. QR code printed in terminal. Access revoked instantly.
+- **Boot-safe** — network-wait wrapper ensures the VPN doesn't race with startup on macOS or Linux.
+- **Fault-tolerant** — SSH pre-flight, IP collision prevention, key mismatch detection, architecture-aware binary selection (amd64/arm64/armv7).
+
+The closest alternative is [Algo VPN](https://github.com/trailofbits/algo) — 10,000+ lines of Ansible/Python requiring a full toolchain install. This is ~1,300 lines of bash that runs on any Mac with a one-liner.
+
 ---
 
 ## What's in here
@@ -109,22 +123,6 @@ macOS    ✓   auto-start via launchd
 Linux    ✓   auto-start via systemd (apt / dnf / pacman)
 Windows  ✗   not supported
 ```
-
----
-
-## What makes this different
-
-Most WireGuard setup scripts on GitHub are one-shot installers — they run once, generate a config, and leave you to figure out everything else. They break on re-run, wipe your peers, have no error handling, and assume you already know what you're doing.
-
-This is a complete managed system:
-
-- **Re-entrant** — every script can be re-run safely without breaking existing state. Keys are preserved, peers aren't wiped, live config is backed up before any change.
-- **AdGuard fully automated** — deployed and configured via REST API with no web UI wizard, no manual steps.
-- **Peer management** — add or remove devices live with no WireGuard restart. QR code printed in terminal. Access revoked instantly.
-- **Boot-safe** — network-wait wrapper ensures the VPN doesn't race with startup on macOS or Linux.
-- **Fault-tolerant** — SSH pre-flight, IP collision prevention, key mismatch detection, architecture-aware binary selection (amd64/arm64/armv7).
-
-The closest alternative is [Algo VPN](https://github.com/trailofbits/algo) — 10,000+ lines of Ansible/Python requiring a full toolchain install. This is ~1,300 lines of bash that runs on any Mac with a one-liner.
 
 ---
 
