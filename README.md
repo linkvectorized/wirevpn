@@ -306,42 +306,161 @@ After this, no one gets in without your private key — even if they know the ro
 
 ---
 
-## Peer connected but no internet / tunnel not handshaking
+## Troubleshooting
+
+### Peer connected but no internet / tunnel not handshaking
 
 If a device shows as connected in the WireGuard app but has no internet, or `wg show` on the VPS shows no handshake for a peer, the most likely cause is a **stale server public key** in the peer's config.
 
-This happens if `server_setup.sh` was run more than once — it regenerates the server keypair, but any peer configs generated before that point still have the old public key. The client encrypts traffic for a key the server no longer holds, so the handshake never completes.
-
 **Diagnose:**
 ```bash
-# On VPS — check what key the server is actually using
+# On VPS — check what public key WireGuard is actually using right now
 wg show wg0 public-key
 
-# Compare against what's in server_public.key
-cat /etc/wireguard/server_public.key
+# Derive the public key from the key file
+wg pubkey < /etc/wireguard/server_private.key
 ```
 
-If they differ, the key file is stale.
+If those two values differ, your key files are stale.
 
 **Fix:**
 ```bash
-# On VPS — sync the key file to reality
-wg show wg0 public-key > /etc/wireguard/server_public.key
-
 # On Mac — remove and re-add the affected peer
+bash add_peer.sh remove phone
+bash add_peer.sh phone
+```
+
+Rescan the QR on the device. `add_peer.sh` always reads the live key from `wg show` so newly generated configs are always correct.
+
+---
+
+### After rebooting your VPS
+
+After a VPS reboot, WireGuard and AdGuard Home both start automatically (`systemctl enable` was set). You should not need to do anything.
+
+**Verify everything came back:**
+```bash
+ssh root@YOUR_SERVER_IP
+systemctl is-active wg-quick@wg0      # should say: active
+systemctl is-active AdGuardHome        # should say: active
+wg show                                # should show your peers
+```
+
+If a peer was connected before the reboot but shows no handshake after, the server public key didn't change — just reconnect the client app. If connectivity is still broken, see the stale key section above.
+
+---
+
+### wg0.conf got wiped or corrupted
+
+If `wg0.conf` is ever damaged, `server_setup.sh` saves a live backup every time it runs:
+
+```bash
+# Restore from the live backup taken before any changes
+cp /etc/wireguard/wg0.conf.live_backup /etc/wireguard/wg0.conf
+systemctl restart wg-quick@wg0
+```
+
+The live backup is written from `wg showconf wg0` — it captures the real running state including all peers added via `add_peer.sh`, not just the initial config.
+
+**If WireGuard is not running and the config is gone:**
+```bash
+# Check if a file backup exists
+ls /etc/wireguard/
+
+# wg0.conf.bak — copy of the config file from before last run
+# wg0.conf.live_backup — snapshot of the live running config (most useful)
+cp /etc/wireguard/wg0.conf.live_backup /etc/wireguard/wg0.conf
+systemctl start wg-quick@wg0
+```
+
+If neither backup exists and WireGuard is running, dump the live config now before anything else:
+```bash
+wg showconf wg0 > /etc/wireguard/wg0.conf
+```
+
+---
+
+### Peer shows `allowed ips: (none)` in wg show
+
+This means the peer was added to WireGuard's keyring but has no IP assignment — usually from a partial or interrupted `add_peer.sh` run.
+
+**Fix:**
+```bash
+# On Mac
 bash add_peer.sh remove <name>
 bash add_peer.sh <name>
 ```
 
-Then rescan the QR on the device. The new config will have the correct server public key.
+If `remove` fails because the peer name isn't found, remove it manually on the VPS:
+```bash
+# Get the peer's public key
+wg show wg0
 
-`add_peer.sh` always reads the live key from `wg show` so newly generated configs are always correct.
+# Remove the broken peer by its public key
+wg set wg0 peer <PUBLIC_KEY> remove
+
+# Also remove from wg0.conf (find and delete the [Peer] block for that key)
+```
 
 ---
 
-## "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
+### Phone / device not connecting after server key change
 
-If your VPS provider reused the same IP for your new server you'll get this SSH error. Safe to fix — just remove the old key:
+If you ever end up with a new server public key (e.g. after restoring from a backup with different keys), every existing device config is invalid. The fix for each device:
+
+**iPhone / Android:**
+1. On your Mac: `bash add_peer.sh remove phone` then `bash add_peer.sh phone`
+2. In WireGuard app: delete the old tunnel, tap `+` → Create from QR code → scan the new QR
+
+**Mac:**
+```bash
+# Update client.conf on VPS (already done by server_setup.sh)
+scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/Desktop/WireVPN/client.conf
+sudo cp ~/Desktop/WireVPN/client.conf /etc/wireguard/client.conf
+sudo wg-quick down /etc/wireguard/client.conf 2>/dev/null || true
+sudo wg-quick up /etc/wireguard/client.conf
+```
+
+---
+
+### AdGuard web UI unreachable (http://10.0.0.1:3000)
+
+The web UI is only reachable **while connected to the VPN**. It is intentionally not exposed to the public internet.
+
+```bash
+# 1. Verify you're on the VPN
+curl ifconfig.me
+# Should return your VPS IP, not your home IP
+
+# 2. Verify AdGuard is running on the VPS
+ssh root@YOUR_SERVER_IP
+systemctl is-active AdGuardHome
+
+# 3. If it's down, restart it
+systemctl restart AdGuardHome
+```
+
+---
+
+### Internet not working after VPS is destroyed
+
+If you destroyed or rebuilt your VPS while the VPN was connected, all traffic tunnels into nothing. Run:
+
+```bash
+# Try this first
+sudo wg-quick down /etc/wireguard/client.conf
+
+# If that doesn't work, kill the process directly
+sudo killall wireguard-go
+```
+
+Your internet comes back immediately. Reconnect once your new VPS is ready.
+
+---
+
+### "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
+
+Your VPS provider reused the same IP for a new server. Safe to fix:
 
 ```bash
 ssh-keygen -R YOUR_SERVER_IP
@@ -350,6 +469,30 @@ ssh-keygen -R YOUR_SERVER_IP
 Then SSH in again normally.
 
 ---
+
+### Emergency: verify the full state of your server
+
+Run this on the VPS to get a complete picture:
+
+```bash
+echo "=== WireGuard ===" && wg show
+echo "=== Live public key ===" && wg show wg0 public-key
+echo "=== Key file public key ===" && wg pubkey < /etc/wireguard/server_private.key
+echo "=== AdGuard ===" && systemctl is-active AdGuardHome
+echo "=== IP forwarding ===" && sysctl net.ipv4.ip_forward
+echo "=== Firewall ===" && ufw status
+echo "=== Backups ===" && ls -lh /etc/wireguard/*.bak /etc/wireguard/*.live_backup 2>/dev/null
+```
+
+Everything healthy looks like:
+- `wg show` lists your peers with recent handshake times
+- Both public key outputs match
+- AdGuard: `active`
+- IP forwarding: `net.ipv4.ip_forward = 1`
+- UFW: `Status: active` with ports 51820/udp, 22 open
+
+---
+
 
 ## Why self-host?
 

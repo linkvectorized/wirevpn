@@ -123,8 +123,8 @@ echo "\$SERVER_PUBLIC" > /etc/wireguard/server_public.key
 SERVER_IP=\$(curl -s --max-time 5 ifconfig.me)
 
 # Save keys to disk
-printf '%s' "\$PRIVATE" > /etc/wireguard/\${PEER_NAME}_private.key
-printf '%s' "\$PUBLIC"  > /etc/wireguard/\${PEER_NAME}_public.key
+printf '%s\n' "\$PRIVATE" > /etc/wireguard/\${PEER_NAME}_private.key
+printf '%s\n' "\$PUBLIC"  > /etc/wireguard/\${PEER_NAME}_public.key
 chmod 600 /etc/wireguard/\${PEER_NAME}_private.key
 
 # Live-add peer (no WireGuard restart needed)
@@ -201,7 +201,7 @@ print('  Block removed from wg0.conf')
 PYEOF
 
 python3 /tmp/remove_peer.py "\$PEER_NAME"
-rm /tmp/remove_peer.py
+rm -f /tmp/remove_peer.py
 
 # Remove key files and config from server
 rm -f /etc/wireguard/\${PEER_NAME}_private.key \

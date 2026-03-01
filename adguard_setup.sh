@@ -18,7 +18,11 @@ AGH_DIR="/opt/AdGuardHome"
 AGH_BIN="$AGH_DIR/AdGuardHome"
 AGH_CONF="$AGH_DIR/AdGuardHome.yaml"
 AGH_USER="admin"
-AGH_PASS=$(openssl rand -base64 16 | tr -d '=+/' | cut -c1-16)
+AGH_PASS=$(openssl rand -base64 32 | tr -d '=+/\n' | cut -c1-16)
+if [ ${#AGH_PASS} -lt 8 ]; then
+  printf "${RED}Failed to generate secure password. Check openssl is installed.${NC}\n"
+  exit 1
+fi
 
 # ── Intro ─────────────────────────────────────────────────────────────────────
 clear
@@ -118,7 +122,16 @@ if systemctl is-active --quiet AdGuardHome 2>/dev/null; then
   systemctl stop AdGuardHome
 fi
 mkdir -p "$AGH_DIR"
-tar -xzf "$TMP_DIR/agh.tar.gz" -C "$TMP_DIR"
+if ! tar -xzf "$TMP_DIR/agh.tar.gz" -C "$TMP_DIR"; then
+  printf "${RED}Failed to extract AdGuard Home archive.${NC}\n"
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
+if [ ! -f "$TMP_DIR/AdGuardHome/AdGuardHome" ]; then
+  printf "${RED}Binary not found in archive — upstream package layout may have changed.${NC}\n"
+  rm -rf "$TMP_DIR"
+  exit 1
+fi
 cp "$TMP_DIR/AdGuardHome/AdGuardHome" "$AGH_BIN"
 chmod 755 "$AGH_BIN"
 rm -rf "$TMP_DIR"

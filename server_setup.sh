@@ -129,7 +129,7 @@ printf "${BOLD}==> Writing server config...${NC}\n"
 # Only write a fresh config if one doesn't already exist with the correct key.
 # Re-running this script must NOT wipe peers added via add_peer.sh.
 CONF_KEY=""
-[ -f /etc/wireguard/wg0.conf ] && CONF_KEY=$(grep "^PrivateKey" /etc/wireguard/wg0.conf | awk '{print $3}')
+[ -f /etc/wireguard/wg0.conf ] && CONF_KEY=$(grep "^PrivateKey" /etc/wireguard/wg0.conf | awk -F'= ' '{print $2}' | tr -d '[:space:]')
 
 if [ "$CONF_KEY" = "$SERVER_PRIVATE" ]; then
   printf "   ${YELLOW}wg0.conf already has correct key and peer list — preserving (skipping rewrite)${NC}\n\n"

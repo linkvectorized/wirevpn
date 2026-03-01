@@ -158,7 +158,7 @@ if [ "$TUNNEL_ACTIVE" = true ]; then
   ACTIVE_CONF="/etc/wireguard/client.conf"
   if [ -f "$ACTIVE_CONF" ]; then
     sudo wg-quick down "$ACTIVE_CONF" 2>/dev/null || true
-    sleep 1
+    sleep 2
     sudo wg-quick up "$ACTIVE_CONF"
     printf "   $PASS Tunnel reconnected with AdGuard DNS\n\n"
   else
@@ -174,7 +174,7 @@ fi
 echo "==> Verifying ad blocking..."
 if command -v dig &>/dev/null; then
   sleep 1
-  BLOCKED=$(dig @"$AGH_DNS" doubleclick.net A +short +time=3 2>/dev/null || true)
+  BLOCKED=$(dig @"$AGH_DNS" doubleclick.net A +short +time=5 2>/dev/null || true)
   if [ -z "$BLOCKED" ] || echo "$BLOCKED" | grep -qE "^(0\.0\.0\.0|NXDOMAIN)"; then
     printf "   $PASS doubleclick.net → blocked (${BLOCKED:-NXDOMAIN})\n"
   else
