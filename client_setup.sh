@@ -179,6 +179,13 @@ if [ "$PLATFORM" = "macos" ]; then
     printf "   $PASS WireGuard tools already installed\n"
   fi
 
+  # macOS ships bash 3.2 but wg-quick requires bash 4+ — patch shebang to use Homebrew bash
+  WG_QUICK_BIN="$(which wg-quick 2>/dev/null || echo /opt/homebrew/bin/wg-quick)"
+  if head -1 "$WG_QUICK_BIN" 2>/dev/null | grep -q '#!/usr/bin/env bash'; then
+    sudo sed -i '' '1s|#!/usr/bin/env bash|#!/opt/homebrew/bin/bash|' "$WG_QUICK_BIN"
+    printf "   $PASS wg-quick patched to use bash 5 (fixes macOS bash 3.2 version error)\n"
+  fi
+
 else
   if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
     echo "==> Installing WireGuard..."
