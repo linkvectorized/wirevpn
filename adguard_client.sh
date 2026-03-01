@@ -14,8 +14,27 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
-WIREVPN_DIR="$HOME/Desktop/WireVPN"
 AGH_DNS="10.0.0.1"
+
+# ── Find WireVPN directory ─────────────────────────────────────────────────────
+WIREVPN_DIR=""
+for candidate in \
+  "$HOME/Desktop/WireVPN" \
+  "$HOME/WireVPN" \
+  "$HOME/Documents/WireVPN" \
+  "$HOME/Downloads/WireVPN"; do
+  if [ -d "$candidate" ]; then
+    WIREVPN_DIR="$candidate"
+    break
+  fi
+done
+if [ -z "$WIREVPN_DIR" ]; then
+  WIREVPN_DIR=$(find "$HOME" -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1 | xargs dirname 2>/dev/null || true)
+fi
+if [ -z "$WIREVPN_DIR" ]; then
+  printf "${RED}Could not find WireVPN directory. Expected ~/Desktop/WireVPN or similar.${NC}\n"
+  exit 1
+fi
 
 # ── Intro ─────────────────────────────────────────────────────────────────────
 clear
