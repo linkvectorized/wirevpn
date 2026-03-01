@@ -52,7 +52,7 @@ This is a complete managed system:
 - **Boot-safe** — network-wait wrapper ensures the VPN doesn't race with startup on macOS or Linux.
 - **Fault-tolerant** — SSH pre-flight, IP collision prevention, key mismatch detection, architecture-aware binary selection (amd64/arm64/armv7).
 
-The closest alternative is [Algo VPN](https://github.com/trailofbits/algo) — 10,000+ lines of Ansible/Python requiring a full toolchain install. This is ~1,300 lines of bash that runs on any Mac with a one-liner.
+The closest alternative is [Algo VPN](https://github.com/trailofbits/algo) — 10,000+ lines of Ansible/Python requiring a full toolchain install. This is ~1,300 lines of bash that runs on any Mac or Linux machine with a one-liner.
 
 ---
 

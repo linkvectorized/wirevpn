@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # adguard_client.sh — Update WireVPN client configs to use AdGuard Home DNS
-# Run this on your Mac after running adguard_setup.sh on your VPS
+# Run this on your Mac or Linux machine after running adguard_setup.sh on your VPS
 
 set -e
 
@@ -15,6 +15,14 @@ PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
 AGH_DNS="10.0.0.1"
+OS=$(uname -s)
+
+# sed -i syntax differs: macOS requires an empty string arg, Linux does not
+if [ "$OS" = "Darwin" ]; then
+  SED_I=(-i '')
+else
+  SED_I=(-i)
+fi
 
 # ── Find WireVPN directory ─────────────────────────────────────────────────────
 WIREVPN_DIR=""
@@ -48,9 +56,9 @@ printf "${NC}\n"
 printf "${YELLOW}  ⚠  Points your tunnel DNS at AdGuard Home — blocks ads for every device.${NC}\n\n"
 sleep 1
 
-# ── macOS only ────────────────────────────────────────────────────────────────
-if [ "$(uname -s)" != "Darwin" ]; then
-  printf "${RED}This script is for macOS. For Linux clients, edit your .conf DNS line manually.${NC}\n"
+# ── Check OS ──────────────────────────────────────────────────────────────────
+if [ "$OS" != "Darwin" ] && [ "$OS" != "Linux" ]; then
+  printf "${RED}Unsupported OS: $OS${NC}\n"
   exit 1
 fi
 
@@ -129,14 +137,18 @@ for f in "${NEEDS_UPDATE[@]}"; do
   # Replace DNS line — handles both commented and active DNS lines
   if grep -q "^DNS" "$f"; then
     # Replace existing DNS line
-    sed -i '' "s|^DNS = .*|DNS = $AGH_DNS|" "$f"
+    sed "${SED_I[@]}" "s|^DNS = .*|DNS = $AGH_DNS|" "$f"
   elif grep -q "^# DNS" "$f"; then
     # Uncomment and set
-    sed -i '' "s|^# DNS.*|DNS = $AGH_DNS|" "$f"
+    sed "${SED_I[@]}" "s|^# DNS.*|DNS = $AGH_DNS|" "$f"
   else
     # No DNS line at all — add one after Address line
-    sed -i '' "/^Address/a\\
+    if [ "$OS" = "Darwin" ]; then
+      sed -i '' "/^Address/a\\
 DNS = $AGH_DNS" "$f"
+    else
+      sed -i "/^Address/a DNS = $AGH_DNS" "$f"
+    fi
   fi
   printf "   $PASS DNS updated to $AGH_DNS\n"
 
@@ -182,7 +194,11 @@ if command -v dig &>/dev/null; then
     printf "   ${YELLOW}AdGuard may still be loading filter lists — try again in 30s.${NC}\n"
   fi
 else
-  printf "   ${YELLOW}dig not installed — install via: brew install bind${NC}\n"
+  if [ "$OS" = "Darwin" ]; then
+    printf "   ${YELLOW}dig not installed — install via: brew install bind${NC}\n"
+  else
+    printf "   ${YELLOW}dig not installed — install via: sudo apt install dnsutils${NC}\n"
+  fi
 fi
 
 # Verify exit IP still routes through VPS
@@ -207,9 +223,13 @@ EOF
 printf "${NC}\n"
 
 printf "  ${BOLD}Web UI (while connected to VPN):${NC}\n"
-printf "  ${CYAN}open http://10.0.0.1:3000${NC}\n\n"
+printf "  ${CYAN}http://10.0.0.1:3000${NC}\n\n"
 printf "  ${BOLD}Useful commands:${NC}\n"
 printf "    Verify blocking:  ${CYAN}dig @10.0.0.1 doubleclick.net${NC}\n"
 printf "    Check exit IP:    ${CYAN}curl ifconfig.me${NC}\n"
-printf "    Open web UI:      ${CYAN}open http://10.0.0.1:3000${NC}\n\n"
+if [ "$OS" = "Darwin" ]; then
+  printf "    Open web UI:      ${CYAN}open http://10.0.0.1:3000${NC}\n\n"
+else
+  printf "    Open web UI:      ${CYAN}xdg-open http://10.0.0.1:3000${NC}\n\n"
+fi
 printf "${YELLOW}  Stay private. Block the noise. Question everything. Never trust your government. Stand against the machine.${NC}\n\n"
