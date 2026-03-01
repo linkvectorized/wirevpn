@@ -197,16 +197,30 @@ http://10.0.0.1:3000
 The UI is only reachable through the tunnel — it's not exposed to the public internet.
 
 ### Verify it's working
+
+**1. Check a known ad domain is blocked**
 ```bash
-# Should return NXDOMAIN (blocked)
 dig @10.0.0.1 doubleclick.net
+```
+Should return `0.0.0.0` in the answer section. That means AdGuard intercepted the DNS query and returned a null address instead of the real one — the ad server is unreachable before any connection is even attempted.
 
-# Should still return your VPS IP
+How `dig` works here:
+- `dig` is a DNS lookup tool — it asks a DNS server "what's the IP for this domain?"
+- `@10.0.0.1` tells it to ask *your* AdGuard instance specifically, not your system DNS
+- A normal domain returns a real IP like `142.250.80.1`
+- A blocked domain returns `0.0.0.0` (null) or NXDOMAIN — AdGuard is lying to the requester on purpose, making the domain effectively unreachable
+
+**2. Confirm you're still routing through your VPS**
+```bash
 curl ifconfig.me
+```
+Should return `137.220.56.59` — your VPS IP, not your home IP.
 
-# Open web UI in browser (while on VPN)
+**3. Open the web UI**
+```bash
 open http://10.0.0.1:3000
 ```
+Shows live query stats, blocked domains, and filter list management. Only reachable while connected to your VPN.
 
 ### Blocklists included by default
 - **AdGuard DNS filter** — ads, trackers, malware
