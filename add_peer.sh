@@ -132,7 +132,7 @@ wg set wg0 peer "\$PUBLIC" allowed-ips "\${NEXT_IP}/32"
 printf '\n[Peer]\n# %s\nPublicKey = %s\nAllowedIPs = %s/32\n' "\$PEER_NAME" "\$PUBLIC" "\$NEXT_IP" >> /etc/wireguard/wg0.conf
 
 # Write peer client config
-printf '[Interface]\nPrivateKey = %s\nAddress = %s/24\nDNS = 1.1.1.1\n\n[Peer]\nPublicKey = %s\nEndpoint = %s:51820\nAllowedIPs = 0.0.0.0/0\nPersistentKeepalive = 25\n' \
+printf '[Interface]\nPrivateKey = %s\nAddress = %s/24\nDNS = 10.0.0.1\n\n[Peer]\nPublicKey = %s\nEndpoint = %s:51820\nAllowedIPs = 0.0.0.0/0\nPersistentKeepalive = 25\n' \
   "\$PRIVATE" "\$NEXT_IP" "\$SERVER_PUBLIC" "\$SERVER_IP" > /etc/wireguard/\${PEER_NAME}.conf
 chmod 600 /etc/wireguard/\${PEER_NAME}.conf
 
