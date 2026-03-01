@@ -80,6 +80,8 @@ It will:
 - Configure routing and firewall
 - Write your client config to `/etc/wireguard/client.conf`
 
+**Re-running this script is safe.** If server keys already exist they are preserved — regenerating them would invalidate all connected clients.
+
 ### 3. Pull the client config to your Mac
 ```bash
 mkdir -p ~/WireVPN
@@ -162,6 +164,9 @@ It will:
 - Write a config with ad/tracker/malware blocklists
 - Lock DNS to the WireGuard interface only — port 53 is never exposed publicly
 - Start AdGuard as a systemd service
+- Print a generated admin password — **save it**, it won't be shown again
+
+**Re-running this script is safe.** If AdGuard is already configured, it updates the binary and restarts the service without touching your password or blocklist settings.
 
 ### 2. Run on your Mac
 ```bash
