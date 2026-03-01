@@ -22,7 +22,6 @@ BOLD=$'\033[1m'
 NC=$'\033[0m'
 
 PASS="${GREEN}[✓]${NC}"
-FAIL="${RED}[✗]${NC}"
 
 # ── Find WireVPN directory ─────────────────────────────────────────────────────
 WIREVPN_DIR=""
@@ -111,6 +110,9 @@ if [ "$ACTION" = "add" ]; then
 
   printf "==> Setting up peer on VPS...\n\n"
 
+  # shellcheck disable=SC2087
+  # ENDSSH is intentionally unquoted: $PEER_NAME and $VPS_IP expand locally;
+  # all server-side variables use \$ to expand remotely.
   ssh "root@$VPS_IP" bash -s << ENDSSH
 set -e
 PEER_NAME="$PEER_NAME"
@@ -183,6 +185,7 @@ elif [ "$ACTION" = "remove" ]; then
 
   printf "\n==> Revoking peer on VPS...\n"
 
+  # shellcheck disable=SC2087
   ssh "root@$VPS_IP" bash -s << ENDSSH
 set -e
 PEER_NAME="$PEER_NAME"
