@@ -180,7 +180,7 @@ printf "   $PASS Config written\n\n"
 # ── Register systemd service ──────────────────────────────────────────────────
 echo "==> Registering AdGuardHome as a systemd service..."
 if ! systemctl is-enabled AdGuardHome &>/dev/null 2>&1; then
-  "$AGH_BIN" -s install -q 2>/dev/null || true
+  "$AGH_BIN" -s install
 fi
 printf "   $PASS Service registered\n\n"
 
