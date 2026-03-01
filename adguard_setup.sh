@@ -212,9 +212,9 @@ printf "\n"
 echo "==> Configuring firewall (DNS on wg0 only)..."
 ufw allow in on wg0 to any port 53 proto udp comment "AdGuard DNS (VPN only)"
 ufw allow in on wg0 to any port 53 proto tcp comment "AdGuard DNS (VPN only)"
-ufw deny 3000/tcp comment "AdGuard UI — not public" 2>/dev/null || true
+ufw allow in on wg0 to any port 3000 proto tcp comment "AdGuard UI (VPN only)"
 printf "   $PASS Port 53/udp+tcp open on wg0 only\n"
-printf "   $PASS Port 3000 blocked from public internet\n\n"
+printf "   $PASS Port 3000 open on wg0 only (default deny covers public internet)\n\n"
 
 # ── Verify DNS is responding ──────────────────────────────────────────────────
 echo "==> Verifying DNS on 10.0.0.1:53..."

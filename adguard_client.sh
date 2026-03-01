@@ -158,8 +158,8 @@ echo "==> Verifying ad blocking..."
 if command -v dig &>/dev/null; then
   sleep 1
   BLOCKED=$(dig @"$AGH_DNS" doubleclick.net A +short +time=3 2>/dev/null || true)
-  if [ -z "$BLOCKED" ] || echo "$BLOCKED" | grep -q "NXDOMAIN"; then
-    printf "   $PASS doubleclick.net → NXDOMAIN (blocked)\n"
+  if [ -z "$BLOCKED" ] || echo "$BLOCKED" | grep -qE "^(0\.0\.0\.0|NXDOMAIN)"; then
+    printf "   $PASS doubleclick.net → blocked (${BLOCKED:-NXDOMAIN})\n"
   else
     printf "   ${YELLOW}doubleclick.net returned: $BLOCKED${NC}\n"
     printf "   ${YELLOW}AdGuard may still be loading filter lists — try again in 30s.${NC}\n"
