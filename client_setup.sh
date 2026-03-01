@@ -312,4 +312,4 @@ else
   printf "    VPN logs:    ${CYAN}sudo journalctl -u wg-quick@client${NC}\n"
 fi
 echo ""
-printf "${YELLOW}  Stay private. Question narratives. Build cool things.${NC}\n\n"
+printf "${YELLOW}  Stay private. Question narratives. Build cool things. Never trust your government. Stand against the machine.${NC}\n\n"
