@@ -17,6 +17,8 @@ FAIL="${RED}[✗]${NC}"
 AGH_DIR="/opt/AdGuardHome"
 AGH_BIN="$AGH_DIR/AdGuardHome"
 AGH_CONF="$AGH_DIR/AdGuardHome.yaml"
+AGH_USER="admin"
+AGH_PASS=$(openssl rand -base64 16 | tr -d '=+/' | cut -c1-16)
 
 # ── Intro ─────────────────────────────────────────────────────────────────────
 clear
@@ -112,7 +114,6 @@ printf "   $PASS Downloaded\n\n"
 
 # ── Install binary ────────────────────────────────────────────────────────────
 echo "==> Installing to $AGH_DIR..."
-# Stop existing service gracefully before overwriting
 if systemctl is-active --quiet AdGuardHome 2>/dev/null; then
   systemctl stop AdGuardHome
 fi
@@ -123,60 +124,6 @@ chmod 755 "$AGH_BIN"
 rm -rf "$TMP_DIR"
 printf "   $PASS Binary installed at $AGH_BIN\n\n"
 
-# ── Write config ──────────────────────────────────────────────────────────────
-echo "==> Writing AdGuardHome.yaml..."
-# Back up existing config if present
-if [ -f "$AGH_CONF" ]; then
-  cp "$AGH_CONF" "${AGH_CONF}.bak"
-  printf "   ${YELLOW}Existing config backed up to AdGuardHome.yaml.bak${NC}\n"
-fi
-
-cat > "$AGH_CONF" << 'YAMLEOF'
-http:
-  address: 0.0.0.0:3000
-
-dns:
-  bind_hosts:
-    - 0.0.0.0
-  port: 53
-  upstream_dns:
-    - 1.1.1.1
-    - 9.9.9.9
-  bootstrap_dns:
-    - 1.1.1.1
-  cache_size: 4194304
-  cache_ttl_min: 0
-  cache_ttl_max: 0
-
-filtering:
-  enabled: true
-  filters:
-    - enabled: true
-      url: https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
-      name: AdGuard DNS filter
-      id: 1
-    - enabled: true
-      url: https://easylist.to/easylist/easylist.txt
-      name: EasyList
-      id: 2
-    - enabled: true
-      url: https://easylist.to/easylist/easyprivacy.txt
-      name: EasyPrivacy
-      id: 3
-
-querylog:
-  enabled: false
-
-statistics:
-  enabled: false
-
-log:
-  enabled: false
-YAMLEOF
-
-chmod 600 "$AGH_CONF"
-printf "   $PASS Config written\n\n"
-
 # ── Register systemd service ──────────────────────────────────────────────────
 echo "==> Registering AdGuardHome as a systemd service..."
 if ! systemctl is-enabled AdGuardHome &>/dev/null 2>&1; then
@@ -184,42 +131,103 @@ if ! systemctl is-enabled AdGuardHome &>/dev/null 2>&1; then
 fi
 printf "   $PASS Service registered\n\n"
 
-# ── Start AdGuard Home ────────────────────────────────────────────────────────
-echo "==> Starting AdGuard Home..."
-systemctl enable AdGuardHome -q
-if ! systemctl restart AdGuardHome; then
-  printf "${RED}AdGuardHome failed to start. Check: systemctl status AdGuardHome${NC}\n"
+# ── Start in setup mode (no config = setup wizard API available) ──────────────
+echo "==> Starting AdGuard Home (setup mode)..."
+# Remove any existing config so AGH enters setup mode
+rm -f "$AGH_CONF"
+systemctl restart AdGuardHome
+sleep 3
+
+# Wait for setup API to become available
+printf "   Waiting for setup API"
+for i in $(seq 1 30); do
+  if curl -sf http://127.0.0.1:3000/control/install/get_addresses >/dev/null 2>&1; then
+    printf "\n   $PASS Setup API ready\n\n"
+    break
+  fi
+  if [ "$i" -eq 30 ]; then
+    printf "\n   ${RED}Setup API not available after 30s. Check: journalctl -u AdGuardHome${NC}\n"
+    exit 1
+  fi
+  printf "."
+  sleep 1
+done
+
+# ── Configure via install API ─────────────────────────────────────────────────
+echo "==> Configuring AdGuard Home..."
+SETUP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:3000/control/install/configure \
+  -H "Content-Type: application/json" \
+  -d "{\"web\":{\"ip\":\"0.0.0.0\",\"port\":3000},\"dns\":{\"ip\":\"0.0.0.0\",\"port\":53},\"username\":\"${AGH_USER}\",\"password\":\"${AGH_PASS}\"}")
+if [ "$SETUP_CODE" != "200" ]; then
+  printf "${RED}Setup API call failed (HTTP $SETUP_CODE). Check: journalctl -u AdGuardHome${NC}\n"
   exit 1
 fi
-sleep 2
-if ! systemctl is-active --quiet AdGuardHome; then
-  printf "${RED}AdGuardHome started but is not active. Check: journalctl -u AdGuardHome${NC}\n"
-  exit 1
-fi
-printf "   $PASS AdGuard Home running\n\n"
+printf "   $PASS Initial setup complete\n"
+
+# AGH restarts itself after configure — wait for it to come back
+printf "   Waiting for AdGuard to restart"
+sleep 4
+for i in $(seq 1 20); do
+  if curl -sf -u "$AGH_USER:$AGH_PASS" http://127.0.0.1:3000/control/status >/dev/null 2>&1; then
+    printf "\n   $PASS AdGuard Home running\n\n"
+    break
+  fi
+  if [ "$i" -eq 20 ]; then
+    printf "\n   ${RED}AdGuard didn't restart cleanly. Check: journalctl -u AdGuardHome${NC}\n"
+    exit 1
+  fi
+  printf "."
+  sleep 1
+done
+
+# ── Set upstream DNS ──────────────────────────────────────────────────────────
+echo "==> Setting upstream DNS (1.1.1.1, 9.9.9.9 — parallel)..."
+curl -s -X POST http://127.0.0.1:3000/control/dns_config \
+  -u "$AGH_USER:$AGH_PASS" \
+  -H "Content-Type: application/json" \
+  -d '{"upstream_dns":["1.1.1.1","9.9.9.9"],"bootstrap_dns":["1.1.1.1:53"],"upstream_mode":"parallel"}' >/dev/null
+printf "   $PASS Upstream DNS configured\n\n"
+
+# ── Add blocklists ────────────────────────────────────────────────────────────
+echo "==> Adding blocklists..."
+for entry in \
+  "AdGuard DNS filter|https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt" \
+  "EasyList|https://easylist.to/easylist/easylist.txt" \
+  "EasyPrivacy|https://easylist.to/easylist/easyprivacy.txt"; do
+  LIST_NAME="${entry%%|*}"
+  LIST_URL="${entry##*|}"
+  curl -s -X POST http://127.0.0.1:3000/control/filtering/add_url \
+    -u "$AGH_USER:$AGH_PASS" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"$LIST_NAME\",\"url\":\"$LIST_URL\",\"whitelist\":false}" >/dev/null
+  printf "   $PASS $LIST_NAME\n"
+done
+
+# Trigger filter download
+curl -s -X POST "http://127.0.0.1:3000/control/filtering/refresh?force=true" \
+  -u "$AGH_USER:$AGH_PASS" >/dev/null
+printf "\n"
 
 # ── Firewall: allow DNS only on wg0, not public internet ─────────────────────
 echo "==> Configuring firewall (DNS on wg0 only)..."
-# Allow DNS from VPN clients only — never expose port 53 publicly
 ufw allow in on wg0 to any port 53 proto udp comment "AdGuard DNS (VPN only)"
 ufw allow in on wg0 to any port 53 proto tcp comment "AdGuard DNS (VPN only)"
-# Web UI — only reachable through the tunnel, not from public internet
 ufw deny 3000/tcp comment "AdGuard UI — not public" 2>/dev/null || true
 printf "   $PASS Port 53/udp+tcp open on wg0 only\n"
 printf "   $PASS Port 3000 blocked from public internet\n\n"
 
 # ── Verify DNS is responding ──────────────────────────────────────────────────
 echo "==> Verifying DNS on 10.0.0.1:53..."
-sleep 1
+sleep 2
 if command -v dig &>/dev/null; then
-  RESULT=$(dig @10.0.0.1 -p 53 google.com A +short +time=3 2>/dev/null || true)
+  RESULT=$(dig @10.0.0.1 -p 53 google.com A +short +time=5 2>/dev/null || true)
   if [ -n "$RESULT" ]; then
     printf "   $PASS DNS resolving: google.com → ${CYAN}$RESULT${NC}\n\n"
   else
-    printf "   ${YELLOW}DNS query returned no result — AdGuard may still be loading filters. Try again in 30s.${NC}\n\n"
+    printf "   ${YELLOW}DNS query returned no result — filters may still be loading. Try again in 30s.${NC}\n\n"
   fi
 else
-  printf "   ${YELLOW}dig not installed — skipping DNS verification. Install dnsutils to test.${NC}\n\n"
+  printf "   ${YELLOW}dig not installed — skipping DNS check. Install dnsutils to test.${NC}\n\n"
 fi
 
 # ── Done ──────────────────────────────────────────────────────────────────────
@@ -231,10 +239,13 @@ cat << 'EOF'
 EOF
 printf "${NC}\n"
 
-printf "  ${BOLD}Next step — on your Mac, run:${NC}\n\n"
-printf "  ${CYAN}bash adguard_client.sh${NC}\n\n"
+printf "  ${BOLD}Web UI credentials — save these:${NC}\n"
+printf "    Username: ${CYAN}$AGH_USER${NC}\n"
+printf "    Password: ${CYAN}$AGH_PASS${NC}\n\n"
 printf "  ${BOLD}Web UI (while connected to VPN):${NC}\n"
 printf "  ${CYAN}http://10.0.0.1:3000${NC}\n\n"
-printf "  ${BOLD}Verify it's working:${NC}\n"
+printf "  ${BOLD}Next step — on your Mac, run:${NC}\n\n"
+printf "  ${CYAN}bash adguard_client.sh${NC}\n\n"
+printf "  ${BOLD}Verify blocking:${NC}\n"
 printf "    ${CYAN}dig @10.0.0.1 doubleclick.net${NC}   # should return NXDOMAIN\n\n"
 printf "${YELLOW}  Stay private. Block the noise. Question everything.${NC}\n\n"
