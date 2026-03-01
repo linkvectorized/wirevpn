@@ -219,7 +219,7 @@ How `dig` works here:
 ```bash
 curl ifconfig.me
 ```
-Should return `137.220.56.59` — your VPS IP, not your home IP.
+Should return your VPS IP, not your home IP.
 
 **3. Open the web UI**
 ```bash
