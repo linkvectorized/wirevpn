@@ -6,6 +6,7 @@ set -e
 
 GREEN=$'\033[0;32m'
 RED=$'\033[0;31m'
+BOLD_RED_UL=$'\033[1;4;31m'
 YELLOW=$'\033[1;33m'
 CYAN=$'\033[0;36m'
 BOLD=$'\033[1m'
@@ -321,7 +322,7 @@ if [ -z "$MY_IP" ]; then
   printf "   ${YELLOW}Could not verify exit IP — check your connection and run: curl ifconfig.me${NC}\n"
 else
   printf "   $PASS Exit IP: ${CYAN}$MY_IP${NC}\n"
-  printf "   ${YELLOW}If this matches your VPS IP, you're routing through the tunnel.${NC}\n"
+  printf "   ${BOLD_RED_UL}If this matches your VPS IP, you're routing through the tunnel.${NC}\n"
 fi
 
 # ── Done ──────────────────────────────────────────────────────────────────────
