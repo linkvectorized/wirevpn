@@ -180,9 +180,11 @@ if [ "$PLATFORM" = "macos" ]; then
   fi
 
   # macOS ships bash 3.2 but wg-quick requires bash 4+ — patch shebang to use Homebrew bash
+  # Resolve symlink first — sed -i won't work on symlinks, needs the real file
   WG_QUICK_BIN="$(which wg-quick 2>/dev/null || echo /opt/homebrew/bin/wg-quick)"
-  if head -1 "$WG_QUICK_BIN" 2>/dev/null | grep -q '#!/usr/bin/env bash'; then
-    sudo sed -i '' '1s|#!/usr/bin/env bash|#!/opt/homebrew/bin/bash|' "$WG_QUICK_BIN"
+  WG_QUICK_REAL="$(python3 -c "import os; print(os.path.realpath('$WG_QUICK_BIN'))")"
+  if head -1 "$WG_QUICK_REAL" 2>/dev/null | grep -q '#!/usr/bin/env bash'; then
+    sudo sed -i '' '1s|#!/usr/bin/env bash|#!/opt/homebrew/bin/bash|' "$WG_QUICK_REAL"
     printf "   $PASS wg-quick patched to use bash 5 (fixes macOS bash 3.2 version error)\n"
   fi
 
