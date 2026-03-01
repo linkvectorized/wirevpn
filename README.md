@@ -29,6 +29,7 @@ World sees: your VPS, not you
 ```
 server_setup.sh   — run on your VPS (Ubuntu 24.04)
 client_setup.sh   — run on your Mac or Linux machine
+add_peer.sh       — add or remove devices from your VPN (run on your Mac)
 ```
 
 ### Persistence — how it works
@@ -100,6 +101,39 @@ It will:
 curl ifconfig.me
 # should return your VPS IP, not your home IP
 ```
+
+---
+
+## Adding and removing devices
+
+Each device needs its own **peer** — unique keys and IP so multiple devices can connect simultaneously.
+
+```bash
+# Add a new device (generates a QR code to scan)
+bash add_peer.sh phone
+bash add_peer.sh laptop
+bash add_peer.sh brian
+
+# Remove a device (revokes access immediately, no restart needed)
+bash add_peer.sh remove phone
+```
+
+Run this on your Mac. It will:
+- Auto-detect your VPS IP from `client.conf`
+- Generate a unique keypair and tunnel IP for the device
+- Add the peer to your live WireGuard server (no restart)
+- Pull the config to `~/Desktop/WireVPN/<name>.conf`
+- Print a QR code — scan with the WireGuard iOS/Android app
+
+Each device gets its own IP in the `10.0.0.x` range:
+```
+Mac Mini  → 10.0.0.2
+iPhone    → 10.0.0.3
+Laptop    → 10.0.0.4
+...
+```
+
+Removing a peer revokes access instantly — they're kicked off the live tunnel and their keys are deleted from the server.
 
 ---
 
