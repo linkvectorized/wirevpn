@@ -135,17 +135,15 @@ done
 # ── Bounce tunnel to pick up new DNS ─────────────────────────────────────────
 if [ "$TUNNEL_ACTIVE" = true ]; then
   echo "==> Bouncing tunnel to apply new DNS..."
-  # Find the active interface name
-  ACTIVE_IFACE=$(sudo wg show interfaces 2>/dev/null | tr ' ' '\n' | head -1)
-  ACTIVE_CONF="/etc/wireguard/${ACTIVE_IFACE}.conf"
-
-  if [ -n "$ACTIVE_IFACE" ] && [ -f "$ACTIVE_CONF" ]; then
+  # Use client.conf as the primary tunnel — it's always the Mac's main config
+  ACTIVE_CONF="/etc/wireguard/client.conf"
+  if [ -f "$ACTIVE_CONF" ]; then
     sudo wg-quick down "$ACTIVE_CONF" 2>/dev/null || true
     sleep 1
     sudo wg-quick up "$ACTIVE_CONF"
     printf "   $PASS Tunnel reconnected with AdGuard DNS\n\n"
   else
-    printf "   ${YELLOW}Could not identify active config — reconnect manually:${NC}\n"
+    printf "   ${YELLOW}Could not find client.conf — reconnect manually:${NC}\n"
     printf "   ${CYAN}sudo wg-quick down /etc/wireguard/client.conf${NC}\n"
     printf "   ${CYAN}sudo wg-quick up /etc/wireguard/client.conf${NC}\n\n"
   fi
