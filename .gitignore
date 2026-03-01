@@ -1,2 +1,6 @@
-client.conf
+# WireGuard client configs — contain private keys and VPS IP
+*.conf
+*.bak
+
+# WireGuard key files
 *.key
