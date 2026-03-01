@@ -30,9 +30,9 @@ for candidate in \
   fi
 done
 
-# If not found in common locations, search the whole home directory
+# If not found in common locations, search home directory (limited depth to avoid hanging)
 if [ -z "$CONF_SRC" ]; then
-  CONF_SRC=$(find "$HOME" -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1)
+  CONF_SRC=$(find "$HOME" -maxdepth 4 -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1)
 fi
 
 # ── Detect OS ─────────────────────────────────────────────────────────────────
@@ -161,10 +161,19 @@ if [ "$PLATFORM" = "macos" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
   eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  # Fallback if brew isn't in PATH yet after install
+  if ! command -v brew &>/dev/null; then
+    export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+  fi
 
   if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
     echo "==> Installing WireGuard tools..."
     brew install wireguard-tools
+    eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+    if ! command -v wg &>/dev/null; then
+      printf "${RED}WireGuard tools install failed. Try manually: brew install wireguard-tools${NC}\n"
+      exit 1
+    fi
     printf "   $PASS WireGuard tools installed\n"
   else
     printf "   $PASS WireGuard tools already installed\n"
@@ -209,7 +218,21 @@ echo ""
 echo "==> Installing auto-connect on startup..."
 
 if [ "$PLATFORM" = "macos" ]; then
-  WG_QUICK_PATH="$(which wg-quick)"
+  # Resolve wg-quick path — 'which' fails on macOS after brew install until shell reloads
+  WG_QUICK_PATH="$(which wg-quick 2>/dev/null || true)"
+  if [ -z "$WG_QUICK_PATH" ]; then
+    for p in /opt/homebrew/bin/wg-quick /usr/local/bin/wg-quick; do
+      [ -f "$p" ] && { WG_QUICK_PATH="$p"; break; }
+    done
+  fi
+  if [ -z "$WG_QUICK_PATH" ]; then
+    printf "${RED}wg-quick not found. Try: brew install wireguard-tools${NC}\n"
+    exit 1
+  fi
+
+  # Ensure log file exists so launchd can write to it
+  sudo touch /var/log/wirevpn.log
+  sudo chmod 644 /var/log/wirevpn.log
 
   # Install wrapper script that waits for network before connecting
   sudo mkdir -p /usr/local/bin
@@ -218,7 +241,8 @@ if [ "$PLATFORM" = "macos" ]; then
 # Wait for network before starting WireGuard (up to 30s)
 MAX=30
 COUNT=0
-until ping -c1 -W1 1.1.1.1 &>/dev/null 2>&1 || [ \$COUNT -ge \$MAX ]; do
+# Use -t (macOS timeout flag) instead of -W (Linux only)
+until ping -c1 -t1 1.1.1.1 &>/dev/null 2>&1 || [ \$COUNT -ge \$MAX ]; do
   sleep 1
   COUNT=\$((COUNT + 1))
 done

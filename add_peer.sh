@@ -100,14 +100,23 @@ if [ "$ACTION" = "add" ]; then
     [ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ] || { printf "Aborted.\n"; exit 0; }
   fi
 
+  printf "==> Verifying SSH access to VPS...\n"
+  if ! ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$VPS_IP" true 2>/dev/null; then
+    printf "${RED}Cannot connect to root@$VPS_IP via SSH key auth.${NC}\n"
+    printf "${YELLOW}Make sure your SSH public key is authorized on the VPS:${NC}\n"
+    printf "  ${CYAN}ssh-copy-id root@$VPS_IP${NC}\n"
+    exit 1
+  fi
+  printf "   $PASS SSH key auth confirmed\n\n"
+
   printf "==> Setting up peer on VPS...\n\n"
 
   ssh "root@$VPS_IP" bash -s << ENDSSH
 set -e
 PEER_NAME="$PEER_NAME"
 
-# Find next available IP
-LAST_OCTET=\$(grep "AllowedIPs" /etc/wireguard/wg0.conf | grep -oE '10\.0\.0\.[0-9]+' | cut -d. -f4 | sort -n | tail -1)
+# Find next available IP (exclude commented lines)
+LAST_OCTET=\$(grep "^AllowedIPs" /etc/wireguard/wg0.conf | grep -oE '10\.0\.0\.[0-9]+' | cut -d. -f4 | sort -n | tail -1)
 if [ -z "\$LAST_OCTET" ]; then
   NEXT_IP="10.0.0.2"
 else
@@ -120,7 +129,11 @@ PUBLIC=\$(echo "\$PRIVATE" | wg pubkey)
 SERVER_PUBLIC=\$(wg show wg0 public-key)
 # Keep server_public.key in sync with reality
 echo "\$SERVER_PUBLIC" > /etc/wireguard/server_public.key
-SERVER_IP=\$(curl -s --max-time 5 ifconfig.me)
+SERVER_IP=\$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
+if [ -z "\$SERVER_IP" ]; then
+  echo "ERROR: Could not detect server public IP — check network connectivity"
+  exit 1
+fi
 
 # Save keys to disk
 printf '%s\n' "\$PRIVATE" > /etc/wireguard/\${PEER_NAME}_private.key
@@ -148,7 +161,11 @@ ENDSSH
   printf "\n==> Generating QR code...\n\n"
   if ! command -v qrencode &>/dev/null; then
     printf "   Installing qrencode...\n"
-    brew install qrencode -q
+    if ! brew install qrencode -q; then
+      printf "${RED}qrencode install failed. Install manually: brew install qrencode${NC}\n"
+      printf "${YELLOW}Config saved to $WIREVPN_DIR/${PEER_NAME}.conf — import it manually in the WireGuard app.${NC}\n"
+      exit 1
+    fi
   fi
   qrencode -t ansiutf8 < "$WIREVPN_DIR/${PEER_NAME}.conf"
 
@@ -200,6 +217,10 @@ with open('/etc/wireguard/wg0.conf', 'w') as f:
 print('  Block removed from wg0.conf')
 PYEOF
 
+if ! command -v python3 &>/dev/null; then
+  echo "ERROR: python3 not found on VPS — install with: apt-get install python3"
+  exit 1
+fi
 python3 /tmp/remove_peer.py "\$PEER_NAME"
 rm -f /tmp/remove_peer.py
 

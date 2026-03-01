@@ -29,7 +29,7 @@ for candidate in \
   fi
 done
 if [ -z "$WIREVPN_DIR" ]; then
-  WIREVPN_DIR=$(find "$HOME" -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1 | xargs dirname 2>/dev/null || true)
+  WIREVPN_DIR=$(find "$HOME" -maxdepth 4 -name "client.conf" -path "*/WireVPN/*" 2>/dev/null | head -1 | xargs dirname 2>/dev/null || true)
 fi
 if [ -z "$WIREVPN_DIR" ]; then
   printf "${RED}Could not find WireVPN directory. Expected ~/Desktop/WireVPN or similar.${NC}\n"

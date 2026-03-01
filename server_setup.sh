@@ -34,21 +34,34 @@ fi
 
 # ── Detect public IP ──────────────────────────────────────────────────────────
 printf "${BOLD}==> Detecting public IP...${NC}\n"
-SERVER_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
-if [ -z "$SERVER_IP" ] || ! echo "$SERVER_IP" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
-  printf "${RED}Failed to detect public IP. Check your network and try again.${NC}\n"
+SERVER_IP=""
+for attempt in 1 2 3; do
+  SERVER_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
+  if echo "$SERVER_IP" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
+    break
+  fi
+  [ "$attempt" -lt 3 ] && { printf "   ${YELLOW}Retrying IP detection...${NC}\n"; sleep 3; }
+done
+if ! echo "$SERVER_IP" | grep -qE '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'; then
+  printf "${RED}Failed to detect public IP after 3 attempts. Check your network and try again.${NC}\n"
   exit 1
 fi
 printf "   $PASS Server IP: ${CYAN}$SERVER_IP${NC}\n\n"
 
 # ── Update system ─────────────────────────────────────────────────────────────
 printf "${BOLD}==> Updating system...${NC}\n"
-apt-get update -qq && apt-get upgrade -y -qq
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -qq
+apt-get upgrade -y -o Dpkg::Options::="--force-confnew" -qq
 printf "   $PASS System updated\n\n"
 
 # ── Install WireGuard ─────────────────────────────────────────────────────────
 printf "${BOLD}==> Installing WireGuard...${NC}\n"
 apt-get install -y -qq wireguard ufw
+if ! command -v wg &>/dev/null; then
+  printf "${RED}WireGuard install failed — wg binary not found. Try: apt-get install wireguard${NC}\n"
+  exit 1
+fi
 printf "   $PASS WireGuard installed\n\n"
 
 # ── Generate server keys ──────────────────────────────────────────────────────
@@ -116,7 +129,12 @@ printf "\n"
 
 # ── Detect network interface ──────────────────────────────────────────────────
 printf "${BOLD}==> Detecting network interface...${NC}\n"
-NET_IF=$(ip route | grep default | awk '{print $5}' | head -1)
+NET_IF=""
+for attempt in 1 2 3; do
+  NET_IF=$(ip route | grep default | awk '{print $5}' | head -1)
+  [ -n "$NET_IF" ] && break
+  [ "$attempt" -lt 3 ] && { printf "   ${YELLOW}Waiting for network interface...${NC}\n"; sleep 2; }
+done
 if [ -z "$NET_IF" ]; then
   printf "${RED}Could not detect network interface. No default route found.${NC}\n"
   exit 1
@@ -157,7 +175,7 @@ fi
 
 # ── Enable IP forwarding ──────────────────────────────────────────────────────
 printf "${BOLD}==> Enabling IP forwarding...${NC}\n"
-if ! grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf; then
+if ! grep -qE "^net\.ipv4\.ip_forward\s*=\s*1" /etc/sysctl.conf; then
   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 fi
 sysctl -p -q

@@ -67,7 +67,17 @@ Windows  ✗   not supported
 
 ### 1. Spin up a VPS
 Get a cheap Ubuntu 24.04 VPS anywhere. Vultr VC2-1C-1GB or similar is plenty.
-Pay with crypto if you want to keep it clean.
+
+**Pay with crypto to keep it clean.** These providers accept crypto and are privacy-friendly:
+
+| Provider | Accepts | Notes |
+|----------|---------|-------|
+| [Vultr](https://vultr.com) | Bitcoin | Fast setup, good global locations, ~$5/mo |
+| [Mullvad VPS](https://mullvad.net/en/servers) | Monero, Bitcoin | No account required, pay anonymously |
+| [1984 Hosting](https://1984.hosting) | Bitcoin, Monero | Iceland-based, strong privacy laws |
+| [FlokiNET](https://flokinet.is) | Monero, Bitcoin | Iceland/Romania, no-questions-asked policy |
+
+**Monero (XMR) is better than Bitcoin for privacy** — Bitcoin transactions are traceable on-chain. Monero is untraceable by design. If anonymity matters, use Monero.
 
 ### 2. Run the server script on your VPS
 ```bash

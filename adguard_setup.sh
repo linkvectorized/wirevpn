@@ -165,15 +165,15 @@ else
   systemctl restart AdGuardHome
   sleep 3
 
-  # Wait for setup API to become available
+  # Wait for setup API to become available (up to 60s for slow VPS)
   printf "   Waiting for setup API"
-  for i in $(seq 1 30); do
-    if curl -sf http://127.0.0.1:3000/control/install/get_addresses >/dev/null 2>&1; then
+  for i in $(seq 1 60); do
+    if curl -sf --connect-timeout 2 http://127.0.0.1:3000/control/install/get_addresses >/dev/null 2>&1; then
       printf "\n   $PASS Setup API ready\n\n"
       break
     fi
-    if [ "$i" -eq 30 ]; then
-      printf "\n   ${RED}Setup API not available after 30s. Check: journalctl -u AdGuardHome${NC}\n"
+    if [ "$i" -eq 60 ]; then
+      printf "\n   ${RED}Setup API not available after 60s. Check: journalctl -u AdGuardHome${NC}\n"
       exit 1
     fi
     printf "."
@@ -223,11 +223,11 @@ else
     "EasyPrivacy|https://easylist.to/easylist/easyprivacy.txt"; do
     LIST_NAME="${entry%%|*}"
     LIST_URL="${entry##*|}"
-    curl -s -X POST http://127.0.0.1:3000/control/filtering/add_url \
+    curl -s --max-time 15 --connect-timeout 5 -X POST http://127.0.0.1:3000/control/filtering/add_url \
       -u "$AGH_USER:$AGH_PASS" \
       -H "Content-Type: application/json" \
-      -d "{\"name\":\"$LIST_NAME\",\"url\":\"$LIST_URL\",\"whitelist\":false}" >/dev/null
-    printf "   $PASS $LIST_NAME\n"
+      -d "{\"name\":\"$LIST_NAME\",\"url\":\"$LIST_URL\",\"whitelist\":false}" >/dev/null \
+      && printf "   $PASS $LIST_NAME\n" || printf "   ${YELLOW}Failed to add $LIST_NAME — add manually via web UI${NC}\n"
   done
 
   # Trigger filter download
