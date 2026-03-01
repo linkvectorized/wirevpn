@@ -25,6 +25,36 @@ Ads and trackers: blocked before they load
 
 ---
 
+## Why self-host?
+
+Commercial VPNs ask you to trust them. Why would you?
+
+```
+Commercial VPN:   You → their server → internet
+                  They log everything. They comply with subpoenas.
+                  You're paying someone else to surveil you.
+
+Self-hosted:      You → your server → internet
+                  You own the keys. You own the logs (there are none).
+                  Zero trust required.
+```
+
+## Threat model
+
+This protects you from:
+- ✓ ISP seeing your browsing traffic
+- ✓ Network-level surveillance on public WiFi
+- ✓ Ad networks correlating your IP
+- ✓ Basic geo-restrictions
+
+This does NOT protect you from:
+- ✗ Your VPS provider (pick one you trust, pay anonymously if needed)
+- ✗ Browser fingerprinting
+- ✗ Being logged in to accounts that identify you
+- ✗ Nation-state level adversaries
+
+---
+
 ## What's in here
 
 ```
@@ -49,7 +79,7 @@ Without this, your VPN dies on restart and you're exposed until you manually rec
 
 ## What you need
 
-- A VPS running Ubuntu 24.04 (Vultr, Hetzner, DigitalOcean — ~$5/month)
+- A VPS running Ubuntu 24.04 — see crypto-friendly providers in the Setup section below
 - A Mac or Linux machine as your client
 - 20 minutes
 
@@ -158,12 +188,6 @@ Block ads, trackers, and malware domains before they load — for every device a
 
 AdGuard Home runs on your VPS and intercepts all DNS queries at `10.0.0.1`. When your iPhone or Mac asks "what's the IP for doubleclick.net?" AdGuard answers NXDOMAIN before the request ever leaves your network.
 
-```
-server_setup.sh     — install WireGuard
-adguard_setup.sh    — install AdGuard Home (run after server_setup.sh)
-adguard_client.sh   — update Mac configs to use AdGuard DNS
-```
-
 ### 1. Run on your VPS (after server_setup.sh)
 ```bash
 ssh root@YOUR_SERVER_IP
@@ -268,22 +292,6 @@ cat /var/log/wirevpn.log
 # View logs (Linux)
 sudo journalctl -u wg-quick@client
 ```
-
-## Internet not working?
-
-If you destroyed your VPS while the VPN was still connected, all traffic is tunneling into nothing. Run:
-
-```bash
-# Try this first
-sudo wg-quick down /etc/wireguard/client.conf
-
-# If that doesn't work, kill the process directly
-sudo killall wireguard-go
-```
-
-Your internet will come back immediately. Reconnect once your new VPS is ready.
-
----
 
 ## Harden SSH access (recommended)
 
@@ -504,22 +512,6 @@ Everything healthy looks like:
 ---
 
 
-## Why self-host?
-
-Commercial VPNs ask you to trust them. Why would you?
-
-```
-Commercial VPN:   You → their server → internet
-                  They log everything. They comply with subpoenas.
-                  You're paying someone else to surveil you.
-
-Self-hosted:      You → your server → internet
-                  You own the keys. You own the logs (there are none).
-                  Zero trust required.
-```
-
----
-
 ## Mobile setup (iOS / Android)
 
 1. Install the **WireGuard** app (free, by WireGuard Development Team)
@@ -542,22 +534,6 @@ With On-Demand enabled your phone connects automatically whenever it's on the ne
 - IPv4 only — no IPv6 support
 - macOS and Linux client only — no Windows support
 - Multiple devices: use `bash add_peer.sh <name>` — each gets its own keys and IP
-
----
-
-## Threat model
-
-This protects you from:
-- ✓ ISP seeing your browsing traffic
-- ✓ Network-level surveillance on public WiFi
-- ✓ Ad networks correlating your IP
-- ✓ Basic geo-restrictions
-
-This does NOT protect you from:
-- ✗ Your VPS provider (pick one you trust, pay anonymously if needed)
-- ✗ Browser fingerprinting
-- ✗ Being logged in to accounts that identify you
-- ✗ Nation-state level adversaries
 
 ---
 
