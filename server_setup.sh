@@ -242,6 +242,7 @@ EOF
 printf "${NC}\n"
 
 printf "  ${BOLD}Next step — on your local machine run:${NC}\n\n"
+printf "  ${YELLOW}⚠  Note: the scp command below saves to ~/WireVPN (your home directory). If you want it elsewhere (e.g. ~/Desktop/WireVPN), adjust the path in both commands.${NC}\n\n"
 printf "  ${CYAN}mkdir -p ~/WireVPN${NC}\n"
 printf "  ${CYAN}scp root@$SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf${NC}\n"
 printf "  ${CYAN}bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh)${NC}\n\n"
