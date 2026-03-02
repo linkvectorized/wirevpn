@@ -313,7 +313,14 @@ else
   printf "   $PASS systemd service enabled and started (waits for network-online.target)\n"
 fi
 
-# ── 4. Verify ─────────────────────────────────────────────────────────────────
+# ── 4. Bring tunnel up immediately (daemon handles future boots; this handles now) ──
+if [ "$PLATFORM" = "macos" ]; then
+  printf "==> Bringing tunnel up now...\n"
+  sudo wg-quick up /etc/wireguard/client.conf 2>/dev/null || true
+  sleep 2
+fi
+
+# ── 5. Verify ─────────────────────────────────────────────────────────────────
 echo ""
 echo "==> Verifying connection..."
 sleep 2
