@@ -42,6 +42,8 @@ Ads and trackers: blocked before they load
 
 ## What makes this build unique?
 
+The smoothest WireGuard setup you'll find anywhere. Fully automated, zero manual config, works first time. While every other script on GitHub leaves you debugging half-finished setup, this one just runs.
+
 Most WireGuard setup scripts on GitHub are one-shot installers — they run once, generate a config, and leave you to figure out everything else. They break on re-run, wipe your peers, have no error handling, and assume you already know what you're doing.
 
 This is a complete managed system:
