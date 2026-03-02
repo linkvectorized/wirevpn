@@ -130,6 +130,8 @@ Windows  ✗   not supported
 
 ## Setup
 
+> **⚠️ Before destroying or rebuilding your VPS, always run `sudo wg-quick down /etc/wireguard/client.conf` on every connected device first. Nuking the VPS while the tunnel is active kills internet on all clients immediately.**
+
 ### 1. Spin up a VPS
 Get a cheap Ubuntu 24.04 VPS anywhere. Vultr VC2-1C-1GB or similar is plenty.
 
@@ -497,14 +499,26 @@ systemctl restart AdGuardHome
 
 ### Internet not working after VPS is destroyed
 
-If you destroyed or rebuilt your VPS while the VPN was connected, all traffic tunnels into nothing. Run:
+> **⚠️ Always disconnect your VPN tunnel before destroying or rebuilding your VPS.**
+> If you nuke the VPS while the tunnel is active, all traffic routes into nothing and every connected device loses internet instantly.
 
+**Disconnect first, then destroy:**
+```bash
+sudo wg-quick down /etc/wireguard/client.conf
+```
+
+**If you already destroyed it and are stuck:**
 ```bash
 # Try this first
 sudo wg-quick down /etc/wireguard/client.conf
 
-# If that doesn't work, kill the process directly
+# If that hangs or errors, kill the process directly
 sudo killall wireguard-go
+```
+
+**Also unload the boot daemon** or it will try to reconnect on next startup:
+```bash
+sudo launchctl unload /Library/LaunchDaemons/com.wirevpn.startup.plist
 ```
 
 Your internet comes back immediately. Reconnect once your new VPS is ready.
