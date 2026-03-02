@@ -242,8 +242,7 @@ It will:
 
 ### 2. Run on your Mac
 ```bash
-cd ~/Desktop/WireVPN
-bash adguard_client.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_client.sh)
 ```
 
 It will:
