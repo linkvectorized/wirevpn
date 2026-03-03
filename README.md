@@ -162,13 +162,13 @@ It will:
 
 **Re-running this script is safe.** If server keys already exist they are preserved — regenerating them would invalidate all connected clients.
 
-### 3. Pull the client config to your Mac
+### 3. Pull the client config to your Mac or Linux machine
 ```bash
 mkdir -p ~/WireVPN
 scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf
 ```
 
-### 4. Run the client script on your Mac
+### 4. Run the client script on your Mac or Linux machine
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
 ```
@@ -179,6 +179,8 @@ It will:
 - Install a launchd daemon so VPN auto-connects on boot
 - Connect the tunnel
 - Verify your exit IP
+
+> **⚠️ This config is for this device only.** Steps 3 and 4 set up your first device. To connect a second device (laptop, phone, etc.) do NOT copy this config — see [Adding and removing devices](#adding-and-removing-devices) below.
 
 ### 5. Verify
 ```bash
