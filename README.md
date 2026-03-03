@@ -14,8 +14,6 @@
 
 Self-hosted WireGuard VPN + AdGuard Home DNS blocking — spin up your own private, ad-free tunnel on any VPS in minutes. No subscriptions. No third party logging your data. No trust required.
 
-> **This is for people who already have a VPS.** Spinning one up takes 5–10 minutes and costs ~$5/month — see the provider table in the Setup section. Once you have a fresh Ubuntu 24.04 server, WireVPN handles everything else.
-
 ![WireVPN + AdGuard Diagram](tunnel.svg)
 
 ```
@@ -41,6 +39,8 @@ Ads and trackers: blocked before they load
 ```
 
 ---
+
+> **This is for people who already have a VPS.** Spinning one up takes 5–10 minutes and costs ~$5/month — see the provider table in the Setup section. Once you have a fresh Ubuntu 24.04 server, WireVPN handles everything else.
 
 ## What makes this build unique?
 
