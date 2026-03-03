@@ -198,13 +198,15 @@ curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_
 
 ### Adding a phone or tablet
 
+> **First, install the WireGuard app on your phone:** [iOS App Store](https://apps.apple.com/us/app/wireguard/id1441195209) · [Google Play](https://play.google.com/store/apps/details?id=com.wireguard.android)
+
 Phones can't run shell scripts, so you generate the peer on your Mac or Linux machine and scan the QR code:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/mobile_peer.sh -o /tmp/mobile_peer.sh && bash /tmp/mobile_peer.sh phone
 ```
 
-Replace `phone` with any name (`ipad`, `partner`, etc.). The script SSHes into your VPS, registers the peer, and prints a QR code. Open the WireGuard app → tap `+` → **Create from QR code** → done.
+Replace `phone` with any name (`ipad`, `partner`, etc.). The script SSHes into your VPS, registers the peer, and prints a QR code. In the WireGuard app tap `+` → **Create from QR code** → scan → done.
 
 ### Removing a device
 
