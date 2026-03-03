@@ -99,7 +99,6 @@ server_setup.sh     — run on your VPS (Ubuntu 24.04)
 client_setup.sh     — run on your Mac or Linux machine
 mobile_peer.sh      — add phones/tablets (shows QR code) or remove any peer
 adguard_setup.sh    — install AdGuard Home on your VPS for DNS-level ad blocking
-adguard_client.sh   — update Mac configs to use AdGuard DNS
 ```
 
 ### Persistence — how it works
@@ -156,13 +155,21 @@ bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/
 
 It will:
 - Install WireGuard
-- Generate server + client keys
+- Generate server keys
 - Configure routing and firewall
-- Write your client config to `/etc/wireguard/client.conf`
 
 **Re-running this script is safe.** If server keys already exist they are preserved — regenerating them would invalidate all connected clients.
 
-### 3. Run the client script on your Mac or Linux machine
+### 3. Run AdGuard on your VPS
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_setup.sh)
+```
+
+Installs AdGuard Home and locks DNS to `10.0.0.1` on the WireGuard interface. Every device that connects to the tunnel gets ad and tracker blocking automatically — no per-device config needed. Save the admin password it prints.
+
+**Skip this step if you don't want ad blocking.** The VPN works fine without it.
+
+### 4. Run the client script on your Mac or Linux machine
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
 ```
@@ -176,7 +183,7 @@ It will prompt for your VPS IP and a device name, then:
 
 > **⚠️ Never copy `client.conf` to another device.** For a second Mac/Linux machine run `client_setup.sh` on it directly. For phones use `mobile_peer.sh`. See [Adding and removing devices](#adding-and-removing-devices) below.
 
-### 4. Verify
+### 5. Verify
 ```bash
 curl ifconfig.me
 # should return your VPS IP, not your home IP
@@ -234,7 +241,7 @@ Block ads, trackers, and malware domains before they load — for every device a
 
 AdGuard Home runs on your VPS and intercepts all DNS queries at `10.0.0.1`. When your iPhone or Mac asks "what's the IP for doubleclick.net?" AdGuard answers NXDOMAIN before the request ever leaves your network.
 
-### 1. Run on your VPS (after server_setup.sh)
+### Run on your VPS
 ```bash
 ssh root@YOUR_SERVER_IP
 bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_setup.sh)
@@ -249,29 +256,7 @@ It will:
 
 **Re-running this script is safe.** If AdGuard is already configured, it updates the binary and restarts the service without touching your password or blocklist settings.
 
-### 2. Run on your Mac
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_client.sh)
-```
-
-It will:
-- Update DNS in all your `.conf` files (client.conf, phone.conf, etc.) from `1.1.1.1` to `10.0.0.1`
-- Back up originals before editing
-- Reinstall configs to `/etc/wireguard/`
-- Bounce the tunnel to pick up the new DNS
-- Verify blocking is working
-
-### 3. For other devices (iPhone, etc.)
-Edit the WireGuard config on each device and change:
-```
-DNS = 1.1.1.1
-```
-to:
-```
-DNS = 10.0.0.1
-```
-
-Or use `bash mobile_peer.sh <name>` — after running `adguard_client.sh`, new peer configs will automatically use AdGuard DNS.
+All devices that connect to your tunnel automatically use AdGuard DNS (`10.0.0.1`) — no per-device setup needed.
 
 ### Web UI
 While connected to your VPN, open:
