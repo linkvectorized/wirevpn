@@ -183,7 +183,15 @@ if [ "$PLATFORM" = "macos" ]; then
   # macOS ships bash 3.2 but wg-quick requires bash 4+ — patch shebang to use Homebrew bash
   # Resolve symlink first — sed -i won't work on symlinks, needs the real file
   WG_QUICK_BIN="$(which wg-quick 2>/dev/null || echo /opt/homebrew/bin/wg-quick)"
-  WG_QUICK_REAL="$(python3 -c "import os; print(os.path.realpath('$WG_QUICK_BIN'))")"
+  # Resolve symlink — macOS readlink doesn't support -f, so follow one level manually
+  WG_QUICK_REAL="$WG_QUICK_BIN"
+  if [ -L "$WG_QUICK_BIN" ]; then
+    TARGET=$(readlink "$WG_QUICK_BIN")
+    case "$TARGET" in
+      /*) WG_QUICK_REAL="$TARGET" ;;
+      *)  WG_QUICK_REAL="$(dirname "$WG_QUICK_BIN")/$TARGET" ;;
+    esac
+  fi
   # Use brew --prefix so the path is correct on both Apple Silicon (/opt/homebrew) and Intel (/usr/local)
   BREW_BASH="$(brew --prefix)/bin/bash"
   if head -1 "$WG_QUICK_REAL" 2>/dev/null | grep -q '#!/usr/bin/env bash'; then

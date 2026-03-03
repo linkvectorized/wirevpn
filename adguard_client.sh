@@ -72,7 +72,7 @@ printf "${BOLD}── Pre-flight check ──${NC}\n\n"
 printf "1. WireVPN config files\n"
 CONF_FILES=()
 while IFS= read -r -d '' f; do
-  CONF_FILES+=("$f")
+  CONF_FILES=("${CONF_FILES[@]}" "$f")
 done < <(find "$WIREVPN_DIR" -maxdepth 1 -name "*.conf" -print0 2>/dev/null)
 
 if [ ${#CONF_FILES[@]} -eq 0 ]; then
@@ -110,7 +110,7 @@ NEEDS_UPDATE=()
 for f in "${CONF_FILES[@]}"; do
   CURRENT_DNS=$(grep "^DNS" "$f" 2>/dev/null | awk '{print $3}' || true)
   if [ "$CURRENT_DNS" != "$AGH_DNS" ]; then
-    NEEDS_UPDATE+=("$f")
+    NEEDS_UPDATE=("${NEEDS_UPDATE[@]}" "$f")
   fi
 done
 
