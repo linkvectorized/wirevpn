@@ -97,7 +97,7 @@ This does NOT protect you from:
 ```
 server_setup.sh     — run on your VPS (Ubuntu 24.04)
 client_setup.sh     — run on your Mac or Linux machine
-add_peer.sh         — add or remove devices from your VPN (run on your Mac or Linux machine)
+mobile_peer.sh      — add phones/tablets (shows QR code) or remove any peer
 adguard_setup.sh    — install AdGuard Home on your VPS for DNS-level ad blocking
 adguard_client.sh   — update Mac configs to use AdGuard DNS
 ```
@@ -180,7 +180,7 @@ It will:
 - Connect the tunnel
 - Verify your exit IP
 
-> **⚠️ This config is for this device only.** Steps 3 and 4 set up your first device. To connect a second device (laptop, phone, etc.) do NOT copy this config — see [Adding and removing devices](#adding-and-removing-devices) below.
+> **⚠️ Never copy `client.conf` to another device.** For a second Mac/Linux machine run `client_setup.sh` on it directly. For phones use `mobile_peer.sh`. See [Adding and removing devices](#adding-and-removing-devices) below.
 
 ### 5. Verify
 ```bash
@@ -194,32 +194,33 @@ curl ifconfig.me
 
 **Every device needs its own peer** — unique keys and IP. Never copy `client.conf` from one machine to another. Two devices sharing the same config causes conflicts and breaks the tunnel.
 
-> **device #1** (your first Mac or Linux machine) is handled automatically by `server_setup.sh` + `client_setup.sh`.
-> **Every device after that** needs `add_peer.sh` first, then `client_setup.sh` on the new device.
+### Adding a Mac or Linux machine
 
-### Adding a new device
+Just run `client_setup.sh` directly on the new machine. If no config exists it will prompt you for your VPS IP and a device name, register itself, and connect — all in one step:
 
-**Step 1 — on your existing Mac or Linux machine** (the one with VPN already working), generate the new peer:
-```bash
-curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh laptop
-```
-
-Replace `laptop` with any name you want (`phone`, `brian`, etc.). This will:
-- SSH into your VPS and generate a unique keypair + IP for the new device
-- Add the peer to your live WireGuard server (no restart needed)
-- Save the config to `~/WireVPN/laptop.conf` on this machine and `/etc/wireguard/laptop.conf` on the VPS
-- Print a QR code — **for phones, scan it in the WireGuard app and you're done**
-
-**Step 2 — on the NEW device** (laptop or other Mac/Linux machine), pull its config directly from the VPS:
-```bash
-mkdir -p ~/WireVPN
-scp root@YOUR_SERVER_IP:/etc/wireguard/laptop.conf ~/WireVPN/client.conf
-```
-
-**Step 3 — on the new device**, run the client script:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
 ```
+
+### Adding a phone or tablet
+
+Phones can't run shell scripts, so you generate the peer on your Mac or Linux machine and scan the QR code:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/mobile_peer.sh -o /tmp/mobile_peer.sh && bash /tmp/mobile_peer.sh phone
+```
+
+Replace `phone` with any name (`ipad`, `partner`, etc.). The script SSHes into your VPS, registers the peer, and prints a QR code. Open the WireGuard app → tap `+` → **Create from QR code** → done.
+
+### Removing a device
+
+Run this on any Mac or Linux machine that has the VPN set up:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/mobile_peer.sh -o /tmp/mobile_peer.sh && bash /tmp/mobile_peer.sh remove laptop
+```
+
+Replace `laptop` with whatever name you used. Revokes access instantly — the peer is kicked off the live tunnel and their keys are deleted from the server. No restart needed.
 
 Each device gets its own IP in the `10.0.0.x` range:
 ```
@@ -228,15 +229,6 @@ Device 2 (laptop)           → 10.0.0.3
 Device 3 (phone)            → 10.0.0.4
 ...
 ```
-
-### Removing a device
-
-Run this on your existing Mac or Linux machine (the one with `client.conf`):
-```bash
-curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh remove laptop
-```
-
-Revokes access instantly — the peer is kicked off the live tunnel and their keys are deleted from the server. No restart needed.
 
 ---
 
@@ -283,7 +275,7 @@ to:
 DNS = 10.0.0.1
 ```
 
-Or use `bash add_peer.sh <name>` — after running `adguard_client.sh`, new peer configs will automatically use AdGuard DNS.
+Or use `bash mobile_peer.sh <name>` — after running `adguard_client.sh`, new peer configs will automatically use AdGuard DNS.
 
 ### Web UI
 While connected to your VPN, open:
@@ -401,11 +393,11 @@ If those two values differ, your key files are stale.
 **Fix:**
 ```bash
 # On Mac — remove and re-add the affected peer
-bash add_peer.sh remove phone
-bash add_peer.sh phone
+bash mobile_peer.sh remove phone
+bash mobile_peer.sh phone
 ```
 
-Rescan the QR on the device. `add_peer.sh` always reads the live key from `wg show` so newly generated configs are always correct.
+Rescan the QR on the device. `mobile_peer.sh` always reads the live key from `wg show` so newly generated configs are always correct.
 
 ---
 
@@ -435,7 +427,7 @@ cp /etc/wireguard/wg0.conf.live_backup /etc/wireguard/wg0.conf
 systemctl restart wg-quick@wg0
 ```
 
-The live backup is written from `wg showconf wg0` — it captures the real running state including all peers added via `add_peer.sh`, not just the initial config.
+The live backup is written from `wg showconf wg0` — it captures the real running state including all peers added via `mobile_peer.sh`, not just the initial config.
 
 **If WireGuard is not running and the config is gone:**
 ```bash
@@ -457,13 +449,13 @@ wg showconf wg0 > /etc/wireguard/wg0.conf
 
 ### Peer shows `allowed ips: (none)` in wg show
 
-This means the peer was added to WireGuard's keyring but has no IP assignment — usually from a partial or interrupted `add_peer.sh` run.
+This means the peer was added to WireGuard's keyring but has no IP assignment — usually from a partial or interrupted `mobile_peer.sh` run.
 
 **Fix:**
 ```bash
 # On Mac
-bash add_peer.sh remove <name>
-bash add_peer.sh <name>
+bash mobile_peer.sh remove <name>
+bash mobile_peer.sh <name>
 ```
 
 If `remove` fails because the peer name isn't found, remove it manually on the VPS:
@@ -484,7 +476,7 @@ wg set wg0 peer <PUBLIC_KEY> remove
 If you ever end up with a new server public key (e.g. after restoring from a backup with different keys), every existing device config is invalid. The fix for each device:
 
 **iPhone / Android:**
-1. On your Mac: `bash add_peer.sh remove phone` then `bash add_peer.sh phone`
+1. On your Mac: `bash mobile_peer.sh remove phone` then `bash mobile_peer.sh phone`
 2. In WireGuard app: delete the old tunnel, tap `+` → Create from QR code → scan the new QR
 
 **Mac:**
@@ -584,7 +576,7 @@ Everything healthy looks like:
 ## Mobile setup (iOS / Android)
 
 1. Install the **WireGuard** app (free, by WireGuard Development Team)
-2. On your Mac run: `bash add_peer.sh phone` — it prints a QR code
+2. On your Mac run: `bash mobile_peer.sh phone` — it prints a QR code
 3. In the app tap `+` → **Create from QR code** → scan → done
 
 **Enable On-Demand (auto-connect without toggling manually):**
@@ -602,7 +594,7 @@ With On-Demand enabled your phone connects automatically whenever it's on the ne
 
 - IPv4 only — no IPv6 support
 - macOS and Linux client only — no Windows support
-- Multiple devices: use `bash add_peer.sh <name>` — each gets its own keys and IP
+- Multiple devices: use `bash mobile_peer.sh <name>` — each gets its own keys and IP
 
 ---
 

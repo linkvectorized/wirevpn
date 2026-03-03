@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-# add_peer.sh — Add or remove WireGuard peers on your WireVPN server
-# Run this on your Mac or Linux machine (not the VPS)
+# mobile_peer.sh — Add phones/tablets to your WireVPN, or remove any peer
+# Run this on your Mac or Linux machine that already has the VPN running
 #
 # Usage:
-#   bash add_peer.sh <name>           — add a new peer (shows QR code)
-#   bash add_peer.sh remove <name>    — revoke a peer's access immediately
+#   bash mobile_peer.sh <name>           — add a phone/tablet (shows QR code to scan)
+#   bash mobile_peer.sh remove <name>    — revoke a peer's access immediately
 #
 # Examples:
-#   bash add_peer.sh phone
-#   bash add_peer.sh laptop
-#   bash add_peer.sh brian
-#   bash add_peer.sh remove phone
+#   bash mobile_peer.sh phone
+#   bash mobile_peer.sh ipad
+#   bash mobile_peer.sh remove phone
 
 set -e
 
@@ -44,6 +43,7 @@ fi
 
 if [ -z "$WIREVPN_DIR" ]; then
   printf "${RED}Could not find WireVPN directory with client.conf${NC}\n"
+  printf "This script must run on a machine that already has the VPN set up.\n"
   exit 1
 fi
 
@@ -62,13 +62,12 @@ fi
 
 if [ -z "$PEER_NAME" ]; then
   printf "${BOLD}Usage:${NC}\n"
-  printf "  bash add_peer.sh <name>           — add a peer\n"
-  printf "  bash add_peer.sh remove <name>    — remove a peer\n\n"
+  printf "  bash mobile_peer.sh <name>           — add a phone or tablet\n"
+  printf "  bash mobile_peer.sh remove <name>    — remove a peer\n\n"
   printf "Examples:\n"
-  printf "  bash add_peer.sh phone\n"
-  printf "  bash add_peer.sh laptop\n"
-  printf "  bash add_peer.sh brian\n"
-  printf "  bash add_peer.sh remove phone\n"
+  printf "  bash mobile_peer.sh phone\n"
+  printf "  bash mobile_peer.sh ipad\n"
+  printf "  bash mobile_peer.sh remove phone\n"
   exit 1
 fi
 
@@ -84,7 +83,7 @@ clear
 printf "${CYAN}"
 cat << 'EOF'
   ╔══════════════════════════════════════════════╗
-  ║         WireVPN — Peer Manager               ║
+  ║       WireVPN — Mobile Peer Manager          ║
   ╚══════════════════════════════════════════════╝
 EOF
 printf "${NC}\n"
@@ -186,7 +185,7 @@ ENDSSH
 
   printf "\n   $PASS Scan the QR code in the WireGuard app\n"
   printf "       iOS/Android: tap + → Create from QR code\n\n"
-  printf "${GREEN}${BOLD}  Peer '${PEER_NAME}' is live.${NC}\n\n"
+  printf "${GREEN}${BOLD}  '${PEER_NAME}' is live.${NC}\n\n"
 
 # ── REMOVE ────────────────────────────────────────────────────────────────────
 elif [ "$ACTION" = "remove" ]; then

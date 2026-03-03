@@ -117,11 +117,7 @@ printf "3. Client config\n"
 if [ -n "$CONF_SRC" ] && [ -f "$CONF_SRC" ]; then
   printf "   $PASS client.conf found at $CONF_SRC\n"
 else
-  printf "   $FAIL client.conf not found anywhere under $HOME\n\n"
-  printf "   ${RED}Run these commands first, then re-run this script:${NC}\n\n"
-  printf "   mkdir -p ~/WireVPN\n"
-  printf "   scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf\n\n"
-  exit 1
+  printf "   $FAIL client.conf not found — will register this device with your VPS\n"
 fi
 
 echo ""
@@ -220,8 +216,70 @@ else
   fi
 fi
 
-# ── 2. Install client config ───────────────────────────────────────────────────
+# ── 2. Register with VPS or install existing config ───────────────────────────
 echo ""
+if [ -z "$CONF_SRC" ]; then
+  echo "==> Registering this device with your VPS..."
+  printf "  Enter your VPS IP: "
+  read -r VPS_IP
+  printf "  Enter a name for this device (e.g. laptop, macbook): "
+  read -r DEVICE_NAME
+
+  if [ -z "$VPS_IP" ] || [ -z "$DEVICE_NAME" ]; then
+    printf "${RED}VPS IP and device name are required.${NC}\n"
+    exit 1
+  fi
+
+  printf "\n  Verifying SSH access...\n"
+  if ! ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$VPS_IP" true 2>/dev/null; then
+    printf "${RED}Cannot connect to root@$VPS_IP — check your VPS IP and SSH access.${NC}\n"
+    exit 1
+  fi
+  printf "   $PASS SSH confirmed\n\n"
+
+  # shellcheck disable=SC2087
+  # DEVICE_NAME and VPS_IP expand locally; all server-side variables use \$ to expand remotely.
+  ssh "root@$VPS_IP" bash -s << ENDSSH
+set -e
+PEER_NAME="$DEVICE_NAME"
+
+LAST_OCTET=\$(grep "^AllowedIPs" /etc/wireguard/wg0.conf | grep -oE '10\.0\.0\.[0-9]+' | cut -d. -f4 | sort -n | tail -1)
+if [ -z "\$LAST_OCTET" ]; then
+  NEXT_IP="10.0.0.2"
+else
+  NEXT_IP="10.0.0.\$((LAST_OCTET + 1))"
+fi
+
+PRIVATE=\$(wg genkey)
+PUBLIC=\$(echo "\$PRIVATE" | wg pubkey)
+SERVER_PUBLIC=\$(wg show wg0 public-key)
+echo "\$SERVER_PUBLIC" > /etc/wireguard/server_public.key
+SERVER_IP=\$(curl -s --max-time 10 ifconfig.me 2>/dev/null || true)
+if [ -z "\$SERVER_IP" ]; then
+  echo "ERROR: Could not detect server public IP — check network connectivity"
+  exit 1
+fi
+
+printf '%s\n' "\$PRIVATE" > /etc/wireguard/\${PEER_NAME}_private.key
+printf '%s\n' "\$PUBLIC"  > /etc/wireguard/\${PEER_NAME}_public.key
+chmod 600 /etc/wireguard/\${PEER_NAME}_private.key
+
+wg set wg0 peer "\$PUBLIC" allowed-ips "\${NEXT_IP}/32"
+printf '\n[Peer]\n# %s\nPublicKey = %s\nAllowedIPs = %s/32\n' "\$PEER_NAME" "\$PUBLIC" "\$NEXT_IP" >> /etc/wireguard/wg0.conf
+
+printf '[Interface]\nPrivateKey = %s\nAddress = %s/24\nDNS = 10.0.0.1\n\n[Peer]\nPublicKey = %s\nEndpoint = %s:51820\nAllowedIPs = 0.0.0.0/0\nPersistentKeepalive = 25\n' \
+  "\$PRIVATE" "\$NEXT_IP" "\$SERVER_PUBLIC" "\$SERVER_IP" > /etc/wireguard/\${PEER_NAME}.conf
+chmod 600 /etc/wireguard/\${PEER_NAME}.conf
+
+echo "  Device \$PEER_NAME registered at \$NEXT_IP"
+ENDSSH
+
+  mkdir -p "$HOME/WireVPN"
+  scp -q "root@$VPS_IP:/etc/wireguard/${DEVICE_NAME}.conf" "$HOME/WireVPN/client.conf"
+  CONF_SRC="$HOME/WireVPN/client.conf"
+  printf "   $PASS Config saved to $HOME/WireVPN/client.conf\n"
+fi
+
 echo "==> Installing client config..."
 sudo mkdir -p /etc/wireguard
 # Back up existing config if present
