@@ -268,28 +268,6 @@ Add more via the web UI under Filters → DNS blocklists.
 
 ---
 
-## Useful commands
-
-```bash
-# Connect
-sudo wg-quick up /etc/wireguard/client.conf
-
-# Disconnect
-sudo wg-quick down /etc/wireguard/client.conf
-
-# Check status
-sudo wg show
-
-# Check your exit IP
-curl ifconfig.me
-
-# View logs (macOS)
-cat /var/log/wirevpn.log
-
-# View logs (Linux)
-sudo journalctl -u wg-quick@client
-```
-
 ## Harden SSH access (recommended)
 
 By default your VPS uses password auth. Switch to SSH keys — much harder to brute force.
@@ -322,6 +300,28 @@ After this, no one gets in without your private key — even if they know the ro
 ---
 
 ## TROUBLESHOOTING
+
+### Useful commands
+
+```bash
+# Connect
+sudo wg-quick up /etc/wireguard/client.conf
+
+# Disconnect
+sudo wg-quick down /etc/wireguard/client.conf
+
+# Check status
+sudo wg show
+
+# Check your exit IP
+curl ifconfig.me
+
+# View logs (macOS)
+cat /var/log/wirevpn.log
+
+# View logs (Linux)
+sudo journalctl -u wg-quick@client
+```
 
 ### Peer connected but no internet / tunnel not handshaking
 
