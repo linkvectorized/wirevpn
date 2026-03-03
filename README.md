@@ -215,6 +215,9 @@ curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/mobile_
 
 Replace `phone` with any name (`ipad`, `partner`, etc.). The script SSHes into your VPS, registers the peer, and prints a QR code. In the WireGuard app tap `+` → **Create from QR code** → scan → done.
 
+**Enable On-Demand (iOS) — auto-connect without manually toggling:**
+Open the tunnel → tap **Edit** → toggle on **On-Demand Activation** → choose WiFi, cellular, or both. Your phone will connect automatically on the networks you select.
+
 ### Removing a device
 
 Run this on any Mac or Linux machine that has the VPN set up:
@@ -517,23 +520,6 @@ Everything healthy looks like:
 
 ---
 
-
-## Mobile setup (iOS / Android)
-
-1. Install the **WireGuard** app (free, by WireGuard Development Team)
-2. On your Mac run: `bash mobile_peer.sh phone` — it prints a QR code
-3. In the app tap `+` → **Create from QR code** → scan → done
-
-**Enable On-Demand (auto-connect without toggling manually):**
-
-In the WireGuard iOS app:
-- Open the tunnel → tap **Edit**
-- Toggle on **On-Demand Activation**
-- Choose: WiFi, cellular, or both
-
-With On-Demand enabled your phone connects automatically whenever it's on the networks you selected — no manual toggle needed.
-
----
 
 ## Limitations
 
