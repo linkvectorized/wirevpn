@@ -199,30 +199,25 @@ curl ifconfig.me
 
 ### Adding a new device
 
-**Step 1 — on the new device, generate its peer (replace `laptop` with whatever you want to call it):**
+**Step 1 — on your existing Mac or Linux machine** (the one with VPN already working), generate the new peer:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh laptop
 ```
 
-Other examples:
+Replace `laptop` with any name you want (`phone`, `brian`, etc.). This will:
+- SSH into your VPS and generate a unique keypair + IP for the new device
+- Add the peer to your live WireGuard server (no restart needed)
+- Save the config to `~/WireVPN/laptop.conf` on this machine and `/etc/wireguard/laptop.conf` on the VPS
+- Print a QR code — **for phones, scan it in the WireGuard app and you're done**
+
+**Step 2 — on the NEW device** (laptop or other Mac/Linux machine), pull its config directly from the VPS:
 ```bash
-bash /tmp/add_peer.sh phone
-bash /tmp/add_peer.sh brian
+mkdir -p ~/WireVPN
+scp root@YOUR_SERVER_IP:/etc/wireguard/laptop.conf ~/WireVPN/client.conf
 ```
 
-This will:
-- SSH into your VPS and generate a unique keypair + IP for the device
-- Add the peer to your live WireGuard server (no restart needed)
-- Save the config to `~/WireVPN/<name>.conf`
-- Print a QR code — scan with the WireGuard iOS/Android app to connect mobile devices
-
-**Step 2 — on the new Mac or Linux machine, run the client script:**
+**Step 3 — on the new device**, run the client script:
 ```bash
-# First copy the generated conf to the new machine
-mkdir -p ~/WireVPN
-scp user@yourmac:~/WireVPN/<name>.conf ~/WireVPN/client.conf
-
-# Then run the client setup
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
 ```
 
@@ -236,8 +231,9 @@ Device 3 (phone)            → 10.0.0.4
 
 ### Removing a device
 
+Run this on your existing Mac or Linux machine (the one with `client.conf`):
 ```bash
-bash /tmp/add_peer.sh remove <name>
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh remove laptop
 ```
 
 Revokes access instantly — the peer is kicked off the live tunnel and their keys are deleted from the server. No restart needed.
