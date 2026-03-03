@@ -197,14 +197,13 @@ curl ifconfig.me
 
 ### Adding a new device
 
-**Step 1 — on your existing Mac or Linux machine, generate the new peer:**
+**Step 1 — on the new device, generate its peer (replace `laptop` with whatever you want to call it):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh <name>
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh laptop
 ```
 
-Examples:
+Other examples:
 ```bash
-bash /tmp/add_peer.sh laptop
 bash /tmp/add_peer.sh phone
 bash /tmp/add_peer.sh brian
 ```
