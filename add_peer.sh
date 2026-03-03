@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # add_peer.sh — Add or remove WireGuard peers on your WireVPN server
-# Run this on your Mac (not the VPS)
+# Run this on your Mac or Linux machine (not the VPS)
 #
 # Usage:
 #   bash add_peer.sh <name>           — add a new peer (shows QR code)
@@ -22,6 +22,8 @@ BOLD=$'\033[1m'
 NC=$'\033[0m'
 
 PASS="${GREEN}[✓]${NC}"
+
+OS=$(uname -s)
 
 # ── Find WireVPN directory ─────────────────────────────────────────────────────
 WIREVPN_DIR=""
@@ -156,15 +158,28 @@ chmod 600 /etc/wireguard/\${PEER_NAME}.conf
 echo "  Peer \$PEER_NAME added at \$NEXT_IP"
 ENDSSH
 
-  printf "\n==> Pulling config to Mac...\n"
+  printf "\n==> Pulling config...\n"
   scp -q "root@$VPS_IP:/etc/wireguard/${PEER_NAME}.conf" "$WIREVPN_DIR/${PEER_NAME}.conf"
   printf "   $PASS Saved to $WIREVPN_DIR/${PEER_NAME}.conf\n"
 
   printf "\n==> Generating QR code...\n\n"
   if ! command -v qrencode &>/dev/null; then
     printf "   Installing qrencode...\n"
-    if ! brew install qrencode -q; then
-      printf "${RED}qrencode install failed. Install manually: brew install qrencode${NC}\n"
+    if [ "$OS" = "Darwin" ]; then
+      brew install qrencode -q
+    elif command -v apt-get &>/dev/null; then
+      sudo apt-get install -y -qq qrencode
+    elif command -v dnf &>/dev/null; then
+      sudo dnf install -y qrencode
+    elif command -v pacman &>/dev/null; then
+      sudo pacman -Sy --noconfirm qrencode
+    else
+      printf "${RED}qrencode not found and no supported package manager detected.${NC}\n"
+      printf "${YELLOW}Install qrencode manually, then re-run — or import $WIREVPN_DIR/${PEER_NAME}.conf manually in the WireGuard app.${NC}\n"
+      exit 1
+    fi
+    if ! command -v qrencode &>/dev/null; then
+      printf "${RED}qrencode install failed. Install manually, then re-run.${NC}\n"
       printf "${YELLOW}Config saved to $WIREVPN_DIR/${PEER_NAME}.conf — import it manually in the WireGuard app.${NC}\n"
       exit 1
     fi

@@ -25,11 +25,11 @@ Ads and trackers: blocked before they load
 
 ```
                              ┌───────────────────────────┐
-  Mac ─────╮                 │         YOUR VPS           │
-           │  WireGuard      │                            │
-  Phone ───┼─────────────── ▶│  WireGuard  ──────────────── ▶  internet
-           │  encrypted      │     │                      │
-  Laptop ──╯  tunnel         │  AdGuard DNS               │
+  Mac ──────╮                │         YOUR VPS           │
+            │  WireGuard     │                            │
+  Linux ────┼───────────── ▶│  WireGuard  ──────────────── ▶  internet
+            │  encrypted     │     │                      │
+  Phone ────╯  tunnel        │  AdGuard DNS               │
                              │  ad domains → NXDOMAIN ✗   │
                              └───────────────────────────┘
 
@@ -43,8 +43,6 @@ Ads and trackers: blocked before they load
 ## What makes this build unique?
 
 The smoothest WireGuard setup you'll find anywhere. Fully automated, zero manual config, works first time. While every other script on GitHub leaves you debugging half-finished setup, this one just runs.
-
-Most WireGuard setup scripts on GitHub are one-shot installers — they run once, generate a config, and leave you to figure out everything else. They break on re-run, wipe your peers, have no error handling, and assume you already know what you're doing.
 
 This is a complete managed system:
 
@@ -97,7 +95,7 @@ This does NOT protect you from:
 ```
 server_setup.sh     — run on your VPS (Ubuntu 24.04)
 client_setup.sh     — run on your Mac or Linux machine
-add_peer.sh         — add or remove devices from your VPN (run on your Mac)
+add_peer.sh         — add or remove devices from your VPN (run on your Mac or Linux machine)
 adguard_setup.sh    — install AdGuard Home on your VPS for DNS-level ad blocking
 adguard_client.sh   — update Mac configs to use AdGuard DNS
 ```
