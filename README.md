@@ -237,67 +237,31 @@ Device 3 (phone)            → 10.0.0.4
 
 ## AdGuard Home — DNS-level ad and tracker blocking
 
-Block ads, trackers, and malware domains before they load — for every device already on your tunnel. No per-device changes needed.
-
-AdGuard Home runs on your VPS and intercepts all DNS queries at `10.0.0.1`. When your iPhone or Mac asks "what's the IP for doubleclick.net?" AdGuard answers NXDOMAIN before the request ever leaves your network.
-
-### Run on your VPS
-```bash
-ssh root@YOUR_SERVER_IP
-bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_setup.sh)
-```
-
-It will:
-- Download and install AdGuard Home binary
-- Write a config with ad/tracker/malware blocklists
-- Lock DNS to the WireGuard interface only — port 53 is never exposed publicly
-- Start AdGuard as a systemd service
-- Print a generated admin password — **save it**, it won't be shown again
-
-**Re-running this script is safe.** If AdGuard is already configured, it updates the binary and restarts the service without touching your password or blocklist settings.
-
-All devices that connect to your tunnel automatically use AdGuard DNS (`10.0.0.1`) — no per-device setup needed.
+AdGuard Home runs on your VPS and intercepts every DNS query from every device on your tunnel. When your phone or Mac asks "what's the IP for doubleclick.net?" AdGuard returns NXDOMAIN — the ad server never loads, before any connection is even attempted. No per-device setup needed, ever.
 
 ### Web UI
+
 While connected to your VPN, open:
 ```
 http://10.0.0.1:3000
 ```
 
-The UI is only reachable through the tunnel — it's not exposed to the public internet.
+The UI is only reachable through the tunnel — it's not exposed to the public internet. From here you can see live query stats, blocked domains, and manage filter lists.
 
 ### Verify it's working
 
-**1. Check a known ad domain is blocked**
 ```bash
 dig @10.0.0.1 doubleclick.net
 ```
-Should return `0.0.0.0` in the answer section. That means AdGuard intercepted the DNS query and returned a null address instead of the real one — the ad server is unreachable before any connection is even attempted.
 
-How `dig` works here:
-- `dig` is a DNS lookup tool — it asks a DNS server "what's the IP for this domain?"
-- `@10.0.0.1` tells it to ask *your* AdGuard instance specifically, not your system DNS
-- A normal domain returns a real IP like `142.250.80.1`
-- A blocked domain returns `0.0.0.0` (null) or NXDOMAIN — AdGuard is lying to the requester on purpose, making the domain effectively unreachable
-
-**2. Confirm you're still routing through your VPS**
-```bash
-curl ifconfig.me
-```
-Should return your VPS IP, not your home IP.
-
-**3. Open the web UI**
-```bash
-open http://10.0.0.1:3000
-```
-Shows live query stats, blocked domains, and filter list management. Only reachable while connected to your VPN.
+A blocked domain returns `0.0.0.0` or NXDOMAIN. A normal domain returns a real IP. If you see `0.0.0.0` for `doubleclick.net`, AdGuard is working.
 
 ### Blocklists included by default
 - **AdGuard DNS filter** — ads, trackers, malware
 - **EasyList** — display ads
 - **EasyPrivacy** — tracking scripts
 
-You can add more via the web UI under Filters → DNS blocklists.
+Add more via the web UI under Filters → DNS blocklists.
 
 ---
 
