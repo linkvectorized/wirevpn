@@ -162,27 +162,21 @@ It will:
 
 **Re-running this script is safe.** If server keys already exist they are preserved — regenerating them would invalidate all connected clients.
 
-### 3. Pull the client config to your Mac or Linux machine
-```bash
-mkdir -p ~/WireVPN
-scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/WireVPN/client.conf
-```
-
-### 4. Run the client script on your Mac or Linux machine
+### 3. Run the client script on your Mac or Linux machine
 ```bash
 curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
 ```
 
-It will:
-- Install WireGuard tools via Homebrew
-- Fix config permissions
+It will prompt for your VPS IP and a device name, then:
+- Register this device with your VPS (generates unique keys + IP)
+- Install WireGuard tools
 - Install a launchd daemon so VPN auto-connects on boot
 - Connect the tunnel
 - Verify your exit IP
 
 > **⚠️ Never copy `client.conf` to another device.** For a second Mac/Linux machine run `client_setup.sh` on it directly. For phones use `mobile_peer.sh`. See [Adding and removing devices](#adding-and-removing-devices) below.
 
-### 5. Verify
+### 4. Verify
 ```bash
 curl ifconfig.me
 # should return your VPS IP, not your home IP
