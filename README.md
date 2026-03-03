@@ -190,34 +190,56 @@ curl ifconfig.me
 
 ## Adding and removing devices
 
-Each device needs its own **peer** — unique keys and IP so multiple devices can connect simultaneously.
+**Every device needs its own peer** — unique keys and IP. Never copy `client.conf` from one machine to another. Two devices sharing the same config causes conflicts and breaks the tunnel.
 
+> **device #1** (your first Mac or Linux machine) is handled automatically by `server_setup.sh` + `client_setup.sh`.
+> **Every device after that** needs `add_peer.sh` first, then `client_setup.sh` on the new device.
+
+### Adding a new device
+
+**Step 1 — on your existing Mac or Linux machine, generate the new peer:**
 ```bash
-# Add a new device (generates a QR code to scan)
-bash add_peer.sh phone
-bash add_peer.sh laptop
-bash add_peer.sh brian
-
-# Remove a device (revokes access immediately, no restart needed)
-bash add_peer.sh remove phone
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/add_peer.sh -o /tmp/add_peer.sh && bash /tmp/add_peer.sh <name>
 ```
 
-Run this on your Mac. It will:
-- Auto-detect your VPS IP from `client.conf`
-- Generate a unique keypair and tunnel IP for the device
-- Add the peer to your live WireGuard server (no restart)
-- Pull the config to `~/Desktop/WireVPN/<name>.conf`
-- Print a QR code — scan with the WireGuard iOS/Android app
+Examples:
+```bash
+bash /tmp/add_peer.sh laptop
+bash /tmp/add_peer.sh phone
+bash /tmp/add_peer.sh brian
+```
+
+This will:
+- SSH into your VPS and generate a unique keypair + IP for the device
+- Add the peer to your live WireGuard server (no restart needed)
+- Save the config to `~/WireVPN/<name>.conf`
+- Print a QR code — scan with the WireGuard iOS/Android app to connect mobile devices
+
+**Step 2 — on the new Mac or Linux machine, run the client script:**
+```bash
+# First copy the generated conf to the new machine
+mkdir -p ~/WireVPN
+scp user@yourmac:~/WireVPN/<name>.conf ~/WireVPN/client.conf
+
+# Then run the client setup
+curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/client_setup.sh -o /tmp/client_setup.sh && bash /tmp/client_setup.sh
+```
 
 Each device gets its own IP in the `10.0.0.x` range:
 ```
-Mac Mini  → 10.0.0.2
-iPhone    → 10.0.0.3
-Laptop    → 10.0.0.4
+Device 1 (first Mac/Linux)  → 10.0.0.2
+Device 2 (laptop)           → 10.0.0.3
+Device 3 (phone)            → 10.0.0.4
 ...
 ```
 
-Removing a peer revokes access instantly — they're kicked off the live tunnel and their keys are deleted from the server.
+### Removing a device
+
+```bash
+bash /tmp/add_peer.sh remove <name>
+```
+
+Revokes access instantly — the peer is kicked off the live tunnel and their keys are deleted from the server. No restart needed.
 
 ---
 
