@@ -102,13 +102,11 @@ if [ "$ACTION" = "add" ]; then
   fi
 
   printf "==> Verifying SSH access to VPS...\n"
-  if ! ssh -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$VPS_IP" true 2>/dev/null; then
-    printf "${RED}Cannot connect to root@$VPS_IP via SSH key auth.${NC}\n"
-    printf "${YELLOW}Make sure your SSH public key is authorized on the VPS:${NC}\n"
-    printf "  ${CYAN}ssh-copy-id root@$VPS_IP${NC}\n"
+  if ! ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new "root@$VPS_IP" true 2>/dev/null; then
+    printf "${RED}Cannot connect to root@$VPS_IP — check your VPS IP and that SSH is accessible.${NC}\n"
     exit 1
   fi
-  printf "   $PASS SSH key auth confirmed\n\n"
+  printf "   $PASS SSH access confirmed\n\n"
 
   printf "==> Setting up peer on VPS...\n\n"
 
