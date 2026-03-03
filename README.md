@@ -321,7 +321,7 @@ After this, no one gets in without your private key — even if they know the ro
 
 ---
 
-## Troubleshooting
+## TROUBLESHOOTING
 
 ### Peer connected but no internet / tunnel not handshaking
 
