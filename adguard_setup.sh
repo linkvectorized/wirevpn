@@ -271,8 +271,6 @@ if [ "$FRESH_INSTALL" = true ]; then
   printf "  ${BOLD}Web UI credentials — save these:${NC}\n"
   printf "    Username: ${CYAN}$AGH_USER${NC}\n"
   printf "    Password: ${CYAN}$AGH_PASS${NC}\n\n"
-  printf "  ${BOLD}Next step — on your Mac, run:${NC}\n\n"
-  printf "  ${CYAN}bash <(curl -fsSL https://raw.githubusercontent.com/linkvectorized/wirevpn/main/adguard_client.sh)${NC}\n\n"
 fi
 printf "  ${BOLD}Web UI (while connected to VPN):${NC}\n"
 printf "  ${CYAN}http://10.0.0.1:3000${NC}\n\n"
