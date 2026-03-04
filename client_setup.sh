@@ -382,8 +382,11 @@ else
 fi
 
 # ── 4. Bring tunnel up immediately (daemon handles future boots; this handles now) ──
+printf "==> Bringing tunnel up now...\n"
 if [ "$PLATFORM" = "macos" ]; then
-  printf "==> Bringing tunnel up now...\n"
+  sudo wg-quick up /etc/wireguard/client.conf 2>/dev/null || true
+  sleep 2
+else
   sudo wg-quick up /etc/wireguard/client.conf 2>/dev/null || true
   sleep 2
 fi
