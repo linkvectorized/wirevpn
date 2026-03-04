@@ -13,6 +13,20 @@ NC=$'\033[0m'
 
 PASS="${GREEN}[✓]${NC}"
 
+# ── Spinner for long-running commands ──────────────────────────────────────────
+_spinner() {
+  local pid=$1
+  local delay=0.08
+  local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+  while kill -0 $pid 2>/dev/null; do
+    for i in $(seq 0 9); do
+      printf "\r%s" "${frames:$i:1}"
+      sleep $delay
+    done
+  done
+  printf "\r"
+}
+
 # ── Intro ─────────────────────────────────────────────────────────────────────
 clear
 printf "${CYAN}"
@@ -50,13 +64,15 @@ printf "   $PASS Server IP: ${CYAN}$SERVER_IP${NC}\n\n"
 # ── Update system ─────────────────────────────────────────────────────────────
 printf "${BOLD}==> Updating system...${NC}\n"
 export DEBIAN_FRONTEND=noninteractive
-apt-get update -qq
-apt-get upgrade -y -o Dpkg::Options::="--force-confnew" -qq
+printf "   "
+apt-get update -qq & _spinner $!
+apt-get upgrade -y -o Dpkg::Options::="--force-confnew" -qq & _spinner $!
 printf "   $PASS System updated\n\n"
 
 # ── Install WireGuard ─────────────────────────────────────────────────────────
 printf "${BOLD}==> Installing WireGuard...${NC}\n"
-apt-get install -y -qq wireguard ufw
+printf "   "
+apt-get install -y -qq wireguard ufw & _spinner $!
 if ! command -v wg &>/dev/null; then
   printf "${RED}WireGuard install failed — wg binary not found. Try: apt-get install wireguard${NC}\n"
   exit 1
@@ -102,7 +118,8 @@ if [ -f /etc/wireguard/server_private.key ]; then
     printf "   ${YELLOW}Server keys already exist — reusing (regenerating would break existing clients)${NC}\n"
   fi
 else
-  wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key
+  printf "   "
+  (wg genkey | tee /etc/wireguard/server_private.key | wg pubkey > /etc/wireguard/server_public.key) & _spinner $!
   chmod 600 /etc/wireguard/server_private.key
   SERVER_PRIVATE=$(cat /etc/wireguard/server_private.key)
   SERVER_PUBLIC=$(cat /etc/wireguard/server_public.key)
@@ -118,7 +135,8 @@ if [ -f /etc/wireguard/client_private.key ]; then
   CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
   printf "   ${YELLOW}Client keys already exist — reusing${NC}\n"
 else
-  wg genkey | tee /etc/wireguard/client_private.key | wg pubkey > /etc/wireguard/client_public.key
+  printf "   "
+  (wg genkey | tee /etc/wireguard/client_private.key | wg pubkey > /etc/wireguard/client_public.key) & _spinner $!
   chmod 600 /etc/wireguard/client_private.key
   CLIENT_PRIVATE=$(cat /etc/wireguard/client_private.key)
   CLIENT_PUBLIC=$(cat /etc/wireguard/client_public.key)
