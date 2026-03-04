@@ -15,6 +15,20 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
+# ── Spinner for long-running commands ──────────────────────────────────────────
+_spinner() {
+  local pid=$1
+  local delay=0.08
+  local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+  while kill -0 $pid 2>/dev/null; do
+    for i in $(seq 0 9); do
+      printf "\r%s" "${frames:$i:1}"
+      sleep $delay
+    done
+  done
+  printf "\r"
+}
+
 CONF_DEST="/etc/wireguard/client.conf"
 
 # ── Find client.conf ──────────────────────────────────────────────────────────
@@ -155,7 +169,8 @@ printf "${BOLD}── Starting setup ──${NC}\n\n"
 if [ "$PLATFORM" = "macos" ]; then
   if ! command -v brew &>/dev/null; then
     echo "==> Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    printf "   "
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" & _spinner $!
   fi
   eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
   # Fallback if brew isn't in PATH yet after install
@@ -165,7 +180,8 @@ if [ "$PLATFORM" = "macos" ]; then
 
   if ! command -v wg &>/dev/null || ! command -v wg-quick &>/dev/null; then
     echo "==> Installing WireGuard tools..."
-    brew install wireguard-tools
+    printf "   "
+    brew install wireguard-tools & _spinner $!
     eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
     if ! command -v wg &>/dev/null; then
       printf "${RED}WireGuard tools install failed. Try manually: brew install wireguard-tools${NC}\n"
@@ -200,14 +216,17 @@ else
     echo "==> Installing WireGuard..."
     case "$PKG_MGR" in
       apt)
-        sudo apt-get update -qq
-        sudo apt-get install -y -qq wireguard
+        printf "   "
+        sudo apt-get update -qq & _spinner $!
+        sudo apt-get install -y -qq wireguard & _spinner $!
         ;;
       dnf)
-        sudo dnf install -y wireguard-tools
+        printf "   "
+        sudo dnf install -y wireguard-tools & _spinner $!
         ;;
       pacman)
-        sudo pacman -Sy --noconfirm wireguard-tools
+        printf "   "
+        sudo pacman -Sy --noconfirm wireguard-tools & _spinner $!
         ;;
     esac
     printf "   $PASS WireGuard installed\n"

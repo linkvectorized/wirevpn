@@ -14,6 +14,20 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
+# ── Spinner for long-running commands ──────────────────────────────────────────
+_spinner() {
+  local pid=$1
+  local delay=0.08
+  local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+  while kill -0 $pid 2>/dev/null; do
+    for i in $(seq 0 9); do
+      printf "\r%s" "${frames:$i:1}"
+      sleep $delay
+    done
+  done
+  printf "\r"
+}
+
 AGH_DIR="/opt/AdGuardHome"
 AGH_BIN="$AGH_DIR/AdGuardHome"
 AGH_CONF="$AGH_DIR/AdGuardHome.yaml"
@@ -109,7 +123,9 @@ fi
 echo "==> Downloading AdGuard Home (linux_$AGH_ARCH)..."
 TMP_DIR=$(mktemp -d)
 AGH_URL="https://static.adguard.com/adguardhome/release/AdGuardHome_linux_${AGH_ARCH}.tar.gz"
-if ! curl -fsSL --max-time 120 "$AGH_URL" -o "$TMP_DIR/agh.tar.gz"; then
+printf "   "
+curl -fsSL --max-time 120 "$AGH_URL" -o "$TMP_DIR/agh.tar.gz" & _spinner $!
+if [ ! -f "$TMP_DIR/agh.tar.gz" ]; then
   printf "${RED}Download failed. Check your internet connection.${NC}\n"
   rm -rf "$TMP_DIR"
   exit 1

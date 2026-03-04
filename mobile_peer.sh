@@ -22,6 +22,20 @@ NC=$'\033[0m'
 
 PASS="${GREEN}[✓]${NC}"
 
+# ── Spinner for long-running commands ──────────────────────────────────────────
+_spinner() {
+  local pid=$1
+  local delay=0.08
+  local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+  while kill -0 $pid 2>/dev/null; do
+    for i in $(seq 0 9); do
+      printf "\r%s" "${frames:$i:1}"
+      sleep $delay
+    done
+  done
+  printf "\r"
+}
+
 OS=$(uname -s)
 
 # ── Find WireVPN directory ─────────────────────────────────────────────────────
@@ -162,14 +176,15 @@ ENDSSH
   printf "\n==> Generating QR code...\n\n"
   if ! command -v qrencode &>/dev/null; then
     printf "   Installing qrencode...\n"
+    printf "   "
     if [ "$OS" = "Darwin" ]; then
-      brew install qrencode -q
+      brew install qrencode -q & _spinner $!
     elif command -v apt-get &>/dev/null; then
-      sudo apt-get install -y -qq qrencode
+      sudo apt-get install -y -qq qrencode & _spinner $!
     elif command -v dnf &>/dev/null; then
-      sudo dnf install -y qrencode
+      sudo dnf install -y qrencode & _spinner $!
     elif command -v pacman &>/dev/null; then
-      sudo pacman -Sy --noconfirm qrencode
+      sudo pacman -Sy --noconfirm qrencode & _spinner $!
     else
       printf "${RED}qrencode not found and no supported package manager detected.${NC}\n"
       printf "${YELLOW}Install qrencode manually, then re-run — or import $WIREVPN_DIR/${PEER_NAME}.conf manually in the WireGuard app.${NC}\n"
