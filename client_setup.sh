@@ -26,7 +26,7 @@ _spinner() {
       sleep $delay
     done
   done
-  printf "\r"
+  printf "\r "
 }
 
 CONF_DEST="/etc/wireguard/client.conf"
