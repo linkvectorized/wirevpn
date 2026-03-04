@@ -25,7 +25,7 @@ _spinner() {
       sleep $delay
     done
   done
-  printf "\r "
+  printf "\r"
 }
 
 AGH_DIR="/opt/AdGuardHome"
