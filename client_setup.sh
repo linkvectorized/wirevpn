@@ -20,7 +20,7 @@ _spinner() {
   local pid=$1
   local delay=0.08
   local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-  while kill -0 $pid 2>/dev/null; do
+  while kill -0 "$pid" 2>/dev/null; do
     for i in $(seq 0 9); do
       printf "\r%s" "${frames:$i:1}"
       sleep $delay
