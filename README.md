@@ -485,6 +485,36 @@ Your internet comes back immediately. Reconnect once your new VPS is ready.
 
 ---
 
+### DNS broken after reboot — all requests hanging (macOS)
+
+**Symptom:** After a reboot, `curl`, `dig`, and HTTPS all hang. `ping 8.8.8.8` works fine. `dig @8.8.8.8 google.com` works but `dig google.com` hangs.
+
+**Cause:** `wg-quick` sets system DNS to `10.0.0.1` (through the tunnel) on every network interface. If the Mac rebooted without the tunnel coming down cleanly, that DNS setting persists — pointing at `10.0.0.1` which is unreachable without the tunnel active.
+
+**Quick fix:**
+```bash
+# Reset DNS on all interfaces back to DHCP
+sudo networksetup -setdnsservers Wi-Fi empty
+sudo networksetup -setdnsservers Ethernet empty
+sudo networksetup -setdnsservers "Thunderbolt Bridge" empty
+
+# Flush the cache
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+```
+
+If you're not sure which interfaces you have:
+```bash
+networksetup -listallnetworkservices
+# run the -setdnsservers empty command for each one listed
+```
+
+DNS comes back immediately. Your tunnel is still broken (that's expected — the VPN wasn't connected), but your machine is now fully functional without it.
+
+**This is now handled automatically** — the boot daemon detects stale VPN DNS at startup and clears it before bringing the tunnel up. You should only need the manual fix above if you're on an older install (before this was added).
+
+---
+
 ### "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED"
 
 Your VPS provider reused the same IP for a new server. Safe to fix:
