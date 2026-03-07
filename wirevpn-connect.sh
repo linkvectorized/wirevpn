@@ -19,27 +19,30 @@ if [ -z "$WG_QUICK" ]; then
     exit 1
 fi
 
-# ── Detect active network interface ──
-detect_iface() {
-    for svc in "Wi-Fi" "Ethernet" "USB 10/100/1000 LAN"; do
-        if networksetup -getinfo "$svc" 2>/dev/null | grep -q "^IP address:"; then
-            echo "$svc"
-            return
+# ── Reset VPN DNS on all network interfaces ──
+# wg-quick sets DNS on every interface, so cleanup must do the same
+clear_vpn_dns_all() {
+    local flushed=0
+    while IFS= read -r svc; do
+        [[ "$svc" == An* ]] && continue  # skip header line
+        svc="${svc#\*}"                  # strip leading asterisk from disabled services
+        svc="${svc# }"
+        local dns
+        dns=$(networksetup -getdnsservers "$svc" 2>/dev/null | tr '\n' ' ')
+        if echo "$dns" | grep -qF "$VPN_DNS"; then
+            networksetup -setdnsservers "$svc" empty 2>/dev/null
+            log "Cleared stale VPN DNS on: $svc"
+            flushed=1
         fi
-    done
-    echo "Wi-Fi"
+    done < <(networksetup -listallnetworkservices 2>/dev/null)
+    if [ "$flushed" -eq 1 ]; then
+        dscacheutil -flushcache 2>/dev/null
+        killall -HUP mDNSResponder 2>/dev/null
+    fi
 }
 
 # ── Phase 1: Clean stale VPN DNS from previous crash/hard reboot ──
-ACTIVE_IFACE=$(detect_iface)
-CURRENT_DNS=$(networksetup -getdnsservers "$ACTIVE_IFACE" 2>/dev/null | tr '\n' ' ')
-
-if echo "$CURRENT_DNS" | grep -qF "$VPN_DNS"; then
-    log "Stale VPN DNS detected ($CURRENT_DNS on $ACTIVE_IFACE) — resetting to DHCP"
-    networksetup -setdnsservers "$ACTIVE_IFACE" empty
-    dscacheutil -flushcache 2>/dev/null
-    killall -HUP mDNSResponder 2>/dev/null
-fi
+clear_vpn_dns_all
 
 # ── Phase 2: Wait for network (up to 30s) ──
 MAX=30; COUNT=0
@@ -56,12 +59,8 @@ fi
 cleanup() {
     log "Shutdown signal received — tearing down tunnel"
     $WG_QUICK down "$CONF" >> "$LOG" 2>&1
-    # Belt-and-suspenders: verify DNS was restored
-    ACTIVE_IFACE=$(detect_iface)
-    if networksetup -getdnsservers "$ACTIVE_IFACE" 2>/dev/null | grep -qF "$VPN_DNS"; then
-        networksetup -setdnsservers "$ACTIVE_IFACE" empty
-        log "Force-cleared stale DNS after tunnel teardown"
-    fi
+    # Belt-and-suspenders: wg-quick down restores DNS, but sweep all interfaces anyway
+    clear_vpn_dns_all
     exit 0
 }
 trap cleanup SIGTERM SIGINT
@@ -69,8 +68,8 @@ trap cleanup SIGTERM SIGINT
 # ── Phase 3: Bring tunnel up ──
 log "Network ready — starting WireGuard"
 if ! $WG_QUICK up "$CONF" >> "$LOG" 2>&1; then
-    log "wg-quick up failed — ensuring DNS is clean"
-    networksetup -setdnsservers "$(detect_iface)" empty
+    log "wg-quick up failed — sweeping DNS on all interfaces"
+    clear_vpn_dns_all
     exit 1
 fi
 
@@ -86,11 +85,9 @@ done
 
 if [ "$DNS_OK" = false ]; then
     log "DNS health check FAILED — ${VPN_DNS} not responding after 3 attempts"
-    log "Tearing down tunnel to restore system DNS"
+    log "Tearing down tunnel and sweeping DNS on all interfaces"
     $WG_QUICK down "$CONF" >> "$LOG" 2>&1
-    networksetup -setdnsservers "$(detect_iface)" empty
-    dscacheutil -flushcache 2>/dev/null
-    killall -HUP mDNSResponder 2>/dev/null
+    clear_vpn_dns_all
     log "DNS restored to DHCP — network functional without VPN"
     exit 1
 fi
