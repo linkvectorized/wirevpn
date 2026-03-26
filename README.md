@@ -99,6 +99,7 @@ server_setup.sh     — run on your VPS (Ubuntu 24.04)
 client_setup.sh     — run on your Mac or Linux machine
 mobile_peer.sh      — add phones/tablets (shows QR code) or remove any peer
 adguard_setup.sh    — install AdGuard Home on your VPS for DNS-level ad blocking
+wirevpn.sh          — the wirevpn CLI (installed to /usr/local/bin/wirevpn by client_setup.sh)
 ```
 
 ### Persistence — how it works
@@ -110,6 +111,18 @@ The `client_setup.sh` script automatically installs a boot daemon so your VPN re
 **Linux** — enables a systemd service (`wg-quick@client`) with `network-online.target` so WireGuard waits for network before starting.
 
 Without this, your VPN dies on restart and you're exposed until you manually reconnect.
+
+### wirevpn CLI
+
+`client_setup.sh` also installs a `wirevpn` command at `/usr/local/bin/wirevpn`:
+
+```bash
+sudo wirevpn up       # bring tunnel up with DNS verification
+sudo wirevpn down     # tear tunnel down cleanly — stops the daemon, restores DNS
+sudo wirevpn status   # show tunnel state, exit IP, and per-interface DNS
+```
+
+Always use `sudo wirevpn down` instead of raw `wg-quick down`. The raw command tears down the tunnel but leaves DNS pointing at your VPS (`10.0.0.1`), which kills all internet until you manually reset it. `wirevpn down` handles the full cleanup in one step.
 
 ---
 
@@ -131,7 +144,7 @@ Windows  ✗   not supported
 
 ## Setup
 
-> **⚠️ Before destroying or rebuilding your VPS, always run `sudo wg-quick down /etc/wireguard/client.conf` on every connected device first. Nuking the VPS while the tunnel is active kills internet on all clients immediately.**
+> **⚠️ Before destroying or rebuilding your VPS, always run `sudo wirevpn down` on every connected device first. Nuking the VPS while the tunnel is active kills internet on all clients immediately.**
 
 ### 1. Spin up a VPS
 Get a cheap Ubuntu 24.04 VPS anywhere. Vultr VC2-1C-1GB or similar is plenty.
@@ -305,16 +318,13 @@ After this, no one gets in without your private key — even if they know the ro
 
 ```bash
 # Connect
-sudo wg-quick up /etc/wireguard/client.conf
+sudo wirevpn up
 
-# Disconnect
-sudo wg-quick down /etc/wireguard/client.conf
+# Disconnect (restores DNS cleanly — do not use wg-quick down directly)
+sudo wirevpn down
 
-# Check status
-sudo wg show
-
-# Check your exit IP
-curl ifconfig.me
+# Status — tunnel state, exit IP, DNS per interface
+sudo wirevpn status
 
 # View logs (macOS)
 cat /var/log/wirevpn.log
@@ -432,8 +442,8 @@ If you ever end up with a new server public key (e.g. after restoring from a bac
 # Update client.conf on VPS (already done by server_setup.sh)
 scp root@YOUR_SERVER_IP:/etc/wireguard/client.conf ~/Desktop/WireVPN/client.conf
 sudo cp ~/Desktop/WireVPN/client.conf /etc/wireguard/client.conf
-sudo wg-quick down /etc/wireguard/client.conf 2>/dev/null || true
-sudo wg-quick up /etc/wireguard/client.conf
+sudo wirevpn down 2>/dev/null || true
+sudo wirevpn up
 ```
 
 ---
@@ -464,21 +474,16 @@ systemctl restart AdGuardHome
 
 **Disconnect first, then destroy:**
 ```bash
-sudo wg-quick down /etc/wireguard/client.conf
+sudo wirevpn down
 ```
 
 **If you already destroyed it and are stuck:**
 ```bash
-# Try this first
-sudo wg-quick down /etc/wireguard/client.conf
+# Try this first — tears down the tunnel, stops the daemon, restores DNS
+sudo wirevpn down
 
 # If that hangs or errors, kill the process directly
 sudo killall wireguard-go
-```
-
-**Also unload the boot daemon** or it will try to reconnect on next startup:
-```bash
-sudo launchctl unload /Library/LaunchDaemons/com.wirevpn.startup.plist
 ```
 
 Your internet comes back immediately. Reconnect once your new VPS is ready.
