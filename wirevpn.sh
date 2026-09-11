@@ -4,7 +4,6 @@
 # Usage: sudo wirevpn [up|down|status]
 
 CONF="/etc/wireguard/client.conf"
-VPN_DNS="10.0.0.1"
 PLIST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
 
 GREEN=$'\033[0;32m'
@@ -28,6 +27,14 @@ for p in /opt/homebrew/bin/wg-quick /usr/local/bin/wg-quick; do
 done
 [ -z "$WG_QUICK" ] && WG_QUICK="$(command -v wg-quick 2>/dev/null || true)"
 
+# ── Parse DNS servers from the client config — never hardcode ──
+# Configs vary: 10.0.0.1 with AdGuard, 1.1.1.1 without. Reads the first
+# uncommented "DNS =" line (comma-separated supported). Falls back to 10.0.0.1
+# only when the config names no DNS server (legacy configs).
+VPN_DNS_SERVERS=$(grep -E '^[[:space:]]*DNS[[:space:]]*=' "$CONF" 2>/dev/null | head -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*#.*$//' | tr ',' ' ' | tr -s ' ')
+VPN_DNS_SERVERS=${VPN_DNS_SERVERS:-10.0.0.1}
+VPN_DNS=$(echo "$VPN_DNS_SERVERS" | awk '{print $1}')
+
 # ── DNS sweep (macOS only) ─────────────────────────────────────────────────────
 clear_vpn_dns_all() {
     local flushed=0
@@ -35,13 +42,16 @@ clear_vpn_dns_all() {
         [[ "$svc" == An* ]] && continue
         svc="${svc#\*}"
         svc="${svc# }"
-        local dns
+        local dns server
         dns=$(networksetup -getdnsservers "$svc" 2>/dev/null | tr '\n' ' ')
-        if echo "$dns" | grep -qF "$VPN_DNS"; then
-            networksetup -setdnsservers "$svc" empty 2>/dev/null
-            printf "   $PASS DNS cleared on: %s\n" "$svc"
-            flushed=1
-        fi
+        for server in $VPN_DNS_SERVERS; do
+            if echo "$dns" | grep -qF "$server"; then
+                networksetup -setdnsservers "$svc" empty 2>/dev/null
+                printf "   $PASS DNS cleared (%s) on: %s\n" "$server" "$svc"
+                flushed=1
+                break
+            fi
+        done
     done < <(networksetup -listallnetworkservices 2>/dev/null)
     if [ "$flushed" -eq 1 ]; then
         dscacheutil -flushcache 2>/dev/null

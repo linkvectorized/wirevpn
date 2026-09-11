@@ -317,11 +317,21 @@ if [ "$PLATFORM" = "macos" ]; then
   sudo tee /usr/local/bin/wirevpn-connect.sh > /dev/null << 'EOFSCRIPT'
 #!/bin/bash
 # WireVPN boot connector — brings up tunnel, verifies DNS, stays resident for clean shutdown
+# Installed to /usr/local/bin/wirevpn-connect.sh by client_setup.sh
+# Run by LaunchDaemon com.wirevpn.startup at boot
+
 LOG=/var/log/wirevpn.log
 CONF=/etc/wireguard/client.conf
-VPN_DNS="10.0.0.1"
 
 log() { echo "$(date): $1" >> "$LOG"; }
+
+# ── Parse DNS servers from the client config — never hardcode ──
+# Configs vary: 10.0.0.1 with AdGuard, 1.1.1.1 without. Reads the first
+# uncommented "DNS =" line (comma-separated supported). Falls back to 10.0.0.1
+# only when the config names no DNS server (legacy configs).
+VPN_DNS_SERVERS=$(grep -E '^[[:space:]]*DNS[[:space:]]*=' "$CONF" 2>/dev/null | head -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*#.*$//' | tr ',' ' ' | tr -s ' ')
+VPN_DNS_SERVERS=${VPN_DNS_SERVERS:-10.0.0.1}
+VPN_DNS=$(echo "$VPN_DNS_SERVERS" | awk '{print $1}')
 
 # ── Find wg-quick (PATH may be limited under launchd) ──
 WG_QUICK=""
@@ -341,13 +351,16 @@ clear_vpn_dns_all() {
         [[ "$svc" == An* ]] && continue  # skip header line
         svc="${svc#\*}"                  # strip leading asterisk from disabled services
         svc="${svc# }"
-        local dns
+        local dns server
         dns=$(networksetup -getdnsservers "$svc" 2>/dev/null | tr '\n' ' ')
-        if echo "$dns" | grep -qF "$VPN_DNS"; then
-            networksetup -setdnsservers "$svc" empty 2>/dev/null
-            log "Cleared stale VPN DNS on: $svc"
-            flushed=1
-        fi
+        for server in $VPN_DNS_SERVERS; do
+            if echo "$dns" | grep -qF "$server"; then
+                networksetup -setdnsservers "$svc" empty 2>/dev/null
+                log "Cleared stale VPN DNS ($server) on: $svc"
+                flushed=1
+                break
+            fi
+        done
     done < <(networksetup -listallnetworkservices 2>/dev/null)
     if [ "$flushed" -eq 1 ]; then
         dscacheutil -flushcache 2>/dev/null
@@ -467,10 +480,10 @@ sudo mkdir -p /usr/local/bin
 sudo tee /usr/local/bin/wirevpn > /dev/null << 'EOFWIREVPN'
 #!/bin/bash
 # wirevpn — manage your WireGuard VPN tunnel
+# Installed to /usr/local/bin/wirevpn by client_setup.sh
 # Usage: sudo wirevpn [up|down|status]
 
 CONF="/etc/wireguard/client.conf"
-VPN_DNS="10.0.0.1"
 PLIST="/Library/LaunchDaemons/com.wirevpn.startup.plist"
 
 GREEN=$'\033[0;32m'
@@ -483,28 +496,42 @@ NC=$'\033[0m'
 PASS="${GREEN}[✓]${NC}"
 FAIL="${RED}[✗]${NC}"
 
+# ── Detect OS ──────────────────────────────────────────────────────────────────
 OS=$(uname -s)
 [ "$OS" = "Darwin" ] && PLATFORM="macos" || PLATFORM="linux"
 
+# ── Find wg-quick ──────────────────────────────────────────────────────────────
 WG_QUICK=""
 for p in /opt/homebrew/bin/wg-quick /usr/local/bin/wg-quick; do
     [ -x "$p" ] && { WG_QUICK="$p"; break; }
 done
 [ -z "$WG_QUICK" ] && WG_QUICK="$(command -v wg-quick 2>/dev/null || true)"
 
+# ── Parse DNS servers from the client config — never hardcode ──
+# Configs vary: 10.0.0.1 with AdGuard, 1.1.1.1 without. Reads the first
+# uncommented "DNS =" line (comma-separated supported). Falls back to 10.0.0.1
+# only when the config names no DNS server (legacy configs).
+VPN_DNS_SERVERS=$(grep -E '^[[:space:]]*DNS[[:space:]]*=' "$CONF" 2>/dev/null | head -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*#.*$//' | tr ',' ' ' | tr -s ' ')
+VPN_DNS_SERVERS=${VPN_DNS_SERVERS:-10.0.0.1}
+VPN_DNS=$(echo "$VPN_DNS_SERVERS" | awk '{print $1}')
+
+# ── DNS sweep (macOS only) ─────────────────────────────────────────────────────
 clear_vpn_dns_all() {
     local flushed=0
     while IFS= read -r svc; do
         [[ "$svc" == An* ]] && continue
         svc="${svc#\*}"
         svc="${svc# }"
-        local dns
+        local dns server
         dns=$(networksetup -getdnsservers "$svc" 2>/dev/null | tr '\n' ' ')
-        if echo "$dns" | grep -qF "$VPN_DNS"; then
-            networksetup -setdnsservers "$svc" empty 2>/dev/null
-            printf "   $PASS DNS cleared on: %s\n" "$svc"
-            flushed=1
-        fi
+        for server in $VPN_DNS_SERVERS; do
+            if echo "$dns" | grep -qF "$server"; then
+                networksetup -setdnsservers "$svc" empty 2>/dev/null
+                printf "   $PASS DNS cleared (%s) on: %s\n" "$server" "$svc"
+                flushed=1
+                break
+            fi
+        done
     done < <(networksetup -listallnetworkservices 2>/dev/null)
     if [ "$flushed" -eq 1 ]; then
         dscacheutil -flushcache 2>/dev/null
@@ -512,6 +539,7 @@ clear_vpn_dns_all() {
     fi
 }
 
+# ── tunnel_up ──────────────────────────────────────────────────────────────────
 cmd_up() {
     if sudo wg show 2>/dev/null | grep -q "interface"; then
         printf "${YELLOW}Tunnel is already up. Run 'sudo wirevpn status' to check.${NC}\n"
@@ -559,18 +587,23 @@ cmd_up() {
     printf "$PASS Tunnel UP — exit IP: ${CYAN}%s${NC}\n" "$MY_IP"
 }
 
+# ── tunnel_down ────────────────────────────────────────────────────────────────
 cmd_down() {
     if [ "$PLATFORM" = "macos" ]; then
+        # If the LaunchDaemon is loaded, unload it — sends SIGTERM to wirevpn-connect.sh
+        # which fires its cleanup trap: wg-quick down + clear_vpn_dns_all
         if sudo launchctl list 2>/dev/null | grep -q "com.wirevpn.startup"; then
             printf "${BOLD}Stopping daemon...${NC}\n"
             sudo launchctl unload "$PLIST" 2>/dev/null
-            sleep 2
+            sleep 2  # give the trap time to run
         fi
 
+        # Belt and suspenders: if tunnel is still up, bring it down
         if [ -n "$WG_QUICK" ] && sudo wg show 2>/dev/null | grep -q "interface"; then
             sudo "$WG_QUICK" down "$CONF" 2>/dev/null
         fi
 
+        # Always sweep DNS — don't trust wg-quick to have done it cleanly
         clear_vpn_dns_all
     else
         if ! sudo systemctl stop wg-quick@client; then
@@ -582,6 +615,7 @@ cmd_down() {
     printf "$PASS Tunnel down. DNS restored.\n"
 }
 
+# ── status ─────────────────────────────────────────────────────────────────────
 cmd_status() {
     printf "\n${BOLD}── Tunnel ──${NC}\n"
     if sudo wg show 2>/dev/null | grep -q "interface"; then
@@ -609,6 +643,7 @@ cmd_status() {
     printf "\n"
 }
 
+# ── dispatch ───────────────────────────────────────────────────────────────────
 case "${1:-}" in
     up)     cmd_up ;;
     down)   cmd_down ;;

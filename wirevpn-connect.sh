@@ -5,9 +5,16 @@
 
 LOG=/var/log/wirevpn.log
 CONF=/etc/wireguard/client.conf
-VPN_DNS="10.0.0.1"
 
 log() { echo "$(date): $1" >> "$LOG"; }
+
+# ── Parse DNS servers from the client config — never hardcode ──
+# Configs vary: 10.0.0.1 with AdGuard, 1.1.1.1 without. Reads the first
+# uncommented "DNS =" line (comma-separated supported). Falls back to 10.0.0.1
+# only when the config names no DNS server (legacy configs).
+VPN_DNS_SERVERS=$(grep -E '^[[:space:]]*DNS[[:space:]]*=' "$CONF" 2>/dev/null | head -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*#.*$//' | tr ',' ' ' | tr -s ' ')
+VPN_DNS_SERVERS=${VPN_DNS_SERVERS:-10.0.0.1}
+VPN_DNS=$(echo "$VPN_DNS_SERVERS" | awk '{print $1}')
 
 # ── Find wg-quick (PATH may be limited under launchd) ──
 WG_QUICK=""
@@ -27,13 +34,16 @@ clear_vpn_dns_all() {
         [[ "$svc" == An* ]] && continue  # skip header line
         svc="${svc#\*}"                  # strip leading asterisk from disabled services
         svc="${svc# }"
-        local dns
+        local dns server
         dns=$(networksetup -getdnsservers "$svc" 2>/dev/null | tr '\n' ' ')
-        if echo "$dns" | grep -qF "$VPN_DNS"; then
-            networksetup -setdnsservers "$svc" empty 2>/dev/null
-            log "Cleared stale VPN DNS on: $svc"
-            flushed=1
-        fi
+        for server in $VPN_DNS_SERVERS; do
+            if echo "$dns" | grep -qF "$server"; then
+                networksetup -setdnsservers "$svc" empty 2>/dev/null
+                log "Cleared stale VPN DNS ($server) on: $svc"
+                flushed=1
+                break
+            fi
+        done
     done < <(networksetup -listallnetworkservices 2>/dev/null)
     if [ "$flushed" -eq 1 ]; then
         dscacheutil -flushcache 2>/dev/null
