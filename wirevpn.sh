@@ -59,6 +59,63 @@ clear_vpn_dns_all() {
     fi
 }
 
+# ── IPv6 leak protection (fail-closed) ──
+# AllowedIPs = 0.0.0.0/0 covers IPv4 only — without this, IPv6 traffic bypasses
+# the tunnel in cleartext. Disable v6 while the tunnel is up; restore on
+# teardown. macOS state persists across reboots (/etc/wireguard); Linux state
+# lives in /run and auto-heals on reboot (sysctl default is v6 enabled).
+if [ "$PLATFORM" = "macos" ]; then
+    V6_STATE="/etc/wireguard/.wirevpn_v6.state"
+else
+    V6_STATE="/run/wirevpn_v6.state"
+fi
+
+disable_ipv6_all() {
+    if [ "$PLATFORM" = "macos" ]; then
+        : > "$V6_STATE"
+        local svc
+        while IFS= read -r svc; do
+            [[ "$svc" == An* ]] && continue
+            svc="${svc#\*}"
+            svc="${svc# }"
+            [ -z "$svc" ] && continue
+            if ! networksetup -getinfo "$svc" 2>/dev/null | grep -q "IPv6: Off"; then
+                if networksetup -setv6off "$svc" 2>/dev/null; then
+                    echo "$svc" >> "$V6_STATE"
+                    printf "   $PASS IPv6 disabled on: %s (leak protection)\n" "$svc"
+                fi
+            fi
+        done < <(networksetup -listallnetworkservices 2>/dev/null)
+        [ -s "$V6_STATE" ] || rm -f "$V6_STATE"
+    else
+        cat /proc/sys/net/ipv6/conf/all/disable_ipv6 > "$V6_STATE" 2>/dev/null || true
+        sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1
+        sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1
+        printf "   $PASS IPv6 disabled (leak protection)\n"
+    fi
+}
+
+restore_ipv6_all() {
+    if [ "$PLATFORM" = "macos" ]; then
+        [ -f "$V6_STATE" ] || return 0
+        local svc
+        while IFS= read -r svc; do
+            [ -z "$svc" ] && continue
+            if networksetup -setv6automatic "$svc" 2>/dev/null; then
+                printf "   $PASS IPv6 restored on: %s\n" "$svc"
+            fi
+        done < "$V6_STATE"
+        rm -f "$V6_STATE"
+    else
+        [ -f "$V6_STATE" ] || return 0
+        local prev
+        prev=$(cat "$V6_STATE" 2>/dev/null || echo 0)
+        sysctl -w "net.ipv6.conf.all.disable_ipv6=${prev:-0}" >/dev/null 2>&1
+        sysctl -w "net.ipv6.conf.default.disable_ipv6=${prev:-0}" >/dev/null 2>&1
+        rm -f "$V6_STATE"
+    fi
+}
+
 # ── tunnel_up ──────────────────────────────────────────────────────────────────
 cmd_up() {
     if sudo wg show 2>/dev/null | grep -q "interface"; then
@@ -74,8 +131,11 @@ cmd_up() {
     printf "${BOLD}Bringing tunnel up...${NC}\n"
 
     if [ "$PLATFORM" = "macos" ]; then
+        # Fail-closed: kill IPv6 before the tunnel exists so nothing leaks in the gap
+        disable_ipv6_all
         if ! sudo "$WG_QUICK" up "$CONF" 2>&1; then
             printf "$FAIL Failed to bring tunnel up.\n"
+            restore_ipv6_all
             exit 1
         fi
 
@@ -93,11 +153,14 @@ cmd_up() {
             printf "$FAIL DNS verification failed — tearing back down.\n"
             sudo "$WG_QUICK" down "$CONF" 2>/dev/null
             clear_vpn_dns_all
+            restore_ipv6_all
             exit 1
         fi
     else
+        disable_ipv6_all
         if ! sudo systemctl start wg-quick@client; then
             printf "$FAIL Failed to start WireGuard.\n"
+            restore_ipv6_all
             exit 1
         fi
         sleep 2
@@ -125,11 +188,15 @@ cmd_down() {
 
         # Always sweep DNS — don't trust wg-quick to have done it cleanly
         clear_vpn_dns_all
+
+        # Restore IPv6 disabled by leak protection
+        restore_ipv6_all
     else
         if ! sudo systemctl stop wg-quick@client; then
             printf "$FAIL Failed to stop WireGuard.\n"
             exit 1
         fi
+        restore_ipv6_all
     fi
 
     printf "$PASS Tunnel down. DNS restored.\n"

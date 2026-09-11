@@ -52,6 +52,7 @@ This is a complete managed system:
 - **AdGuard fully automated** — deployed and configured via REST API with no web UI wizard, no manual steps.
 - **Peer management** — add or remove devices live with no WireGuard restart. QR code printed in terminal. Access revoked instantly.
 - **Boot-safe** — network-wait wrapper ensures the VPN doesn't race with startup on macOS or Linux.
+- **IPv6 leak protection** — IPv6 is disabled on all interfaces while the tunnel is up (fail-closed), restored on teardown. No v6 traffic escapes in cleartext.
 - **Fault-tolerant** — SSH pre-flight, IP collision prevention, key mismatch detection, architecture-aware binary selection (amd64/arm64/armv7).
 
 The closest alternative is [Algo VPN](https://github.com/trailofbits/algo) — 10,000+ lines of Ansible/Python requiring a full toolchain install. This is ~1,400 lines of bash that runs on any Mac or Linux machine with a one-liner.
@@ -111,6 +112,20 @@ The `client_setup.sh` script automatically installs a boot daemon so your VPN re
 **Linux** — enables a systemd service (`wg-quick@client`) with `network-online.target` so WireGuard waits for network before starting.
 
 Without this, your VPN dies on restart and you're exposed until you manually reconnect.
+
+### IPv6 leak protection
+
+`AllowedIPs = 0.0.0.0/0` routes IPv4 only. On any IPv6-capable network, v6 traffic would bypass the tunnel in cleartext — a silent leak most setups never notice.
+
+WireVPN fails closed instead: while the tunnel is up, IPv6 is disabled on every network service (`networksetup -setv6off` on macOS, `sysctl net.ipv6.conf.all.disable_ipv6=1` on Linux). It's restored automatically on `wirevpn down` or shutdown, and the boot connector heals stale state at startup, so a crash or hard power loss can't leave IPv6 disabled.
+
+Verify any time with:
+
+```bash
+networksetup -getinfo Wi-Fi | grep IPv6   # expect "IPv6: Off" while tunneled
+```
+
+Note: v6-only destinations (rare) are unreachable while the VPN is up — that's the point. Full v6 tunneling may come later if your VPS supports it.
 
 ### wirevpn CLI
 
