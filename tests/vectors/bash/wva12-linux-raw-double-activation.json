@@ -1,0 +1,311 @@
+{
+  "arguments": [],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline performs managed systemctl start and then raw wg-quick up; the synthetic second success records two activations."
+  },
+  "binding_id": "bash-wva12-linux-raw-double-activation",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "clear"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "1"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "-v"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "systemctl",
+        "is-enabled",
+        "wg-quick@client"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "mkdir",
+        "-p",
+        "@CASE@/etc/wireguard"
+      ],
+      "effects": [
+        {
+          "op": "mkdir",
+          "parents": true,
+          "path": "etc/wireguard",
+          "root": "case"
+        }
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "cp",
+        "@CASE@/home/WireVPN/client.conf",
+        "@CASE@/etc/wireguard/client.conf"
+      ],
+      "effects": [
+        {
+          "destination_path": "etc/wireguard/client.conf",
+          "destination_root": "case",
+          "mode": 384,
+          "op": "copy",
+          "source_path": "home/WireVPN/client.conf",
+          "source_root": "case"
+        }
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "chmod",
+        "600",
+        "@CASE@/etc/wireguard/client.conf"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "enable",
+        "systemd-networkd-wait-online.service"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "enable",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "start",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "services.systemd_started",
+          "value": true
+        },
+        {
+          "op": "set",
+          "path": "activation.managed_immediate",
+          "value": true
+        },
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": true
+        },
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "activation.count"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "mkdir",
+        "-p",
+        "@CASE@/usr/local/bin"
+      ],
+      "effects": [
+        {
+          "op": "mkdir",
+          "parents": true,
+          "path": "usr/local/bin",
+          "root": "case"
+        }
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "tee",
+        "@CASE@/usr/local/bin/wirevpn"
+      ],
+      "effects": [
+        {
+          "from_stdin": true,
+          "mode": 493,
+          "op": "write",
+          "path": "usr/local/bin/wirevpn",
+          "root": "case"
+        }
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdin": {
+        "text": "#!@BASH@\n# wirevpn \u2014 manage your WireGuard VPN tunnel\n# Installed to @CASE@/usr/local/bin/wirevpn by client_setup.sh\n# Usage: sudo wirevpn [up|down|status]\n\nCONF=\"@CASE@/etc/wireguard/client.conf\"\nPLIST=\"@CASE@/Library/LaunchDaemons/com.wirevpn.startup.plist\"\n\nGREEN=$'\\033[0;32m'\nRED=$'\\033[0;31m'\nYELLOW=$'\\033[1;33m'\nCYAN=$'\\033[0;36m'\nBOLD=$'\\033[1m'\nNC=$'\\033[0m'\n\nPASS=\"${GREEN}[\u2713]${NC}\"\nFAIL=\"${RED}[\u2717]${NC}\"\n\n# \u2500\u2500 Detect OS \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nOS=$(uname -s)\n[ \"$OS\" = \"Darwin\" ] && PLATFORM=\"macos\" || PLATFORM=\"linux\"\n\n# \u2500\u2500 Find wg-quick \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nWG_QUICK=\"\"\nfor p in @CASE@/opt/homebrew/bin/wg-quick @CASE@/usr/local/bin/wg-quick; do\n    [ -x \"$p\" ] && { WG_QUICK=\"$p\"; break; }\ndone\n[ -z \"$WG_QUICK\" ] && WG_QUICK=\"$(command -v wg-quick 2>/dev/null || true)\"\n\n# \u2500\u2500 Parse DNS servers from the client config \u2014 never hardcode \u2500\u2500\n# Configs vary: 10.0.0.1 with AdGuard, 1.1.1.1 without. Reads the first\n# uncommented \"DNS =\" line (comma-separated supported). Falls back to 10.0.0.1\n# only when the config names no DNS server (legacy configs).\nVPN_DNS_SERVERS=$(grep -E '^[[:space:]]*DNS[[:space:]]*=' \"$CONF\" 2>/dev/null | head -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*#.*$//' | tr ',' ' ' | tr -s ' ')\nVPN_DNS_SERVERS=${VPN_DNS_SERVERS:-10.0.0.1}\nVPN_DNS=$(echo \"$VPN_DNS_SERVERS\" | awk '{print $1}')\n\n# \u2500\u2500 DNS sweep (macOS only) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nclear_vpn_dns_all() {\n    local flushed=0\n    while IFS= read -r svc; do\n        [[ \"$svc\" == An* ]] && continue\n        svc=\"${svc#\\*}\"\n        svc=\"${svc# }\"\n        local dns server\n        dns=$(networksetup -getdnsservers \"$svc\" 2>/dev/null | tr '\\n' ' ')\n        for server in $VPN_DNS_SERVERS; do\n            if echo \"$dns\" | grep -qF \"$server\"; then\n                networksetup -setdnsservers \"$svc\" empty 2>/dev/null\n                printf \"   $PASS DNS cleared (%s) on: %s\\n\" \"$server\" \"$svc\"\n                flushed=1\n                break\n            fi\n        done\n    done < <(networksetup -listallnetworkservices 2>/dev/null)\n    if [ \"$flushed\" -eq 1 ]; then\n        dscacheutil -flushcache 2>/dev/null\n        killall -HUP mDNSResponder 2>/dev/null\n    fi\n}\n\n# \u2500\u2500 IPv6 leak protection (fail-closed) \u2500\u2500\n# AllowedIPs = 0.0.0.0/0 covers IPv4 only \u2014 without this, IPv6 traffic bypasses\n# the tunnel in cleartext. Disable v6 while the tunnel is up; restore on\n# teardown. macOS state persists across reboots (@CASE@/etc/wireguard); Linux state\n# lives in @CASE@/run and auto-heals on reboot (sysctl default is v6 enabled).\nif [ \"$PLATFORM\" = \"macos\" ]; then\n    V6_STATE=\"@CASE@/etc/wireguard/.wirevpn_v6.state\"\nelse\n    V6_STATE=\"@CASE@/run/wirevpn_v6.state\"\nfi\n\ndisable_ipv6_all() {\n    if [ \"$PLATFORM\" = \"macos\" ]; then\n        : > \"$V6_STATE\"\n        local svc\n        while IFS= read -r svc; do\n            [[ \"$svc\" == An* ]] && continue\n            svc=\"${svc#\\*}\"\n            svc=\"${svc# }\"\n            [ -z \"$svc\" ] && continue\n            if ! networksetup -getinfo \"$svc\" 2>/dev/null | grep -q \"IPv6: Off\"; then\n                if networksetup -setv6off \"$svc\" 2>/dev/null; then\n                    echo \"$svc\" >> \"$V6_STATE\"\n                    printf \"   $PASS IPv6 disabled on: %s (leak protection)\\n\" \"$svc\"\n                fi\n            fi\n        done < <(networksetup -listallnetworkservices 2>/dev/null)\n        [ -s \"$V6_STATE\" ] || rm -f \"$V6_STATE\"\n    else\n        cat @CASE@/proc/sys/net/ipv6/conf/all/disable_ipv6 > \"$V6_STATE\" 2>/dev/null || true\n        sysctl -w net.ipv6.conf.all.disable_ipv6=1 >/dev/null 2>&1\n        sysctl -w net.ipv6.conf.default.disable_ipv6=1 >/dev/null 2>&1\n        printf \"   $PASS IPv6 disabled (leak protection)\\n\"\n    fi\n}\n\nrestore_ipv6_all() {\n    if [ \"$PLATFORM\" = \"macos\" ]; then\n        [ -f \"$V6_STATE\" ] || return 0\n        local svc\n        while IFS= read -r svc; do\n            [ -z \"$svc\" ] && continue\n            if networksetup -setv6automatic \"$svc\" 2>/dev/null; then\n                printf \"   $PASS IPv6 restored on: %s\\n\" \"$svc\"\n            fi\n        done < \"$V6_STATE\"\n        rm -f \"$V6_STATE\"\n    else\n        [ -f \"$V6_STATE\" ] || return 0\n        local prev\n        prev=$(cat \"$V6_STATE\" 2>/dev/null || echo 0)\n        sysctl -w \"net.ipv6.conf.all.disable_ipv6=${prev:-0}\" >/dev/null 2>&1\n        sysctl -w \"net.ipv6.conf.default.disable_ipv6=${prev:-0}\" >/dev/null 2>&1\n        rm -f \"$V6_STATE\"\n    fi\n}\n\n# \u2500\u2500 tunnel_up \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\ncmd_up() {\n    if sudo wg show 2>/dev/null | grep -q \"interface\"; then\n        printf \"${YELLOW}Tunnel is already up. Run 'sudo wirevpn status' to check.${NC}\\n\"\n        exit 0\n    fi\n\n    if [ -z \"$WG_QUICK\" ]; then\n        printf \"${RED}wg-quick not found. Is WireGuard installed?${NC}\\n\"\n        exit 1\n    fi\n\n    printf \"${BOLD}Bringing tunnel up...${NC}\\n\"\n\n    if [ \"$PLATFORM\" = \"macos\" ]; then\n        # Fail-closed: kill IPv6 before the tunnel exists so nothing leaks in the gap\n        disable_ipv6_all\n        if ! sudo \"$WG_QUICK\" up \"$CONF\" 2>&1; then\n            printf \"$FAIL Failed to bring tunnel up.\\n\"\n            restore_ipv6_all\n            exit 1\n        fi\n\n        printf \"${BOLD}Verifying DNS...${NC}\\n\"\n        DNS_OK=false\n        for attempt in 1 2 3; do\n            if @CASE@/fakebin/dig +short +time=3 +tries=1 \"@${VPN_DNS}\" google.com 2>/dev/null | grep -qE '^[0-9]+\\.'; then\n                DNS_OK=true\n                break\n            fi\n            sleep 2\n        done\n\n        if [ \"$DNS_OK\" = false ]; then\n            printf \"$FAIL DNS verification failed \u2014 tearing back down.\\n\"\n            sudo \"$WG_QUICK\" down \"$CONF\" 2>/dev/null\n            clear_vpn_dns_all\n            restore_ipv6_all\n            exit 1\n        fi\n    else\n        disable_ipv6_all\n        if ! sudo systemctl start wg-quick@client; then\n            printf \"$FAIL Failed to start WireGuard.\\n\"\n            restore_ipv6_all\n            exit 1\n        fi\n        sleep 2\n    fi\n\n    MY_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || echo \"unknown\")\n    printf \"$PASS Tunnel UP \u2014 exit IP: ${CYAN}%s${NC}\\n\" \"$MY_IP\"\n}\n\n# \u2500\u2500 tunnel_down \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\ncmd_down() {\n    if [ \"$PLATFORM\" = \"macos\" ]; then\n        # If the LaunchDaemon is loaded, unload it \u2014 sends SIGTERM to wirevpn-connect.sh\n        # which fires its cleanup trap: wg-quick down + clear_vpn_dns_all\n        if sudo launchctl list 2>/dev/null | grep -q \"com.wirevpn.startup\"; then\n            printf \"${BOLD}Stopping daemon...${NC}\\n\"\n            sudo launchctl unload \"$PLIST\" 2>/dev/null\n            sleep 2  # give the trap time to run\n        fi\n\n        # Belt and suspenders: if tunnel is still up, bring it down\n        if [ -n \"$WG_QUICK\" ] && sudo wg show 2>/dev/null | grep -q \"interface\"; then\n            sudo \"$WG_QUICK\" down \"$CONF\" 2>/dev/null\n        fi\n\n        # Always sweep DNS \u2014 don't trust wg-quick to have done it cleanly\n        clear_vpn_dns_all\n\n        # Restore IPv6 disabled by leak protection\n        restore_ipv6_all\n    else\n        if ! sudo systemctl stop wg-quick@client; then\n            printf \"$FAIL Failed to stop WireGuard.\\n\"\n            exit 1\n        fi\n        restore_ipv6_all\n    fi\n\n    printf \"$PASS Tunnel down. DNS restored.\\n\"\n}\n\n# \u2500\u2500 status \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\ncmd_status() {\n    printf \"\\n${BOLD}\u2500\u2500 Tunnel \u2500\u2500${NC}\\n\"\n    if sudo wg show 2>/dev/null | grep -q \"interface\"; then\n        printf \"$PASS Status: ${GREEN}UP${NC}\\n\\n\"\n        sudo wg show\n    else\n        printf \"$FAIL Status: ${RED}DOWN${NC}\\n\"\n    fi\n\n    printf \"\\n${BOLD}\u2500\u2500 Exit IP \u2500\u2500${NC}\\n\"\n    MY_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null || echo \"unavailable\")\n    printf \"   %s\\n\" \"$MY_IP\"\n\n    if [ \"$PLATFORM\" = \"macos\" ]; then\n        printf \"\\n${BOLD}\u2500\u2500 DNS \u2500\u2500${NC}\\n\"\n        while IFS= read -r svc; do\n            [[ \"$svc\" == An* ]] && continue\n            svc=\"${svc#\\*}\"\n            svc=\"${svc# }\"\n            dns=$(networksetup -getdnsservers \"$svc\" 2>/dev/null)\n            [[ \"$dns\" == *\"There aren't\"* ]] && continue\n            printf \"   %-20s %s\\n\" \"$svc\" \"$(echo \"$dns\" | tr '\\n' ' ')\"\n        done < <(networksetup -listallnetworkservices 2>/dev/null)\n    fi\n    printf \"\\n\"\n}\n\n# \u2500\u2500 dispatch \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\ncase \"${1:-}\" in\n    up)     cmd_up ;;\n    down)   cmd_down ;;\n    status) cmd_status ;;\n    *)\n        printf \"Usage: sudo wirevpn [up|down|status]\\n\"\n        printf \"\\n\"\n        printf \"  up      Bring the tunnel up and verify DNS\\n\"\n        printf \"  down    Tear the tunnel down cleanly and restore DNS\\n\"\n        printf \"  status  Show tunnel state, exit IP, and DNS servers\\n\\n\"\n        exit 1\n        ;;\nesac\n"
+      },
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "chmod",
+        "755",
+        "@CASE@/usr/local/bin/wirevpn"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg-quick",
+        "up",
+        "@CASE@/etc/wireguard/client.conf"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "activation.raw_attempted",
+          "value": true
+        },
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": true
+        },
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "activation.count"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "2"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "2"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.10\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "7077ec66d6b772abcbdce12e908df92be094a71052286865d40f8da929cae660",
+  "entrypoint": "client_setup.sh",
+  "initial_state": {
+    "activation": {
+      "count": 0,
+      "managed_boot": false,
+      "managed_immediate": false,
+      "raw_attempted": false
+    },
+    "dns": {},
+    "ipv6": {},
+    "packages": {},
+    "peers": {},
+    "services": {
+      "launchd_loaded": false,
+      "systemd_started": false
+    },
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva12-linux-raw-double-activation",
+  "vector_sha256": "cd46a84d311bb033f343e3a18f3d4511bb7a88ea5adfee6fb02de8c6d2f76876"
+}

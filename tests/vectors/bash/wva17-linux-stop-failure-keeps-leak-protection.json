@@ -1,0 +1,65 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline exits 1 immediately and does not restore IPv6, which is the required fail-closed ordering."
+  },
+  "binding_id": "bash-wva17-linux-stop-failure-keeps-leak-protection",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "stop",
+        "wg-quick@client"
+      ],
+      "exit": 1,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.stop_attempts"
+        }
+      ],
+      "stderr": "synthetic service stop failure\n",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "39c4c6fe711167a039614167f9d6f52b7548dc7ff23cce6f8da31346082f3c62",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {
+      "all": 1,
+      "default": 1
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "stop_attempts": 0
+    },
+    "tunnel": {
+      "active": true
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva17-linux-stop-failure-keeps-leak-protection",
+  "vector_sha256": "1a9e294b1e01addfa2190a6d64327ce99153e6f0caafb49c24cf5939f51bb101"
+}

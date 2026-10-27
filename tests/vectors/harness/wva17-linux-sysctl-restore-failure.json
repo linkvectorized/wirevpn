@@ -1,0 +1,66 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The service stops, all=0 restore fails, default=0 restore succeeds, and baseline continuation removes the state file."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": 0,
+      "kind": "state_equals",
+      "path": "ipv6.all"
+    },
+    {
+      "kind": "file_exists",
+      "path": "run/wirevpn_v6.state",
+      "root": "case"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "853fbf33cd242f85dda224ddc06681380a14d0ae1386884b3ba8723f02ead1b7",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-RESTORE"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "A failed all=0 restoration must be visible as a failure rather than discarded state."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-RESTORE"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Retryable state must survive a failed restore."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-LINUX-IPV6-RESTORE",
+  "fixtures": [
+    {
+      "bytes": 469,
+      "path": "wva17/sysctl-restore-failure.fixture",
+      "sha256": "d3269c124103339ffc407668bc0e5b2bbe1e3654f59f738e416262db59f90a28"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-sysctl-restore-failure"
+}

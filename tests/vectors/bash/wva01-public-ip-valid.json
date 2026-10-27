@@ -1,0 +1,89 @@
+{
+  "arguments": [],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline accepts 192.0.2.10 and proceeds to apt-get update, whose synthetic failure produces exit 1."
+  },
+  "binding_id": "bash-wva01-public-ip-valid",
+  "commands": [
+    {
+      "argv": [
+        "clear"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "1"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "network.ip_attempts"
+        }
+      ],
+      "stderr": "",
+      "stdout": "192.0.2.10\n"
+    },
+    {
+      "argv": [
+        "apt-get",
+        "update",
+        "-qq"
+      ],
+      "exit": 1,
+      "state": [
+        {
+          "op": "set",
+          "path": "server.ip_accepted",
+          "value": "192.0.2.10"
+        }
+      ],
+      "stderr": "synthetic later preflight failure\n",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "e5f2ecb0ddc024846567bdcc814870d06edfc473025e354e5f1e760687135346",
+  "entrypoint": "server_setup.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {},
+    "network": {
+      "ip_attempts": 0
+    },
+    "packages": {},
+    "peers": {},
+    "server": {
+      "ip_accepted": false,
+      "out_of_range_rejected": false
+    },
+    "services": {},
+    "tunnel": {},
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva01-public-ip-valid",
+  "vector_sha256": "d6e9c43b3571052474506dfd9403e9e32534d1b02315424f5732f1afd9dbe8c8"
+}

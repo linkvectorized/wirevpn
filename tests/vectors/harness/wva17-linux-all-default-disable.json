@@ -1,0 +1,77 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The synthetic proc all value is 0 and both disable sysctl writes succeed before service start."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    },
+    {
+      "expected": "0\n",
+      "kind": "file_text",
+      "path": "run/wirevpn_v6.state",
+      "root": "case"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "43952bf9d03c91c1db684531b6c37d5d1a01b28099356735da77e791606dcddb",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Managed Linux up disables IPv6 for both all and default."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "The prior all value is persisted for restoration."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "The tunnel starts only after both sysctl writes succeed."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 501,
+      "path": "wva17/up-prior-enabled.fixture",
+      "sha256": "cfaa045d1d6700937fd66683d0a037c68a6f5089e4e5f2e4acd9f3092cfc8a08"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-all-default-disable"
+}

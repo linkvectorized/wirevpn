@@ -1,0 +1,120 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline ignores Wi-Fi restore failure, removes the entire state file, and exits 0, losing retry evidence."
+  },
+  "binding_id": "bash-wva16-ipv6-restore-failure-truthful",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Darwin\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "launchctl",
+        "list"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-listallnetworkservices"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "An asterisk (*) denotes that a network service is disabled.\nWi-Fi\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getdnsservers",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "There aren't any DNS Servers set on Wi-Fi.\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-setv6automatic",
+        "Wi-Fi"
+      ],
+      "exit": 1,
+      "stderr": "synthetic IPv6 restore failure\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-setv6automatic",
+        "Ethernet"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.Ethernet",
+          "value": "automatic"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "427fbfea6d6100c400b77977c490504117570d86fe1aa4e797af5ad46a9cbbd5",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {
+      "cache_flush_attempted": false,
+      "cache_flush_verified": false,
+      "clear_attempted": false,
+      "failure_reported": false,
+      "responder_flush_attempted": false,
+      "safe_rejection": false,
+      "stale_remaining": false,
+      "swept_server": null
+    },
+    "ipv6": {
+      "Ethernet": "off",
+      "Wi-Fi": "off"
+    },
+    "packages": {},
+    "peers": {},
+    "services": {},
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva16-ipv6-restore-failure-truthful",
+  "vector_sha256": "527c5019f54308dfc07960901a20cd286ba9df715c9f2055257ff9e3af09accb"
+}

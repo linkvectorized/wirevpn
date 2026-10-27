@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-16"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Wi-Fi is already IPv6-off before managed up, so no setv6off call or persistent state entry is expected."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": "off",
+      "kind": "state_equals",
+      "path": "ipv6.Wi-Fi"
+    },
+    {
+      "kind": "file_absent",
+      "path": "etc/wireguard/.wirevpn_v6.state",
+      "root": "case"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "8eab7e1c1c3b1b2c916ab20a320dc1eb715543f854f2bde959e31ec98af7716e",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "A service already manually configured IPv6-off remains off."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "No ownership state is fabricated for a service that was already off."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "Preserving prior-off state does not block activation."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva16/prior-off.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva16-ipv6-prior-off-preserved"
+}

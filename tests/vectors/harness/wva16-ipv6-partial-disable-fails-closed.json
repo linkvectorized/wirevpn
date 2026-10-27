@@ -1,0 +1,66 @@
+{
+  "acceptance_ids": [
+    "WVA-16"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Wi-Fi disable succeeds, Ethernet disable fails, and baseline continuation is fully characterized through DNS health."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    },
+    {
+      "expected": "off",
+      "kind": "state_not_equals",
+      "path": "ipv6.Ethernet"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "c95008b0bca000d3e7029f33ec123829bc820ba4aef45d48058089f08061e870",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-FAIL-CLOSED"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "Failure to disable IPv6 on any enumerated service must prevent tunnel activation."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-FAIL-CLOSED"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "A service whose IPv6 disable failed must not be represented as protected."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-IPV6-FAIL-CLOSED",
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva16/partial-disable.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva16-ipv6-partial-disable-fails-closed"
+}

@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-13"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Managed macOS down with one Wi-Fi service and synthetic inline-comment client configuration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": "1.1.1.1",
+      "kind": "state_equals",
+      "path": "dns.swept_server"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.cache_flush_attempted"
+    },
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "7fc6c92ae78f2c8bb2d31d79ca5e5ab300c87ff9542f8fde89ccfce864802afa",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The parsed DNS server for the inline-comment configuration drives stale-DNS cleanup."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "A successful sweep flushes both synthetic macOS DNS caches."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The managed down path leaves no matching stale DNS server."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 399,
+      "path": "wva13/inline-comment.fixture",
+      "sha256": "a9338d86a7a2c9dc0f191534683a9925be4ca9f5cd742659a9c8b72dd73ddbef"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva13-dns-inline-comment"
+}

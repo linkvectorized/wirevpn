@@ -1,0 +1,179 @@
+{
+  "arguments": [
+    "up"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline ignores the Ethernet setv6off failure, activates with only Wi-Fi recorded, and exits 0."
+  },
+  "binding_id": "bash-wva16-ipv6-partial-disable-fails-closed",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Darwin\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-listallnetworkservices"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.enumerations"
+        }
+      ],
+      "stderr": "",
+      "stdout": "An asterisk (*) denotes that a network service is disabled.\nWi-Fi\nEthernet\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getinfo",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "IPv6: Automatic\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-setv6off",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.Wi-Fi",
+          "value": "off"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getinfo",
+        "Ethernet"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "IPv6: Automatic\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-setv6off",
+        "Ethernet"
+      ],
+      "exit": 1,
+      "stderr": "synthetic IPv6 disable failure\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "@CASE@/opt/homebrew/bin/wg-quick",
+        "up",
+        "@CASE@/etc/wireguard/client.conf"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": true
+        },
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "activation.count"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+short",
+        "+time=3",
+        "+tries=1",
+        "@10.0.0.1",
+        "google.com"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.53\n"
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.10\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "8502b980a3920343aa2ca423cb75e64ed99d1c800f71e9156df0506198ca3cf6",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "activation": {
+      "count": 0
+    },
+    "dns": {
+      "cache_flush_attempted": false,
+      "cache_flush_verified": false,
+      "clear_attempted": false,
+      "responder_flush_attempted": false,
+      "safe_rejection": false,
+      "stale_remaining": true,
+      "swept_server": null
+    },
+    "ipv6": {
+      "Ethernet": "automatic",
+      "Wi-Fi": "automatic"
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "enumerations": 0
+    },
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva16-ipv6-partial-disable-fails-closed",
+  "vector_sha256": "c95008b0bca000d3e7029f33ec123829bc820ba4aef45d48058089f08061e870"
+}

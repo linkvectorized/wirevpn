@@ -1,0 +1,54 @@
+{
+  "acceptance_ids": [
+    "WVA-01"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "A valid IPv4 candidate is returned once; the deliberately failing apt preflight stops the case immediately after IP acceptance."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": "192.0.2.10",
+      "kind": "state_equals",
+      "path": "server.ip_accepted"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "network.ip_attempts"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "d6e9c43b3571052474506dfd9403e9e32534d1b02315424f5732f1afd9dbe8c8",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "A syntactically valid public IPv4 candidate is accepted before later setup preflight."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "The first candidate requires exactly one public-IP request."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": null,
+  "fixtures": [],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva01-public-ip-valid"
+}

@@ -1,0 +1,104 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline applies the single saved all=0 value to default as well, incorrectly enabling default IPv6 and exiting 0."
+  },
+  "binding_id": "bash-wva17-linux-divergent-default-prior-state",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "stop",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.stop_attempts"
+        },
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": false
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.all.disable_ipv6=0"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.all",
+          "value": 0
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.default.disable_ipv6=0"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.default",
+          "value": 0
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "db186a3e66c13fe1554a741854ad3e01c5a301a381ca510f376b5937f7b72bf8",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {
+      "all": 1,
+      "default": 1
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "stop_attempts": 0
+    },
+    "tunnel": {
+      "active": true
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva17-linux-divergent-default-prior-state",
+  "vector_sha256": "9bd4baba6a2c23bd77941060c866e5fadea28bdd840ba7b93f309a69d1e17105"
+}

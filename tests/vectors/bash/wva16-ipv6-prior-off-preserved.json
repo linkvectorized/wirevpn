@@ -1,0 +1,141 @@
+{
+  "arguments": [
+    "up"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline does not call setv6off for prior-off Wi-Fi and removes the empty state file."
+  },
+  "binding_id": "bash-wva16-ipv6-prior-off-preserved",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Darwin\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-listallnetworkservices"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.enumerations"
+        }
+      ],
+      "stderr": "",
+      "stdout": "An asterisk (*) denotes that a network service is disabled.\nWi-Fi\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getinfo",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "IPv6: Off\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "@CASE@/opt/homebrew/bin/wg-quick",
+        "up",
+        "@CASE@/etc/wireguard/client.conf"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": true
+        },
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "activation.count"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "dig",
+        "+short",
+        "+time=3",
+        "+tries=1",
+        "@10.0.0.1",
+        "google.com"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.53\n"
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.10\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "47fbdeece718617e9575633fe7e05bec8f0386e23187c80ac144979ef0a0f9f2",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "activation": {
+      "count": 0
+    },
+    "dns": {
+      "cache_flush_attempted": false,
+      "cache_flush_verified": false,
+      "clear_attempted": false,
+      "responder_flush_attempted": false,
+      "safe_rejection": false,
+      "stale_remaining": true,
+      "swept_server": null
+    },
+    "ipv6": {
+      "Wi-Fi": "off"
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "enumerations": 0
+    },
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva16-ipv6-prior-off-preserved",
+  "vector_sha256": "8eab7e1c1c3b1b2c916ab20a320dc1eb715543f854f2bde959e31ec98af7716e"
+}

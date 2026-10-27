@@ -1,0 +1,54 @@
+{
+  "acceptance_ids": [
+    "WVA-01"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The first curl response is malformed; the second is valid; apt then fails deliberately."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": "192.0.2.10",
+      "kind": "state_equals",
+      "path": "server.ip_accepted"
+    },
+    {
+      "expected": 2,
+      "kind": "state_equals",
+      "path": "network.ip_attempts"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "d531eb00dc0747fbdacc481b6af81a74691f82f1ba55e20c50630fe9450ed7c4",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "A malformed first response is rejected and a later valid response is accepted."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "The retry performs exactly two bounded public-IP requests."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": null,
+  "fixtures": [],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva01-public-ip-malformed-retry"
+}

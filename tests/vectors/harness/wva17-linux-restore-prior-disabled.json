@@ -1,0 +1,62 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The volatile state file records prior all=1 and the prior default value is likewise 1."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.all"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "9e2971f4a948ea33df9b5bf8683d14655c00f239d1a862da440dcec9966496af",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "A prior-disabled all/default configuration remains disabled after managed down."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Default IPv6 is restored to the same prior-disabled value in the aligned-state case."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 469,
+      "path": "wva17/restore-prior-disabled.fixture",
+      "sha256": "a3c72821d718ec722f2a7d5c088e57e785ade37e42c4fecfb7dda214dcf0de3a"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-restore-prior-disabled"
+}

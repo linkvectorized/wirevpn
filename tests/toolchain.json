@@ -1,0 +1,113 @@
+{
+  "schema": "wirevpn.toolchain/1.0",
+  "schema_version": "1.0.0",
+  "kind": "read-only-discovered-toolchain-identities",
+  "identity": "wirevpn-w1-toolchain",
+  "toolchain_version": "1.0.0",
+  "discovery": {
+    "project_code_executed": false,
+    "network_used": false,
+    "methods": [
+      "filesystem-metadata",
+      "sha-256",
+      "executable-version-report",
+      "interpreter-version-report"
+    ],
+    "scope": "public-system-toolchain-only"
+  },
+  "host": {
+    "system": "Darwin",
+    "system_version": "25.2.0",
+    "architecture": "arm64",
+    "identity_scope": "bootstrap-host-only",
+    "sandbox_exec": {
+      "path": "/usr/bin/sandbox-exec",
+      "resolved_path": "/usr/bin/sandbox-exec",
+      "bytes": 102560,
+      "sha256": "fd89e1f6e6d822fcc0f3844bd11fecdc9b68f705f80c32f4334bc23913d5451b",
+      "profile_version": "wirevpn.darwin-sandbox/1.0",
+      "identity_requirement": "revalidate-path-size-and-sha256-before-behavior-lanes"
+    },
+    "bash": {
+      "minimum_version": "4.0.0",
+      "minimum_reason": "wg-quick-language-compatibility",
+      "current": {
+        "version": "5.3.9",
+        "release": "5.3.9(1)-release",
+        "target": "aarch64-apple-darwin25.1.0",
+        "path": "/opt/homebrew/bin/bash",
+        "resolved_path": "/opt/homebrew/Cellar/bash/5.3.9/bin/bash",
+        "bytes": 891808,
+        "sha256": "94d661f8e2d6922f16d5eeb918359750f70d5e9a99fd179d438eeb27bb6ca045",
+        "selection": "explicit-fixed-binary"
+      },
+      "system": {
+        "version": "3.2.57",
+        "release": "3.2.57(1)-release",
+        "target": "arm64-apple-darwin25",
+        "path": "/bin/bash",
+        "resolved_path": "/bin/bash",
+        "bytes": 1310208,
+        "sha256": "07ad8525844ce61471e08e8c515b76bf063bac482394152bad814026cd577f69",
+        "selection": "discovered-not-selected"
+      }
+    },
+    "python": {
+      "minimum_version": "3.9.0",
+      "minimum_reason": "standard-library-runner-baseline",
+      "current": {
+        "implementation": "CPython",
+        "version": "3.9.6",
+        "path": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9",
+        "resolved_path": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/bin/python3.9",
+        "bytes": 102352,
+        "sha256": "6b24be8ba00c4abc8b3e7e2620bd710e2cf7a4312d00c147f8f05fbb6f3d297a",
+        "selection": "bootstrap-discovery-only"
+      }
+    }
+  },
+  "ci": {
+    "runner_label": "macos-14",
+    "bash": {
+      "version": "5.3.9",
+      "selection": "exact-version"
+    },
+    "python": {
+      "implementation": "CPython",
+      "version": "3.14.3",
+      "selection": "exact-version"
+    },
+    "containment_profile_version": "wirevpn.darwin-sandbox/1.0",
+    "action_pin_policy": "full-commit-sha-only"
+  },
+  "shell_lint": {
+    "schema": "wirevpn.shell-lint-toolchain/1.0",
+    "version": "1.0.0",
+    "platform": {
+      "system": "Darwin",
+      "architecture": "arm64"
+    },
+    "shellcheck": {
+      "version": "0.11.0",
+      "asset": {
+        "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz",
+        "sha256": "56affdd8de5527894dca6dc3d7e0a99a873b0f004d7aabc30ae407d3f48b0a79",
+        "format": "tar.xz",
+        "member": "shellcheck-v0.11.0/shellcheck",
+        "allowed_members": [
+          "shellcheck-v0.11.0/LICENSE.txt",
+          "shellcheck-v0.11.0/README.txt",
+          "shellcheck-v0.11.0/shellcheck"
+        ]
+      }
+    },
+    "shfmt": {
+      "version": "3.12.0",
+      "asset": {
+        "url": "https://github.com/mvdan/sh/releases/download/v3.12.0/shfmt_v3.12.0_darwin_arm64",
+        "sha256": "d903802e0ce3ecbc82b98512f55ba370b0d37a93f3f78de394f5b657052b33dd",
+        "format": "executable"
+      }
+    }
+  }
+}

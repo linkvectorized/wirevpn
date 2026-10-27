@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-13"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Managed macOS down with one Wi-Fi service and synthetic comma-list client configuration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": "1.1.1.1",
+      "kind": "state_equals",
+      "path": "dns.swept_server"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.cache_flush_attempted"
+    },
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "fbe8e548c9694ee7c504d308b48018c83f016f7ae58dc5d051b527cb8ea0c931",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The parsed DNS server for the comma-list configuration drives stale-DNS cleanup."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "A successful sweep flushes both synthetic macOS DNS caches."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The managed down path leaves no matching stale DNS server."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 389,
+      "path": "wva13/comma-list.fixture",
+      "sha256": "fade8dfaa4600b6aa109cb1c0fc5e74b0b43a72cd58090a9f1c3b88634fb7f59"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva13-dns-comma-list"
+}

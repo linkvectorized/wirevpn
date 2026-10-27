@@ -1,0 +1,97 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline ignores the failed all restore, removes the state file, and exits 0 with all IPv6 still disabled."
+  },
+  "binding_id": "bash-wva17-linux-sysctl-restore-failure",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "stop",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.stop_attempts"
+        },
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": false
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.all.disable_ipv6=0"
+      ],
+      "exit": 1,
+      "stderr": "synthetic IPv6 restore failure\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.default.disable_ipv6=0"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.default",
+          "value": 0
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "87269d859e718401ef33bd69e247346dae7e276fd4c7952823edb2f1653552ae",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {
+      "all": 1,
+      "default": 1
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "stop_attempts": 0
+    },
+    "tunnel": {
+      "active": true
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva17-linux-sysctl-restore-failure",
+  "vector_sha256": "853fbf33cd242f85dda224ddc06681380a14d0ae1386884b3ba8723f02ead1b7"
+}

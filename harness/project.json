@@ -1,0 +1,1559 @@
+{
+  "accepted_specification": {
+    "accepted_on": "2026-10-27",
+    "bytes": 38336,
+    "commit": "d5dbe8378c813d1c687f75bfec8223cc5e5b3409",
+    "path": "docs/specs/wirevpn-harness-audit-v1.md",
+    "sha256": "d7e2bba1491c1cf7dcb0f7913bdf51ca116cc4a8d76fb970f1f5f04e7e11c2d5"
+  },
+  "allowed_roots": {
+    "fixture": {
+      "access": "read-only",
+      "data_class": "public",
+      "path": "tests/fixtures",
+      "root_class": "synthetic-fixture"
+    },
+    "output": {
+      "access": "generated-output-only",
+      "data_class": "public",
+      "path": "reports/public",
+      "root_class": "public-report"
+    },
+    "source": {
+      "access": "read-only",
+      "data_class": "public",
+      "path": ".",
+      "root_class": "canonical-source"
+    },
+    "vector": {
+      "access": "read-only",
+      "data_class": "public",
+      "path": "tests/vectors",
+      "root_class": "semantic-vector"
+    }
+  },
+  "bootstrap": {
+    "artifacts": [
+      {
+        "artifact_id": "runner",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      {
+        "artifact_id": "vector-bundle",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "version": "wirevpn.semantic-vectors/1.0"
+      },
+      {
+        "artifact_id": "check-inventory",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "9d25ff8e7cfee7423d65099d6ecb0383dff4e153b6bbfce405da495020ef9642",
+          "state": "content-bound"
+        },
+        "path": "harness/checks.json",
+        "version": "wirevpn.check-inventory/1.0"
+      },
+      {
+        "artifact_id": "toolchain",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      {
+        "artifact_id": "project-schema",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "316dacb22fdef358ce24a0e054e5203b36bbff422268fe426cd8b254158f2a61",
+          "state": "content-bound"
+        },
+        "path": "harness/project.schema.json",
+        "version": "wirevpn.project-schema/1.0"
+      },
+      {
+        "artifact_id": "checks-schema",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3bdb4c383e38d183c44eec6844fb10fb44719b5dcb06f3c10ab8c7b9ea5953c8",
+          "state": "content-bound"
+        },
+        "path": "harness/checks.schema.json",
+        "version": "wirevpn.checks-schema/1.0"
+      },
+      {
+        "artifact_id": "vector-schema",
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "a72a3041fe074a54fe231b2e5e7b1b2a675cbde7289e71464eb185bd465b45c6",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/schema.json",
+        "version": "wirevpn.vector-schema/1.0"
+      }
+    ],
+    "digest_algorithm": "sha-256",
+    "identity": "wirevpn-w1-bootstrap/1.0",
+    "on_missing_or_mismatch": "fail-closed",
+    "pending_update": "exact-content-only",
+    "recompute_before_use": true
+  },
+  "data_classes": [
+    {
+      "class_id": "public",
+      "disposition": "eligible-for-reviewed-public-commit"
+    },
+    {
+      "class_id": "internal",
+      "disposition": "owner-only-unless-curated"
+    },
+    {
+      "class_id": "restricted",
+      "disposition": "never-accepted-as-harness-input"
+    }
+  ],
+  "denied_root_classes": [
+    {
+      "class_id": "real-runtime-configuration",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "real-home-or-home-fallback",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "live-system-service-roots",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "live-wireguard-roots",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "live-adguard-roots",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "canonical-repository-as-sandbox",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "filesystem-root-as-sandbox",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "overlapping-or-aliased-evidence-roots",
+      "rule": "deny-and-fail-closed"
+    },
+    {
+      "class_id": "symlink-or-path-escape",
+      "rule": "deny-and-fail-closed"
+    }
+  ],
+  "embedded_payloads": [
+    {
+      "baseline_byte_equal": null,
+      "byte_equality_required": false,
+      "container_source_path": "client_setup.sh",
+      "content": {
+        "bytes": 1344,
+        "sha256": "e149df1d2d6469c86f19c5c32dfeaf72467f3027c5da6846d7a36d786db1a601"
+      },
+      "content_end_line": 274,
+      "content_start_line": 243,
+      "delimiter": "ENDSSH",
+      "includes_final_newline": true,
+      "opening_line": 242,
+      "payload_id": "client-register-ssh",
+      "payload_kind": "remote-bash",
+      "standalone_sha256": null,
+      "standalone_source_path": null
+    },
+    {
+      "baseline_byte_equal": true,
+      "byte_equality_required": true,
+      "container_source_path": "client_setup.sh",
+      "content": {
+        "bytes": 5651,
+        "sha256": "c8c0010279eddfe57628f73295a949383e0f1c852322be9433cb859694c85b84"
+      },
+      "content_end_line": 471,
+      "content_start_line": 318,
+      "delimiter": "EOFSCRIPT",
+      "includes_final_newline": true,
+      "opening_line": 317,
+      "payload_id": "embedded-wirevpn-connect",
+      "payload_kind": "embedded-bash",
+      "standalone_sha256": "c8c0010279eddfe57628f73295a949383e0f1c852322be9433cb859694c85b84",
+      "standalone_source_path": "wirevpn-connect.sh"
+    },
+    {
+      "baseline_byte_equal": true,
+      "byte_equality_required": true,
+      "container_source_path": "client_setup.sh",
+      "content": {
+        "bytes": 9819,
+        "sha256": "89f0c84dc96bffb60bed68b743c231a109a07243a953a579a91a801ef5eb110e"
+      },
+      "content_end_line": 771,
+      "content_start_line": 526,
+      "delimiter": "EOFWIREVPN",
+      "includes_final_newline": true,
+      "opening_line": 525,
+      "payload_id": "embedded-wirevpn-cli",
+      "payload_kind": "embedded-bash",
+      "standalone_sha256": "89f0c84dc96bffb60bed68b743c231a109a07243a953a579a91a801ef5eb110e",
+      "standalone_source_path": "wirevpn.sh"
+    },
+    {
+      "baseline_byte_equal": null,
+      "byte_equality_required": false,
+      "container_source_path": "mobile_peer.sh",
+      "content": {
+        "bytes": 1567,
+        "sha256": "5d6453bdb984d7685d4163284ae6d0c314432e459a6508d9a14a2bb65b1c9917"
+      },
+      "content_end_line": 155,
+      "content_start_line": 116,
+      "delimiter": "ENDSSH",
+      "includes_final_newline": true,
+      "opening_line": 115,
+      "payload_id": "mobile-add-ssh",
+      "payload_kind": "remote-bash",
+      "standalone_sha256": null,
+      "standalone_source_path": null
+    },
+    {
+      "baseline_byte_equal": null,
+      "byte_equality_required": false,
+      "container_source_path": "mobile_peer.sh",
+      "content": {
+        "bytes": 1288,
+        "sha256": "d666d0b14dbc12c47402ba6b59d5250092ee28d7bd83287b2c57914d4a86e1a4"
+      },
+      "content_end_line": 247,
+      "content_start_line": 202,
+      "delimiter": "ENDSSH",
+      "includes_final_newline": true,
+      "opening_line": 201,
+      "payload_id": "mobile-remove-ssh",
+      "payload_kind": "remote-bash",
+      "standalone_sha256": null,
+      "standalone_source_path": null
+    },
+    {
+      "baseline_byte_equal": null,
+      "byte_equality_required": false,
+      "container_source_path": "mobile_peer.sh",
+      "content": {
+        "bytes": 438,
+        "sha256": "0ede369b1da85b3c64c70c0cc358a8280c19515c3f91cb9a9a361ed761d591ba"
+      },
+      "content_end_line": 232,
+      "content_start_line": 217,
+      "delimiter": "PYEOF",
+      "includes_final_newline": true,
+      "opening_line": 216,
+      "payload_id": "embedded-remove-peer-python",
+      "payload_kind": "embedded-python",
+      "standalone_sha256": null,
+      "standalone_source_path": null
+    }
+  ],
+  "entrypoints": [
+    {
+      "entrypoint_id": "server-setup",
+      "interface": "server-installation",
+      "source_path": "server_setup.sh",
+      "source_sha256": "0facd517571e53754992b62fb163698d690fe1fc3779813c258b33e670dfb3f5"
+    },
+    {
+      "entrypoint_id": "adguard-setup",
+      "interface": "adguard-installation",
+      "source_path": "adguard_setup.sh",
+      "source_sha256": "299b60a63525f7526267047f3b2035e991956349b1c95ecd6906203bf47f9cb5"
+    },
+    {
+      "entrypoint_id": "client-setup",
+      "interface": "client-installation",
+      "source_path": "client_setup.sh",
+      "source_sha256": "c7032118aa94a24b1115ca1c22afb7f119adca7c7627757bd6eea14258d2aad2"
+    },
+    {
+      "entrypoint_id": "mobile-peer",
+      "interface": "mobile-peer-management",
+      "source_path": "mobile_peer.sh",
+      "source_sha256": "a7b5d1b020fd06a3534fb1febf209d4904a538912cd70a48ed1d01e19a9e8b2d"
+    },
+    {
+      "entrypoint_id": "managed-cli",
+      "interface": "managed-cli",
+      "source_path": "wirevpn.sh",
+      "source_sha256": "89f0c84dc96bffb60bed68b743c231a109a07243a953a579a91a801ef5eb110e"
+    },
+    {
+      "entrypoint_id": "boot-connector",
+      "interface": "boot-connector",
+      "source_path": "wirevpn-connect.sh",
+      "source_sha256": "c8c0010279eddfe57628f73295a949383e0f1c852322be9433cb859694c85b84"
+    }
+  ],
+  "evidence_limits": {
+    "prohibited_claims": [
+      "production-safety",
+      "live-platform-proof",
+      "runtime-governance",
+      "generic-conformance",
+      "tamper-proof-evidence"
+    ],
+    "scope": [
+      "deterministic-project-evidence"
+    ]
+  },
+  "generated_artifacts": [
+    {
+      "artifact_id": "server-live-config-backup",
+      "artifact_kind": "wireguard-config-backup",
+      "content": {
+        "bytes": 16,
+        "sha256": "0d74b190a6853682576362b2059eee28a140ebc73269f0b0dbc7783ac68fc22e"
+      },
+      "destination": "/etc/wireguard/wg0.conf.live_backup",
+      "expansion": "command-output",
+      "extraction": {
+        "content_end_column": 17,
+        "content_end_line": 72,
+        "content_start_column": 3,
+        "content_start_line": 72,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "command-output",
+        "source_end_column": 55,
+        "source_end_line": 72,
+        "source_start_column": 1,
+        "source_start_line": 72
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 55,
+        "sha256": "60bee243a062d3b842ffca407c7f505963a801467df2dce3bb3ba8bff6e0175d"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-config-backup",
+      "artifact_kind": "wireguard-config-backup",
+      "content": {
+        "bytes": 23,
+        "sha256": "b2f4202f8da933c00695b10ba1d08964cb5f2827ecc489c42cd9813350931447"
+      },
+      "destination": "/etc/wireguard/wg0.conf.bak",
+      "expansion": "source-content",
+      "extraction": {
+        "content_end_column": 28,
+        "content_end_line": 78,
+        "content_start_column": 6,
+        "content_start_line": 78,
+        "delimiter": null,
+        "includes_final_newline": null,
+        "kind": "file-copy",
+        "source_end_column": 56,
+        "source_end_line": 78,
+        "source_start_column": 1,
+        "source_start_line": 78
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 56,
+        "sha256": "66edcc6bc938e879d387ca502a774d82edb6d73bf8856f31632bec8379a08af0"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-public-key-sync",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 15,
+        "sha256": "b535b0209be9b2aa80e76af4f7bcb643727da864d2b01572396659d5e0afefbe"
+      },
+      "destination": "/etc/wireguard/server_public.key",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 23,
+        "content_end_line": 87,
+        "content_start_column": 8,
+        "content_start_line": 87,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "echo-double-quoted",
+        "source_end_column": 58,
+        "source_end_line": 87,
+        "source_start_column": 1,
+        "source_start_line": 87
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 58,
+        "sha256": "ffc5677cb4b81197a40ffc64322d9062857b9be544c87f004e07cf4762371953"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-private-key-generate",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 10,
+        "sha256": "6f3f2378d43c74e37dd9d7bbaba67461c23557afbce747a2b93af160653fd7bd"
+      },
+      "destination": "/etc/wireguard/server_private.key",
+      "expansion": "command-output",
+      "extraction": {
+        "content_end_column": 11,
+        "content_end_line": 105,
+        "content_start_column": 3,
+        "content_start_line": 105,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "command-output",
+        "source_end_column": 98,
+        "source_end_line": 105,
+        "source_start_column": 1,
+        "source_start_line": 105
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 98,
+        "sha256": "ba61c4f0874ba7246976ba19dcea9b2d36d3d64ea1c0955b6eb6fd7aa77bb65d"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-public-key-generate",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 10,
+        "sha256": "eb1dccf565e5dba48862b6006efa3571ad91df18a05a5228153f4f2341b3b010"
+      },
+      "destination": "/etc/wireguard/server_public.key",
+      "expansion": "command-output",
+      "extraction": {
+        "content_end_column": 63,
+        "content_end_line": 105,
+        "content_start_column": 55,
+        "content_start_line": 105,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "command-output",
+        "source_end_column": 98,
+        "source_end_line": 105,
+        "source_start_column": 1,
+        "source_start_line": 105
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 98,
+        "sha256": "ba61c4f0874ba7246976ba19dcea9b2d36d3d64ea1c0955b6eb6fd7aa77bb65d"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-client-private-key-generate",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 10,
+        "sha256": "6f3f2378d43c74e37dd9d7bbaba67461c23557afbce747a2b93af160653fd7bd"
+      },
+      "destination": "/etc/wireguard/client_private.key",
+      "expansion": "command-output",
+      "extraction": {
+        "content_end_column": 11,
+        "content_end_line": 121,
+        "content_start_column": 3,
+        "content_start_line": 121,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "command-output",
+        "source_end_column": 98,
+        "source_end_line": 121,
+        "source_start_column": 1,
+        "source_start_line": 121
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 98,
+        "sha256": "d87f0b837422c6a45a6f15f3df1fd5dfdd74e66c30a84eab16b481c7aa8035a3"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-client-public-key-generate",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 10,
+        "sha256": "eb1dccf565e5dba48862b6006efa3571ad91df18a05a5228153f4f2341b3b010"
+      },
+      "destination": "/etc/wireguard/client_public.key",
+      "expansion": "command-output",
+      "extraction": {
+        "content_end_column": 63,
+        "content_end_line": 121,
+        "content_start_column": 55,
+        "content_start_line": 121,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "command-output",
+        "source_end_column": 98,
+        "source_end_line": 121,
+        "source_start_column": 1,
+        "source_start_line": 121
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 98,
+        "sha256": "d87f0b837422c6a45a6f15f3df1fd5dfdd74e66c30a84eab16b481c7aa8035a3"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-wg0-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 538,
+        "sha256": "68258387b4f0d46c57502c734a5e34678a5a7e2749f8c9b45c3438e86a9f41c6"
+      },
+      "destination": "/etc/wireguard/wg0.conf",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 25,
+        "content_end_line": 168,
+        "content_start_column": 1,
+        "content_start_line": 156,
+        "delimiter": "EOF",
+        "includes_final_newline": true,
+        "kind": "heredoc",
+        "source_end_column": 4,
+        "source_end_line": 169,
+        "source_start_column": 1,
+        "source_start_line": 155
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 581,
+        "sha256": "12150ffe5d4c0b49bbb28edbcd258ea8f36bbb9a95eb0fc33096675637e5b686"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-sysctl-ip-forward-fragment",
+      "artifact_kind": "sysctl-fragment",
+      "content": {
+        "bytes": 22,
+        "sha256": "7de9e61bfd3ef0b34bcacfba0fcbd0896611812ed74015f2dac1446c3bacd743"
+      },
+      "destination": "/etc/sysctl.conf",
+      "expansion": "literal",
+      "extraction": {
+        "content_end_column": 30,
+        "content_end_line": 178,
+        "content_start_column": 8,
+        "content_start_line": 178,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "echo-double-quoted",
+        "source_end_column": 51,
+        "source_end_line": 178,
+        "source_start_column": 1,
+        "source_start_line": 178
+      },
+      "framing": "append-fragment",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 51,
+        "sha256": "e795e7c1d40ff013d30d2af8624fb534c4b446db390d04b8ad5c47b2d6de775b"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "server-client-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 340,
+        "sha256": "186652a095c88928d08984bed9563959104d107af929d04d96b39380a1b56ec2"
+      },
+      "destination": "/etc/wireguard/client.conf",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 25,
+        "content_end_line": 230,
+        "content_start_column": 1,
+        "content_start_line": 219,
+        "delimiter": "CLIENTCONF",
+        "includes_final_newline": true,
+        "kind": "heredoc",
+        "source_end_column": 11,
+        "source_end_line": 231,
+        "source_start_column": 1,
+        "source_start_line": 218
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 397,
+        "sha256": "978569c7969bcb953a86ba4df7fd51133e11fcbc94ea970ff6724bdc719a0f32"
+      },
+      "source_path": "server_setup.sh"
+    },
+    {
+      "artifact_id": "adguard-resolv-conf",
+      "artifact_kind": "resolver-config",
+      "content": {
+        "bytes": 19,
+        "sha256": "d9fcf7783d7b0b51869ef66ed4febbf50f514057108278e330b1e84d8aeb33e0"
+      },
+      "destination": "/etc/resolv.conf",
+      "expansion": "literal",
+      "extraction": {
+        "content_end_column": 27,
+        "content_end_line": 104,
+        "content_start_column": 8,
+        "content_start_line": 104,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "echo-double-quoted",
+        "source_end_column": 47,
+        "source_end_line": 104,
+        "source_start_column": 1,
+        "source_start_line": 104
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 47,
+        "sha256": "7c61355f9c6bc8455ae5d49a9900f7afedcb5371e3b4fbf3eb04c584e97025f5"
+      },
+      "source_path": "adguard_setup.sh"
+    },
+    {
+      "artifact_id": "adguard-install-configure-json",
+      "artifact_kind": "adguard-json-request",
+      "content": {
+        "bytes": 119,
+        "sha256": "5e74460278e0fdb2593582ad88bb1eebbb85a44e54b12211fe410f1d64d4d473"
+      },
+      "destination": "/control/install/configure",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 152,
+        "content_end_line": 187,
+        "content_start_column": 8,
+        "content_start_line": 187,
+        "delimiter": null,
+        "includes_final_newline": false,
+        "kind": "shell-double-quoted-argument",
+        "source_end_column": 154,
+        "source_end_line": 187,
+        "source_start_column": 1,
+        "source_start_line": 187
+      },
+      "framing": "request-body",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 154,
+        "sha256": "1b7f3b7f882aa70111a414fff4b84d2c0bdf9e7918304f0e366f39d158186bdf"
+      },
+      "source_path": "adguard_setup.sh"
+    },
+    {
+      "artifact_id": "adguard-dns-config-json",
+      "artifact_kind": "adguard-json-request",
+      "content": {
+        "bytes": 96,
+        "sha256": "6081926d72b2f6af7b6d0c454d60b6d902ee9005a9dc7f67935079f1bb48fbdc"
+      },
+      "destination": "/control/dns_config",
+      "expansion": "literal",
+      "extraction": {
+        "content_end_column": 105,
+        "content_end_line": 215,
+        "content_start_column": 8,
+        "content_start_line": 215,
+        "delimiter": null,
+        "includes_final_newline": false,
+        "kind": "shell-single-quoted-argument",
+        "source_end_column": 117,
+        "source_end_line": 215,
+        "source_start_column": 1,
+        "source_start_line": 215
+      },
+      "framing": "request-body",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 117,
+        "sha256": "c8d4ac36a0d2829d4b0fd27d128bf1becd52e13f4a173efb8c612e611a765c83"
+      },
+      "source_path": "adguard_setup.sh"
+    },
+    {
+      "artifact_id": "adguard-filter-add-url-json",
+      "artifact_kind": "adguard-json-request",
+      "content": {
+        "bytes": 57,
+        "sha256": "866d8ac85a22f63a7c1c384556f0851e9b69e829322ed1ab85015e18c5408b7d"
+      },
+      "destination": "/control/filtering/add_url",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 78,
+        "content_end_line": 229,
+        "content_start_column": 10,
+        "content_start_line": 229,
+        "delimiter": null,
+        "includes_final_newline": false,
+        "kind": "shell-double-quoted-argument",
+        "source_end_column": 7,
+        "source_end_line": 231,
+        "source_start_column": 1,
+        "source_start_line": 220
+      },
+      "framing": "request-body",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 698,
+        "sha256": "404cdcff7716b3a71ed8ff754d2c03fc48f082b965eb072eb66ee150fd886fa8"
+      },
+      "source_path": "adguard_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-server-public-key-sync",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 15,
+        "sha256": "b535b0209be9b2aa80e76af4f7bcb643727da864d2b01572396659d5e0afefbe"
+      },
+      "destination": "/etc/wireguard/server_public.key",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 22,
+        "content_end_line": 256,
+        "content_start_column": 6,
+        "content_start_line": 256,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "echo-double-quoted",
+        "source_end_column": 57,
+        "source_end_line": 256,
+        "source_start_column": 1,
+        "source_start_line": 256
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "client-register-ssh",
+      "source": {
+        "bytes": 57,
+        "sha256": "2472dd6f2533d2c4755fa58b9df2bcda80133ff0588d1c2abe145ce152a4a475"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-peer-private-key",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 3,
+        "sha256": "ff9c156ad09a251a438c223a0d3d7671b00361e0b334aefdd5374d7a4c1e401c"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}_private.key",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 13,
+        "content_end_line": 263,
+        "content_start_column": 8,
+        "content_start_line": 263,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 68,
+        "source_end_line": 263,
+        "source_start_column": 1,
+        "source_start_line": 263
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "client-register-ssh",
+      "source": {
+        "bytes": 68,
+        "sha256": "1d571b5a510051f0de89e2c848c5dd0b37843d1726d61059b69295c8d99b3517"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-peer-public-key",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 3,
+        "sha256": "ff9c156ad09a251a438c223a0d3d7671b00361e0b334aefdd5374d7a4c1e401c"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}_public.key",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 13,
+        "content_end_line": 264,
+        "content_start_column": 8,
+        "content_start_line": 264,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 67,
+        "source_end_line": 264,
+        "source_start_column": 1,
+        "source_start_line": 264
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "client-register-ssh",
+      "source": {
+        "bytes": 67,
+        "sha256": "4286542c511f331eccd3240a51612229986a011920314d9ec7e633ed4cbf4216"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-wg0-peer-fragment",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 47,
+        "sha256": "a977ba94670058b73d15293ccd65c36623397c39a8d3da42fb6e2e6d5d0df83a"
+      },
+      "destination": "/etc/wireguard/wg0.conf",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 61,
+        "content_end_line": 268,
+        "content_start_column": 8,
+        "content_start_line": 268,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 126,
+        "source_end_line": 268,
+        "source_start_column": 1,
+        "source_start_line": 268
+      },
+      "framing": "append-fragment",
+      "nested_payload_id": "client-register-ssh",
+      "source": {
+        "bytes": 126,
+        "sha256": "19661156bd4433e7f56e562dd349401d9647fd42bdfea33253b72b439ecd98a5"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-peer-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 150,
+        "sha256": "cc149f39e191de1f78e01fb0b7a267895f3142427f1cbe6f6dc07f233cece8e7"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}.conf",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 169,
+        "content_end_line": 270,
+        "content_start_column": 8,
+        "content_start_line": 270,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 94,
+        "source_end_line": 271,
+        "source_start_column": 1,
+        "source_start_line": 270
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "client-register-ssh",
+      "source": {
+        "bytes": 266,
+        "sha256": "4ba3826eb2289db185ceab244f0400a3290e2cdfe3fcc7cc00987acd11202a33"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-register-downloaded-peer-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 47,
+        "sha256": "67aa542c0faf02e606969228b3900f7df7ef0d253592bd01af04b23b5512b432"
+      },
+      "destination": "$HOME/WireVPN/client.conf",
+      "expansion": "source-content",
+      "extraction": {
+        "content_end_column": 58,
+        "content_end_line": 278,
+        "content_start_column": 10,
+        "content_start_line": 278,
+        "delimiter": null,
+        "includes_final_newline": null,
+        "kind": "file-copy",
+        "source_end_column": 86,
+        "source_end_line": 278,
+        "source_start_column": 1,
+        "source_start_line": 278
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 86,
+        "sha256": "d286ab85f325fff575282780bd38992c5681a98814bf0f976352506df5d76c55"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-conf-backup",
+      "artifact_kind": "wireguard-config-backup",
+      "content": {
+        "bytes": 10,
+        "sha256": "c69f2c4154d8d06eee003d99ed5a1b397d5d63ede515b0d59d2c170835ed6c2b"
+      },
+      "destination": "/etc/wireguard/client.conf.bak",
+      "expansion": "source-content",
+      "extraction": {
+        "content_end_column": 22,
+        "content_end_line": 287,
+        "content_start_column": 11,
+        "content_start_line": 287,
+        "delimiter": null,
+        "includes_final_newline": null,
+        "kind": "file-copy",
+        "source_end_column": 41,
+        "source_end_line": 287,
+        "source_start_column": 1,
+        "source_start_line": 287
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 41,
+        "sha256": "7a7ecfca2b06ca64f7f8bcceabd58c98a7a71eda02bc639212efc783407a57b5"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-installed-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 9,
+        "sha256": "887145c207372965f85f7b18f26db36b5f4de51bacdf19a69864e9ce7bd806c6"
+      },
+      "destination": "/etc/wireguard/client.conf",
+      "expansion": "source-content",
+      "extraction": {
+        "content_end_column": 19,
+        "content_end_line": 290,
+        "content_start_column": 9,
+        "content_start_line": 290,
+        "delimiter": null,
+        "includes_final_newline": null,
+        "kind": "file-copy",
+        "source_end_column": 32,
+        "source_end_line": 290,
+        "source_start_column": 1,
+        "source_start_line": 290
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 32,
+        "sha256": "db5bc5d0a2dc05ee92eb290c2117a04a7b071f0d41afc62304430ad8d29cf053"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "client-launchd-startup-plist",
+      "artifact_kind": "launchd-plist",
+      "content": {
+        "bytes": 624,
+        "sha256": "5bfe9ec5715e54847c7dfffe77051cf69f758db5c31b283dc649c9dab7ee08eb"
+      },
+      "destination": "/Library/LaunchDaemons/com.wirevpn.startup.plist",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 9,
+        "content_end_line": 496,
+        "content_start_column": 1,
+        "content_start_line": 476,
+        "delimiter": "EOF",
+        "includes_final_newline": true,
+        "kind": "heredoc",
+        "source_end_column": 4,
+        "source_end_line": 497,
+        "source_start_column": 1,
+        "source_start_line": 475
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 672,
+        "sha256": "db7c33c93ed2b0e2fedd153c10093e0ad9bf88532af66cc9e5cc3887629d2cfe"
+      },
+      "source_path": "client_setup.sh"
+    },
+    {
+      "artifact_id": "mobile-add-server-public-key-sync",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 15,
+        "sha256": "b535b0209be9b2aa80e76af4f7bcb643727da864d2b01572396659d5e0afefbe"
+      },
+      "destination": "/etc/wireguard/server_public.key",
+      "expansion": "shell-parameters",
+      "extraction": {
+        "content_end_column": 22,
+        "content_end_line": 132,
+        "content_start_column": 6,
+        "content_start_line": 132,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "echo-double-quoted",
+        "source_end_column": 57,
+        "source_end_line": 132,
+        "source_start_column": 1,
+        "source_start_line": 132
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "mobile-add-ssh",
+      "source": {
+        "bytes": 57,
+        "sha256": "2472dd6f2533d2c4755fa58b9df2bcda80133ff0588d1c2abe145ce152a4a475"
+      },
+      "source_path": "mobile_peer.sh"
+    },
+    {
+      "artifact_id": "mobile-add-peer-private-key",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 3,
+        "sha256": "ff9c156ad09a251a438c223a0d3d7671b00361e0b334aefdd5374d7a4c1e401c"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}_private.key",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 13,
+        "content_end_line": 140,
+        "content_start_column": 8,
+        "content_start_line": 140,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 68,
+        "source_end_line": 140,
+        "source_start_column": 1,
+        "source_start_line": 140
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "mobile-add-ssh",
+      "source": {
+        "bytes": 68,
+        "sha256": "1d571b5a510051f0de89e2c848c5dd0b37843d1726d61059b69295c8d99b3517"
+      },
+      "source_path": "mobile_peer.sh"
+    },
+    {
+      "artifact_id": "mobile-add-peer-public-key",
+      "artifact_kind": "wireguard-key",
+      "content": {
+        "bytes": 3,
+        "sha256": "ff9c156ad09a251a438c223a0d3d7671b00361e0b334aefdd5374d7a4c1e401c"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}_public.key",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 13,
+        "content_end_line": 141,
+        "content_start_column": 8,
+        "content_start_line": 141,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 67,
+        "source_end_line": 141,
+        "source_start_column": 1,
+        "source_start_line": 141
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "mobile-add-ssh",
+      "source": {
+        "bytes": 67,
+        "sha256": "4286542c511f331eccd3240a51612229986a011920314d9ec7e633ed4cbf4216"
+      },
+      "source_path": "mobile_peer.sh"
+    },
+    {
+      "artifact_id": "mobile-add-wg0-peer-fragment",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 47,
+        "sha256": "a977ba94670058b73d15293ccd65c36623397c39a8d3da42fb6e2e6d5d0df83a"
+      },
+      "destination": "/etc/wireguard/wg0.conf",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 61,
+        "content_end_line": 148,
+        "content_start_column": 8,
+        "content_start_line": 148,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 126,
+        "source_end_line": 148,
+        "source_start_column": 1,
+        "source_start_line": 148
+      },
+      "framing": "append-fragment",
+      "nested_payload_id": "mobile-add-ssh",
+      "source": {
+        "bytes": 126,
+        "sha256": "19661156bd4433e7f56e562dd349401d9647fd42bdfea33253b72b439ecd98a5"
+      },
+      "source_path": "mobile_peer.sh"
+    },
+    {
+      "artifact_id": "mobile-add-peer-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 150,
+        "sha256": "cc149f39e191de1f78e01fb0b7a267895f3142427f1cbe6f6dc07f233cece8e7"
+      },
+      "destination": "/etc/wireguard/${PEER_NAME}.conf",
+      "expansion": "printf-arguments",
+      "extraction": {
+        "content_end_column": 169,
+        "content_end_line": 151,
+        "content_start_column": 8,
+        "content_start_line": 151,
+        "delimiter": null,
+        "includes_final_newline": true,
+        "kind": "printf-single-quoted-format",
+        "source_end_column": 94,
+        "source_end_line": 152,
+        "source_start_column": 1,
+        "source_start_line": 151
+      },
+      "framing": "complete-file",
+      "nested_payload_id": "mobile-add-ssh",
+      "source": {
+        "bytes": 266,
+        "sha256": "4ba3826eb2289db185ceab244f0400a3290e2cdfe3fcc7cc00987acd11202a33"
+      },
+      "source_path": "mobile_peer.sh"
+    },
+    {
+      "artifact_id": "mobile-add-downloaded-peer-conf",
+      "artifact_kind": "wireguard-config",
+      "content": {
+        "bytes": 45,
+        "sha256": "ddbad69b63e8a660b8e58fb761c72ac5e4986cc9f4d4b76f0561172e472f4ef9"
+      },
+      "destination": "$WIREVPN_DIR/${PEER_NAME}.conf",
+      "expansion": "source-content",
+      "extraction": {
+        "content_end_column": 56,
+        "content_end_line": 159,
+        "content_start_column": 10,
+        "content_start_line": 159,
+        "delimiter": null,
+        "includes_final_newline": null,
+        "kind": "file-copy",
+        "source_end_column": 89,
+        "source_end_line": 159,
+        "source_start_column": 1,
+        "source_start_line": 159
+      },
+      "framing": "complete-file",
+      "nested_payload_id": null,
+      "source": {
+        "bytes": 89,
+        "sha256": "e321d9852cbaa5ba48430d77a7b257617a81e98b08947d73030cdaf637f9f762"
+      },
+      "source_path": "mobile_peer.sh"
+    }
+  ],
+  "kind": "validated-external-project-configuration",
+  "manifest_version": "1.0.0",
+  "optional_capabilities": [],
+  "product_baseline": {
+    "branch": "main",
+    "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "repository": "linkvectorized/wirevpn"
+  },
+  "prohibited_input_classes": [
+    "real-configurations",
+    "private-keys",
+    "real-endpoints",
+    "credentials",
+    "host-inventory",
+    "raw-terminal-or-ssh-material",
+    "real-backups"
+  ],
+  "public_report_rules": {
+    "curated_only": true,
+    "excluded_content": [
+      "real-local-paths",
+      "real-hostnames",
+      "real-endpoints",
+      "credentials",
+      "key-material",
+      "sensitive-remote-payloads",
+      "unsanitized-transcripts"
+    ],
+    "raw_evidence_upload": "denied",
+    "secret_canary_failure": "blocks-completion"
+  },
+  "required_checks": [
+    {
+      "check_id": "WVH-01",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "check-inventory",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVH-02",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "public-report-policy"
+      ]
+    },
+    {
+      "check_id": "WVH-03",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fake-model",
+        "fixtures"
+      ]
+    },
+    {
+      "check_id": "WVH-04",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "check-inventory"
+      ]
+    },
+    {
+      "check_id": "WVH-05",
+      "invalidation_dependencies": [
+        "runner",
+        "vector-schema",
+        "vector-bundle",
+        "check-inventory"
+      ]
+    },
+    {
+      "check_id": "WVH-06",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "instrumentation-profile",
+        "check-inventory"
+      ]
+    },
+    {
+      "check_id": "WVH-07",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "public-report-policy"
+      ]
+    },
+    {
+      "check_id": "WVH-08",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "schedules"
+      ]
+    },
+    {
+      "check_id": "WVH-09",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "containment-profile",
+        "toolchain",
+        "fixtures"
+      ]
+    },
+    {
+      "check_id": "WVH-10",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "public-report-policy",
+        "fixtures"
+      ]
+    },
+    {
+      "check_id": "WVA-01",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-12",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "instrumentation-profile",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-13",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-14",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-15",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-16",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-17",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-19",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "public-report-policy",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-20",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "vector-bundle",
+        "check-inventory"
+      ]
+    },
+    {
+      "check_id": "WVA-21",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "instrumentation-profile",
+        "check-inventory"
+      ]
+    },
+    {
+      "check_id": "WVA-26",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "vector-bundle",
+        "toolchain"
+      ]
+    },
+    {
+      "check_id": "WVA-27",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "public-report-policy"
+      ]
+    },
+    {
+      "check_id": "WVA-28",
+      "invalidation_dependencies": [
+        "runner",
+        "vector-schema",
+        "vector-bundle",
+        "schedules",
+        "fixtures",
+        "check-inventory"
+      ]
+    }
+  ],
+  "schema": "wirevpn.external-project-config/1.0",
+  "schema_version": "1.0.0",
+  "sources": [
+    {
+      "bytes": 12031,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "server_setup.sh",
+      "role": "product-script",
+      "sha256": "0facd517571e53754992b62fb163698d690fe1fc3779813c258b33e670dfb3f5"
+    },
+    {
+      "bytes": 12316,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "adguard_setup.sh",
+      "role": "product-script",
+      "sha256": "299b60a63525f7526267047f3b2035e991956349b1c95ecd6906203bf47f9cb5"
+    },
+    {
+      "bytes": 31514,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "client_setup.sh",
+      "role": "product-script",
+      "sha256": "c7032118aa94a24b1115ca1c22afb7f119adca7c7627757bd6eea14258d2aad2"
+    },
+    {
+      "bytes": 9518,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "mobile_peer.sh",
+      "role": "product-script",
+      "sha256": "a7b5d1b020fd06a3534fb1febf209d4904a538912cd70a48ed1d01e19a9e8b2d"
+    },
+    {
+      "bytes": 9819,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "wirevpn.sh",
+      "role": "product-script",
+      "sha256": "89f0c84dc96bffb60bed68b743c231a109a07243a953a579a91a801ef5eb110e"
+    },
+    {
+      "bytes": 5651,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "wirevpn-connect.sh",
+      "role": "product-script",
+      "sha256": "c8c0010279eddfe57628f73295a949383e0f1c852322be9433cb859694c85b84"
+    },
+    {
+      "bytes": 22617,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": "README.md",
+      "role": "documentation",
+      "sha256": "f7da7ab2042dfbd24a25341c5c1979c63031b930936e21c03d8d29eaf4fafec0"
+    },
+    {
+      "bytes": 105,
+      "origin": {
+        "commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+        "data_class": "public",
+        "repository": "linkvectorized/wirevpn"
+      },
+      "path": ".gitignore",
+      "role": "ignore-rules",
+      "sha256": "3bbf8490cb563a4f794e3d3c2cab1072a9bc542ceb9b6d67b51b811e2a0eba19"
+    }
+  ]
+}

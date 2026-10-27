@@ -1,0 +1,50 @@
+{
+  "acceptance_ids": [
+    "WVA-16"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "A synthetic directory occupies the state-file path, making shell truncation and append operations fail without host access."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "1478015ad9ed2d9b7ed99178191918c56970877cacbcc93a0304cb6222522004",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-STATE"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "Failure to persist IPv6 ownership state must prevent activation because restoration cannot be guaranteed."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-IPV6-STATE",
+  "fixtures": [
+    {
+      "bytes": 421,
+      "path": "wva16/state-write-failure.fixture",
+      "sha256": "2221d3f5ef4575f8fe516673135e397d8aa49404582d7cd9a6af13edf4f40f6a"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva16-ipv6-state-write-failure"
+}

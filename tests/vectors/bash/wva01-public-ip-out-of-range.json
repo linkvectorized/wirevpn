@@ -1,0 +1,89 @@
+{
+  "arguments": [],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "The baseline regex accepts 999.1.1.1 and proceeds to apt-get; this is a predicted contractual defect, not an accepted behavior."
+  },
+  "binding_id": "bash-wva01-public-ip-out-of-range",
+  "commands": [
+    {
+      "argv": [
+        "clear"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "1"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "network.ip_attempts"
+        }
+      ],
+      "stderr": "",
+      "stdout": "999.1.1.1\n"
+    },
+    {
+      "argv": [
+        "apt-get",
+        "update",
+        "-qq"
+      ],
+      "exit": 1,
+      "state": [
+        {
+          "op": "set",
+          "path": "server.ip_accepted",
+          "value": "999.1.1.1"
+        }
+      ],
+      "stderr": "synthetic later preflight failure\n",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "318ea5894e03b48ce887f51673868d29bb167a4c48d50c2e6743fe299172b175",
+  "entrypoint": "server_setup.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {},
+    "network": {
+      "ip_attempts": 0
+    },
+    "packages": {},
+    "peers": {},
+    "server": {
+      "ip_accepted": false,
+      "out_of_range_rejected": false
+    },
+    "services": {},
+    "tunnel": {},
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva01-public-ip-out-of-range",
+  "vector_sha256": "dc352840f87412f709fe58d2b18b354b4c69593f473b1e94c39ce3984b2f3c87"
+}

@@ -1,0 +1,90 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline sweeps only currently configured servers, so it performs no sweep for the old server and exits 0."
+  },
+  "binding_id": "bash-wva14-changed-dns-old-server-remains",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Darwin\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "launchctl",
+        "list"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-listallnetworkservices"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "An asterisk (*) denotes that a network service is disabled.\nWi-Fi\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getdnsservers",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "10.0.0.1\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "5c3834eb6bcd866da545d40d16bb8814390b262663cc4ace4168a8229e2a4a84",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {
+      "cache_flush_attempted": false,
+      "cache_flush_verified": false,
+      "clear_attempted": false,
+      "failure_reported": false,
+      "responder_flush_attempted": false,
+      "safe_rejection": false,
+      "stale_remaining": true,
+      "swept_server": null
+    },
+    "ipv6": {},
+    "packages": {},
+    "peers": {},
+    "services": {},
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva14-changed-dns-old-server-remains",
+  "vector_sha256": "ff2ef4dae8ae3f293ca57f848dc847de4008abffd8ba86eb518276913587b135"
+}

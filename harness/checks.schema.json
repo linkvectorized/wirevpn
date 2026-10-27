@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wirevpn:harness:checks.schema:1.0",
+  "title": "WireVPN named check inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "kind",
+    "inventory_version",
+    "project_binding",
+    "vector_bundle",
+    "checks"
+  ],
+  "properties": {
+    "schema": {"const": "wirevpn.check-inventory/1.0"},
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "named-installed-check-inventory"},
+    "inventory_version": {"$ref": "#/$defs/version"},
+    "project_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "kind", "baseline_commit", "spec_commit", "spec_sha256"],
+      "properties": {
+        "schema": {"const": "wirevpn.external-project-config/1.0"},
+        "kind": {"const": "validated-external-project-configuration"},
+        "baseline_commit": {"const": "01143e05ce105ab42fec5fd7b0bacaac49ad2405"},
+        "spec_commit": {"const": "d5dbe8378c813d1c687f75bfec8223cc5e5b3409"},
+        "spec_sha256": {"const": "d7e2bba1491c1cf7dcb0f7913bdf51ca116cc4a8d76fb970f1f5f04e7e11c2d5"}
+      }
+    },
+    "vector_bundle": {"$ref": "#/$defs/artifactBinding"},
+    "checks": {
+      "type": "array",
+      "minItems": 23,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/check"}
+    }
+  },
+  "allOf": [
+    {"$ref": "#/$defs/requireWVH01"},
+    {"$ref": "#/$defs/requireWVH02"},
+    {"$ref": "#/$defs/requireWVH03"},
+    {"$ref": "#/$defs/requireWVH04"},
+    {"$ref": "#/$defs/requireWVH05"},
+    {"$ref": "#/$defs/requireWVH06"},
+    {"$ref": "#/$defs/requireWVH07"},
+    {"$ref": "#/$defs/requireWVH08"},
+    {"$ref": "#/$defs/requireWVH09"},
+    {"$ref": "#/$defs/requireWVH10"},
+    {"$ref": "#/$defs/requireWVA01"},
+    {"$ref": "#/$defs/requireWVA12"},
+    {"$ref": "#/$defs/requireWVA13"},
+    {"$ref": "#/$defs/requireWVA14"},
+    {"$ref": "#/$defs/requireWVA15"},
+    {"$ref": "#/$defs/requireWVA16"},
+    {"$ref": "#/$defs/requireWVA17"},
+    {"$ref": "#/$defs/requireWVA19"},
+    {"$ref": "#/$defs/requireWVA20"},
+    {"$ref": "#/$defs/requireWVA21"},
+    {"$ref": "#/$defs/requireWVA26"},
+    {"$ref": "#/$defs/requireWVA27"},
+    {"$ref": "#/$defs/requireWVA28"}
+  ],
+  "$defs": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9.][A-Za-z0-9._-]*(?:/[A-Za-z0-9.][A-Za-z0-9._-]*)*$"
+    },
+    "digestState": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "state", "sha256"],
+          "properties": {
+            "algorithm": {"const": "sha-256"},
+            "state": {"const": "pending-bootstrap"},
+            "sha256": {"type": "null"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "state", "sha256"],
+          "properties": {
+            "algorithm": {"const": "sha-256"},
+            "state": {"const": "content-bound"},
+            "sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      ]
+    },
+    "artifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "digest"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safeRelativePath"},
+        "version": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*/[0-9]+\\.[0-9]+$"},
+        "digest": {"$ref": "#/$defs/digestState"}
+      }
+    },
+    "toolchainBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "path", "version", "digest"],
+      "properties": {
+        "identity": {"const": "wirevpn-w1-toolchain"},
+        "path": {"const": "tests/toolchain.json"},
+        "version": {"const": "wirevpn.toolchain/1.0"},
+        "digest": {"$ref": "#/$defs/digestState"}
+      }
+    },
+    "vectorBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "digest", "selection"],
+      "properties": {
+        "path": {"const": "tests/vectors/vectors.json"},
+        "version": {"const": "wirevpn.semantic-vectors/1.0"},
+        "digest": {"$ref": "#/$defs/digestState"},
+        "selection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "acceptance_id"],
+          "properties": {
+            "mode": {"enum": ["runner-self-test", "all-current-vectors-for-acceptance"]},
+            "acceptance_id": {"type": "string", "pattern": "^WV[AH]-[0-9]{2}$"}
+          }
+        }
+      }
+    },
+    "invalidationDependency": {
+      "enum": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "vector-bundle",
+        "check-inventory",
+        "toolchain",
+        "project-schema",
+        "checks-schema",
+        "vector-schema",
+        "fixtures",
+        "fake-model",
+        "instrumentation-profile",
+        "containment-profile",
+        "schedules",
+        "public-report-policy"
+      ]
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "check_version",
+        "phase",
+        "suite",
+        "requirement",
+        "runner",
+        "vectors",
+        "toolchain",
+        "output_schema",
+        "invalidation_dependencies"
+      ],
+      "properties": {
+        "check_id": {"type": "string", "pattern": "^WV[AH]-[0-9]{2}$"},
+        "check_version": {"$ref": "#/$defs/version"},
+        "phase": {"const": "W1"},
+        "suite": {
+          "enum": [
+            "source-manifest",
+            "path-policy-negative",
+            "fake-command-negative",
+            "embedded-payload-static",
+            "vector-schema-negative",
+            "instrumentation",
+            "evidence-integrity",
+            "interruption-recovery",
+            "containment-conformance",
+            "evidence-root-policy",
+            "public-ip-characterization",
+            "client-activation-characterization",
+            "dns-parsing-characterization",
+            "dns-restoration-characterization",
+            "dns-health-contract",
+            "macos-ipv6-contract",
+            "linux-ipv6-contract",
+            "secret-canary",
+            "documentation-history-inventory",
+            "embedded-source-inventory",
+            "external-code-inventory",
+            "ignore-public-output-inventory",
+            "concurrency-schedule-negative"
+          ]
+        },
+        "requirement": {"enum": ["required", "advisory"]},
+        "runner": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactBinding"},
+            {"type": "object", "properties": {"path": {"const": "tests/harness/run.py"}, "version": {"const": "wirevpn.python-runner/1.0"}}}
+          ]
+        },
+        "vectors": {"$ref": "#/$defs/vectorBinding"},
+        "toolchain": {"$ref": "#/$defs/toolchainBinding"},
+        "output_schema": {"enum": ["wirevpn.infrastructure-result/1.0", "wirevpn.characterization-result/1.0"]},
+        "invalidation_dependencies": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/invalidationDependency"}
+        }
+      }
+    },
+    "requireWVH01": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-01"}}}}}},
+    "requireWVH02": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-02"}}}}}},
+    "requireWVH03": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-03"}}}}}},
+    "requireWVH04": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-04"}}}}}},
+    "requireWVH05": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-05"}}}}}},
+    "requireWVH06": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-06"}}}}}},
+    "requireWVH07": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-07"}}}}}},
+    "requireWVH08": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-08"}}}}}},
+    "requireWVH09": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-09"}}}}}},
+    "requireWVH10": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVH-10"}}}}}},
+    "requireWVA01": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-01"}}}}}},
+    "requireWVA12": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-12"}}}}}},
+    "requireWVA13": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-13"}}}}}},
+    "requireWVA14": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-14"}}}}}},
+    "requireWVA15": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-15"}}}}}},
+    "requireWVA16": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-16"}}}}}},
+    "requireWVA17": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-17"}}}}}},
+    "requireWVA19": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-19"}}}}}},
+    "requireWVA20": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-20"}}}}}},
+    "requireWVA21": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-21"}}}}}},
+    "requireWVA26": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-26"}}}}}},
+    "requireWVA27": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-27"}}}}}},
+    "requireWVA28": {"type": "object", "properties": {"checks": {"contains": {"required": ["check_id"], "properties": {"check_id": {"const": "WVA-28"}}}}}}
+  }
+}

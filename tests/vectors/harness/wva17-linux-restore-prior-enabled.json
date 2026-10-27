@@ -1,0 +1,62 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The service stops successfully and the volatile state file records prior all=0; prior default is also 0."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": 0,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    },
+    {
+      "kind": "file_absent",
+      "path": "run/wirevpn_v6.state",
+      "root": "case"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "7048d6372ca59b94bc7a85525e8cc052d27b1dc0b0491938f934e7d74bf03bde",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Managed down restores prior-enabled all and default IPv6 state."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Successful restoration removes the volatile state file."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 469,
+      "path": "wva17/restore-prior-enabled.fixture",
+      "sha256": "d3269c124103339ffc407668bc0e5b2bbe1e3654f59f738e416262db59f90a28"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-restore-prior-enabled"
+}

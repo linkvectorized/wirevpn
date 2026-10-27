@@ -1,0 +1,107 @@
+name: deterministic-gates
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validation-and-self-tests:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Discover exact runtime toolchain
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/wirevpn-private"
+          python tests/harness/toolchain.py --require-ci --output "$RUNNER_TEMP/wirevpn-private/toolchain.json"
+      - name: Validate every semantic vector and Bash binding
+        run: python tests/harness/run.py validate --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+      - name: Run required negative controls
+        run: python tests/harness/run.py self-test --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+
+  bash-static:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Discover exact runtime toolchain
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/wirevpn-private"
+          python tests/harness/toolchain.py --require-ci --output "$RUNNER_TEMP/wirevpn-private/toolchain.json"
+      - name: Check source, Bash syntax, and embedded payloads
+        run: python tests/harness/run.py static --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+
+  shell-lint:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Provision exact ShellCheck and shfmt release assets
+        run: python tests/harness/shell_lint.py provision --output-dir "$RUNNER_TEMP/wirevpn-shell-lint"
+      - name: Check all six product entrypoints
+        run: python tests/harness/shell_lint.py check --tool-dir "$RUNNER_TEMP/wirevpn-shell-lint"
+
+  bash-characterization:
+    runs-on: macos-14
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Discover exact runtime toolchain
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/wirevpn-private"
+          python tests/harness/toolchain.py --require-ci --output "$RUNNER_TEMP/wirevpn-private/toolchain.json"
+      - name: Execute all synthetic contained Bash vectors
+        run: python tests/harness/run.py characterize --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+
+  audit-inventory:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Discover exact runtime toolchain
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/wirevpn-private"
+          python tests/harness/toolchain.py --require-ci --output "$RUNNER_TEMP/wirevpn-private/toolchain.json"
+      - name: Verify W1 documentation and external-code inventories
+        run: python tests/harness/run.py static --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+
+  public-artifacts:
+    runs-on: macos-14
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: "3.14.3"
+      - name: Discover exact runtime toolchain
+        run: |
+          mkdir -m 700 "$RUNNER_TEMP/wirevpn-private"
+          python tests/harness/toolchain.py --require-ci --output "$RUNNER_TEMP/wirevpn-private/toolchain.json"
+      - name: Scan declared public artifacts and secret boundaries
+        run: python tests/harness/run.py static --toolchain "$RUNNER_TEMP/wirevpn-private/toolchain.json" --evidence-root "$RUNNER_TEMP/wirevpn-evidence"
+      - name: Check tracked and staged whitespace
+        run: |
+          git diff --check
+          git diff --cached --check

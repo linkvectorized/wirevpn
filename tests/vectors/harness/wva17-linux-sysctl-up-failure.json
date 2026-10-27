@@ -1,0 +1,82 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The all.disable_ipv6=1 write fails, default.disable_ipv6=1 succeeds, and baseline continuation reaches service start."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.all"
+    },
+    {
+      "expected": 0,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "59c3d0f2f590e81ecb92e6ab5b2bef550217e3901b2b03d42806eaaa1b2fce83",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-FAIL-CLOSED"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Failure of the all.disable_ipv6 write must prevent service start."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-FAIL-CLOSED"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "A failed all write must not be represented as disabled."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-FAIL-CLOSED"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Partial default disable must be rolled back when activation is refused."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-LINUX-IPV6-FAIL-CLOSED",
+  "fixtures": [
+    {
+      "bytes": 501,
+      "path": "wva17/sysctl-up-failure.fixture",
+      "sha256": "cfaa045d1d6700937fd66683d0a037c68a6f5089e4e5f2e4acd9f3092cfc8a08"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-sysctl-up-failure"
+}

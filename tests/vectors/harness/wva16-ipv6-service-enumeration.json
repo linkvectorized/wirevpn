@@ -1,0 +1,77 @@
+{
+  "acceptance_ids": [
+    "WVA-16"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Service enumeration returns the header, Wi-Fi, and asterisk-marked Ethernet; both have IPv6 automatic."
+  },
+  "arguments": [
+    "up"
+  ],
+  "assertions": [
+    {
+      "expected": "off",
+      "kind": "state_equals",
+      "path": "ipv6.Ethernet"
+    },
+    {
+      "expected": "Wi-Fi\nEthernet\n",
+      "kind": "file_text",
+      "path": "etc/wireguard/.wirevpn_v6.state",
+      "root": "case"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "3abdf5a320500b0d43e2ae195fd961dc44b0ead9eef1c0aeef1f1583189f9d48",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "Every enumerated non-header service, including a disabled-marked service, has IPv6 disabled."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "The state file preserves deterministic service enumeration order."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "The tunnel activates only after all enumerated services are disabled."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva16/enumeration.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva16-ipv6-service-enumeration"
+}

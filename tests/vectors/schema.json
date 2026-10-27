@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wirevpn:tests:vectors.schema:1.0",
+  "title": "WireVPN vector index, semantic vectors, and Bash execution bindings",
+  "oneOf": [
+    {"$ref": "#/$defs/index"},
+    {"$ref": "#/$defs/semantic"},
+    {"$ref": "#/$defs/binding"}
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "safeRelativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9.][A-Za-z0-9._@-]*(?:/[A-Za-z0-9.][A-Za-z0-9._@-]*)*$"
+    },
+    "stableId": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "statement": {"type": "string", "minLength": 1, "maxLength": 4096, "pattern": "^[^\\u0000-\\u001F]*$"},
+    "bytes": {
+      "oneOf": [
+        {"type": "string"},
+        {"type": "object", "additionalProperties": false, "required": ["text"], "properties": {"text": {"type": "string"}}},
+        {"type": "object", "additionalProperties": false, "required": ["base64"], "properties": {"base64": {"type": "string", "pattern": "^[A-Za-z0-9+/]*={0,2}$"}}},
+        {"type": "object", "additionalProperties": false, "required": ["hex"], "properties": {"hex": {"type": "string", "pattern": "^(?:[0-9a-fA-F]{2})*$"}}}
+      ]
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/safeRelativePath"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "stateOperation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "path", "value"],
+          "properties": {"op": {"const": "set"}, "path": {"type": "string", "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*$"}, "value": true}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "path"],
+          "properties": {"op": {"const": "delete"}, "path": {"type": "string", "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*$"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "path"],
+          "properties": {"op": {"const": "increment"}, "path": {"type": "string", "pattern": "^[A-Za-z0-9_-]+(?:\\.[A-Za-z0-9_-]+)*$"}, "by": {"type": "number"}}
+        }
+      ]
+    },
+    "effect": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "root", "path"],
+          "properties": {
+            "op": {"const": "write"},
+            "root": {"enum": ["case", "evidence"]},
+            "path": {"type": "string", "minLength": 1},
+            "content": {"$ref": "#/$defs/bytes"},
+            "from_stdin": {"type": "boolean"},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 511},
+            "append": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "root", "path"],
+          "properties": {
+            "op": {"const": "mkdir"},
+            "root": {"enum": ["case", "evidence"]},
+            "path": {"type": "string", "minLength": 1},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 511},
+            "parents": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "root", "path"],
+          "properties": {
+            "op": {"const": "remove"},
+            "root": {"enum": ["case", "evidence"]},
+            "path": {"type": "string", "minLength": 1},
+            "recursive": {"type": "boolean"},
+            "must_exist": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "source_root", "source_path", "destination_root", "destination_path"],
+          "properties": {
+            "op": {"const": "copy"},
+            "source_root": {"enum": ["case", "evidence"]},
+            "source_path": {"type": "string", "minLength": 1},
+            "destination_root": {"enum": ["case", "evidence"]},
+            "destination_path": {"type": "string", "minLength": 1},
+            "mode": {"type": "integer", "minimum": 0, "maximum": 511}
+          }
+        }
+      ]
+    },
+    "expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv", "exit", "stdout", "stderr"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "string", "maxLength": 16384}},
+        "exit": {"type": "integer", "minimum": 0, "maximum": 255},
+        "stdout": {"$ref": "#/$defs/bytes"},
+        "stderr": {"$ref": "#/$defs/bytes"},
+        "stdin": {
+          "oneOf": [
+            {"type": "object", "additionalProperties": false, "required": ["text"], "properties": {"text": {"type": "string"}}},
+            {"type": "object", "additionalProperties": false, "required": ["size", "sha256"], "properties": {"size": {"type": "integer", "minimum": 0}, "sha256": {"$ref": "#/$defs/sha256"}}}
+          ]
+        },
+        "state": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/stateOperation"}},
+        "effects": {"type": "array", "maxItems": 128, "items": {"$ref": "#/$defs/effect"}}
+      }
+    },
+    "assertion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "path", "expected"],
+          "properties": {"kind": {"enum": ["state_equals", "state_not_equals"]}, "path": {"type": "string"}, "expected": true}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root", "path"],
+          "properties": {"kind": {"enum": ["file_exists", "file_absent"]}, "root": {"enum": ["case", "evidence"]}, "path": {"type": "string", "minLength": 1}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root", "path", "expected"],
+          "properties": {"kind": {"const": "file_sha256"}, "root": {"enum": ["case", "evidence"]}, "path": {"type": "string", "minLength": 1}, "expected": {"$ref": "#/$defs/sha256"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root", "path", "expected"],
+          "properties": {"kind": {"const": "file_text"}, "root": {"enum": ["case", "evidence"]}, "path": {"type": "string", "minLength": 1}, "expected": {"type": "string"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "root", "path", "expected"],
+          "properties": {"kind": {"const": "file_mode"}, "root": {"enum": ["case", "evidence"]}, "path": {"type": "string", "minLength": 1}, "expected": {"type": "integer", "minimum": 0, "maximum": 4095}}
+        }
+      ]
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assertion_id", "basis", "statement", "requirement_links", "finding_links"],
+      "properties": {
+        "assertion_id": {"$ref": "#/$defs/stableId"},
+        "basis": {"enum": ["safety", "compatibility", "accepted-intentional-change"]},
+        "statement": {"$ref": "#/$defs/statement"},
+        "requirement_links": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^WVA-[0-9]{2}$"}},
+        "finding_links": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^(?:RED-BASH|DOC|HARDENING)-[A-Z0-9-]+$"}}
+      }
+    },
+    "singleActor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {"mode": {"const": "single-actor"}}
+    },
+    "multiActor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "actors", "schedule", "barriers", "signals", "partial_orders", "allowed_linearizations", "final_state_invariants"],
+      "properties": {
+        "mode": {"const": "multi-actor"},
+        "actors": {"type": "array", "minItems": 2, "maxItems": 32, "items": {"type": "object", "additionalProperties": false, "required": ["actor_id", "role"], "properties": {"actor_id": {"$ref": "#/$defs/stableId"}, "role": {"enum": ["primary", "daemon", "concurrent-invoker", "signal-source", "synthetic-service"]}}}},
+        "schedule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_steps", "max_virtual_time_ms", "max_spawned_processes", "steps"],
+          "properties": {
+            "max_steps": {"type": "integer", "minimum": 2, "maximum": 10000},
+            "max_virtual_time_ms": {"type": "integer", "minimum": 0, "maximum": 3600000},
+            "max_spawned_processes": {"type": "integer", "minimum": 0, "maximum": 256},
+            "steps": {"type": "array", "minItems": 2, "maxItems": 10000, "items": {"type": "object", "additionalProperties": false, "required": ["step_id", "actor_id", "operation_id", "virtual_time_offset_ms", "after_barrier_ids"], "properties": {"step_id": {"$ref": "#/$defs/stableId"}, "actor_id": {"$ref": "#/$defs/stableId"}, "operation_id": {"$ref": "#/$defs/stableId"}, "virtual_time_offset_ms": {"type": "integer", "minimum": 0, "maximum": 3600000}, "after_barrier_ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/stableId"}}}}}
+          }
+        },
+        "barriers": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["barrier_id", "after_step_ids", "before_step_ids"], "properties": {"barrier_id": {"$ref": "#/$defs/stableId"}, "after_step_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/stableId"}}, "before_step_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/stableId"}}}}},
+        "signals": {"type": "array", "maxItems": 32, "items": {"type": "object", "additionalProperties": false, "required": ["signal_id", "at_step_id", "actor_id", "name", "expected_handler_observation"], "properties": {"signal_id": {"$ref": "#/$defs/stableId"}, "at_step_id": {"$ref": "#/$defs/stableId"}, "actor_id": {"$ref": "#/$defs/stableId"}, "name": {"enum": ["SIGTERM", "SIGINT", "SIGHUP"]}, "expected_handler_observation": {"$ref": "#/$defs/statement"}}}},
+        "partial_orders": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["order_id", "before_step_id", "after_step_id"], "properties": {"order_id": {"$ref": "#/$defs/stableId"}, "before_step_id": {"$ref": "#/$defs/stableId"}, "after_step_id": {"$ref": "#/$defs/stableId"}}}},
+        "allowed_linearizations": {"type": "array", "minItems": 1, "items": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/stableId"}}},
+        "final_state_invariants": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/statement"}}
+      }
+    },
+    "index": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "vectors", "content_sha256"],
+      "properties": {
+        "schema": {"const": "wirevpn.vector-index/1.0"},
+        "vectors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["vector_id", "acceptance_id", "semantic_path", "bash_binding_path", "semantic_sha256", "bash_binding_sha256"],
+            "properties": {
+              "vector_id": {"$ref": "#/$defs/stableId"},
+              "acceptance_id": {"type": "string", "pattern": "^WVA-[0-9]{2}$"},
+              "semantic_path": {"$ref": "#/$defs/safeRelativePath"},
+              "bash_binding_path": {"$ref": "#/$defs/safeRelativePath"},
+              "semantic_sha256": {"$ref": "#/$defs/sha256"},
+              "bash_binding_sha256": {"$ref": "#/$defs/sha256"}
+            }
+          }
+        },
+        "content_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "semantic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "vector_id", "acceptance_ids", "platform", "arguments", "applicability", "fixtures", "contracts", "assertions", "exit_codes", "finding_id", "concurrency", "content_sha256"],
+      "properties": {
+        "schema": {"const": "wirevpn.semantic-vector/1.0"},
+        "vector_id": {"$ref": "#/$defs/stableId"},
+        "acceptance_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^WVA-[0-9]{2}$"}},
+        "platform": {"enum": ["macos", "linux", "platform-independent"]},
+        "arguments": {"type": "array", "maxItems": 32, "items": {"type": "string"}},
+        "applicability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["baseline_commit", "condition"],
+          "properties": {"baseline_commit": {"const": "01143e05ce105ab42fec5fd7b0bacaac49ad2405"}, "condition": {"$ref": "#/$defs/statement"}}
+        },
+        "fixtures": {"type": "array", "maxItems": 64, "items": {"$ref": "#/$defs/fixture"}},
+        "contracts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/contract"}},
+        "assertions": {"type": "array", "minItems": 1, "maxItems": 128, "items": {"$ref": "#/$defs/assertion"}},
+        "exit_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "integer", "minimum": 0, "maximum": 255}},
+        "finding_id": {"oneOf": [{"type": "null"}, {"type": "string", "pattern": "^(?:RED-BASH|DOC|HARDENING)-[A-Z0-9-]+$"}]},
+        "concurrency": {"oneOf": [{"$ref": "#/$defs/singleActor"}, {"$ref": "#/$defs/multiActor"}]},
+        "content_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "binding_id", "vector_id", "vector_sha256", "entrypoint", "arguments", "instrumentation_profile", "containment_profile", "timeout_seconds", "initial_state", "commands", "baseline_observation", "content_sha256"],
+      "properties": {
+        "schema": {"const": "wirevpn.bash-execution-binding/1.0"},
+        "binding_id": {"$ref": "#/$defs/stableId"},
+        "vector_id": {"$ref": "#/$defs/stableId"},
+        "vector_sha256": {"$ref": "#/$defs/sha256"},
+        "entrypoint": {"enum": ["server_setup.sh", "adguard_setup.sh", "client_setup.sh", "mobile_peer.sh", "wirevpn.sh", "wirevpn-connect.sh"]},
+        "arguments": {"type": "array", "maxItems": 32, "items": {"type": "string"}},
+        "instrumentation_profile": {"const": "wirevpn-bash-instrumentation/1.0"},
+        "containment_profile": {"const": "wirevpn-darwin-seatbelt/1"},
+        "timeout_seconds": {"type": "number", "minimum": 0.1, "maximum": 30},
+        "initial_state": {"type": "object"},
+        "commands": {"type": "array", "minItems": 1, "maxItems": 10000, "items": {"$ref": "#/$defs/expectation"}},
+        "baseline_observation": {"type": "object", "additionalProperties": false, "required": ["authority", "statement"], "properties": {"authority": {"const": "non-authoritative"}, "statement": {"$ref": "#/$defs/statement"}}},
+        "content_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "arguments": [
+    "up"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline ignores both sysctl statuses, starts the tunnel with all IPv6 still enabled, and exits 0."
+  },
+  "binding_id": "bash-wva17-linux-sysctl-up-failure",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.all.disable_ipv6=1"
+      ],
+      "exit": 1,
+      "stderr": "synthetic sysctl all failure\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.default.disable_ipv6=1"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.default",
+          "value": 1
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "start",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": true
+        },
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "activation.count"
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "2"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "192.0.2.10\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "a88e2193c8fc430ad4c624ac86552b8f58d687b93bd9d7aba3b943d92b66a7c1",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "activation": {
+      "count": 0
+    },
+    "dns": {},
+    "ipv6": {
+      "all": 0,
+      "default": 0
+    },
+    "packages": {},
+    "peers": {},
+    "services": {},
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva17-linux-sysctl-up-failure",
+  "vector_sha256": "59c3d0f2f590e81ecb92e6ab5b2bef550217e3901b2b03d42806eaaa1b2fce83"
+}

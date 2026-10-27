@@ -1,0 +1,66 @@
+{
+  "acceptance_ids": [
+    "WVA-13"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The synthetic client configuration contains DNS = not-an-ip; the fake current DNS repeats it to expose whether validation occurs."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.safe_rejection"
+    },
+    {
+      "expected": "not-an-ip",
+      "kind": "state_not_equals",
+      "path": "dns.swept_server"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "ca190d48118ca43e5c6625d1411a05b48d80125484ee173967d55989b760f7f0",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-DNS-VALIDATION"
+      ],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "An invalid DNS token must be rejected safely instead of being swept or used as a health target."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-DNS-VALIDATION"
+      ],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The invalid token must not be treated as a valid configured DNS server."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-DNS-VALIDATION",
+  "fixtures": [
+    {
+      "bytes": 381,
+      "path": "wva13/invalid.fixture",
+      "sha256": "3e5639b4bb6b914f7894ee9c380bef9d8790910ef4e2642a95689bc1ae17ebbd"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva13-dns-invalid-rejected"
+}

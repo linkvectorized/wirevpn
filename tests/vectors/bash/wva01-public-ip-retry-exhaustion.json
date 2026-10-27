@@ -1,0 +1,128 @@
+{
+  "arguments": [],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline exits 1 after three malformed candidates and two fake sleeps."
+  },
+  "binding_id": "bash-wva01-public-ip-retry-exhaustion",
+  "commands": [
+    {
+      "argv": [
+        "clear"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sleep",
+        "1"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "network.ip_attempts"
+        }
+      ],
+      "stderr": "",
+      "stdout": "not-an-ip\n"
+    },
+    {
+      "argv": [
+        "sleep",
+        "3"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "network.ip_attempts"
+        }
+      ],
+      "stderr": "",
+      "stdout": "not-an-ip\n"
+    },
+    {
+      "argv": [
+        "sleep",
+        "3"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "curl",
+        "-s",
+        "--max-time",
+        "10",
+        "ifconfig.me"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "network.ip_attempts"
+        }
+      ],
+      "stderr": "",
+      "stdout": "not-an-ip\n"
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "9620ae3c46bace060b0621470b20283838b8f084440b4a97e36ff335b3bdeecc",
+  "entrypoint": "server_setup.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {},
+    "network": {
+      "ip_attempts": 0
+    },
+    "packages": {},
+    "peers": {},
+    "server": {
+      "ip_accepted": false,
+      "out_of_range_rejected": false
+    },
+    "services": {},
+    "tunnel": {},
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva01-public-ip-retry-exhaustion",
+  "vector_sha256": "ce85856a9d953b4d81f32a5b39301b7f00f3393ff24316e64765cc19030dbf49"
+}

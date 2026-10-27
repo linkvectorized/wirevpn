@@ -1,0 +1,10 @@
+{
+  "directories": [],
+  "files": [
+    {
+      "mode": 384,
+      "path": "etc/wireguard/client.conf",
+      "text": "[Interface]\nPrivateKey = SYNTHETIC-CLIENT-PRIVATE-KEY-NOT-SECRET\nAddress = 10.0.0.2/24\nDNS = 10.0.0.1, 1.1.1.1\n\n[Peer]\nPublicKey = SYNTHETIC-SERVER-PUBLIC-KEY-NOT-SECRET\nEndpoint = 192.0.2.10:51820\nAllowedIPs = 0.0.0.0/0\nPersistentKeepalive = 25\n"
+    }
+  ]
+}

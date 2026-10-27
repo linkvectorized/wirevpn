@@ -1,0 +1,66 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Prior state is all=0 but default=1; the legacy one-value state file can record only all=0 while current tunnel state has both disabled."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    },
+    {
+      "expected": 0,
+      "kind": "state_equals",
+      "path": "ipv6.all"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "9bd4baba6a2c23bd77941060c866e5fadea28bdd840ba7b93f309a69d1e17105",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-DEFAULT"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "A prior default=1 must survive restoration even when prior all=0."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [
+        "RED-BASH-W1-LINUX-IPV6-DEFAULT"
+      ],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "The independently recorded all=0 prior state is restored."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-LINUX-IPV6-DEFAULT",
+  "fixtures": [
+    {
+      "bytes": 469,
+      "path": "wva17/restore-divergent-default.fixture",
+      "sha256": "d3269c124103339ffc407668bc0e5b2bbe1e3654f59f738e416262db59f90a28"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-divergent-default-prior-state"
+}

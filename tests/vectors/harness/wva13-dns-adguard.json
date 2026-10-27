@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-13"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Managed macOS down with one Wi-Fi service and synthetic adguard client configuration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": "10.0.0.1",
+      "kind": "state_equals",
+      "path": "dns.swept_server"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.cache_flush_attempted"
+    },
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "933d21ddb266124b15476fa6ace3c8445cf9ea51952ea616d7c526703cdc7cd9",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The parsed DNS server for the adguard configuration drives stale-DNS cleanup."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "A successful sweep flushes both synthetic macOS DNS caches."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-13"
+      ],
+      "statement": "The managed down path leaves no matching stale DNS server."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva13/adguard.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva13-dns-adguard"
+}

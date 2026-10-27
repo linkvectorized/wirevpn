@@ -1,0 +1,104 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline restores all=0 and default=0 and removes the run state file."
+  },
+  "binding_id": "bash-wva17-linux-restore-prior-enabled",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Linux\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "systemctl",
+        "stop",
+        "wg-quick@client"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "by": 1,
+          "op": "increment",
+          "path": "services.stop_attempts"
+        },
+        {
+          "op": "set",
+          "path": "tunnel.active",
+          "value": false
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.all.disable_ipv6=0"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.all",
+          "value": 0
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sysctl",
+        "-w",
+        "net.ipv6.conf.default.disable_ipv6=0"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "ipv6.default",
+          "value": 0
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "e1e87f444b35b2460d075ffd10ad36a12d185f3aa5a4908a2d75e7efed3ee879",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {},
+    "ipv6": {
+      "all": 1,
+      "default": 1
+    },
+    "packages": {},
+    "peers": {},
+    "services": {
+      "stop_attempts": 0
+    },
+    "tunnel": {
+      "active": true
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva17-linux-restore-prior-enabled",
+  "vector_sha256": "7048d6372ca59b94bc7a85525e8cc052d27b1dc0b0491938f934e7d74bf03bde"
+}

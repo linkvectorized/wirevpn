@@ -1,0 +1,82 @@
+{
+  "acceptance_ids": [
+    "WVA-16"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "State names Wi-Fi and Ethernet; Wi-Fi restore fails and Ethernet restore succeeds after an otherwise clean managed down."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "kind": "file_exists",
+      "path": "etc/wireguard/.wirevpn_v6.state",
+      "root": "case"
+    },
+    {
+      "expected": "automatic",
+      "kind": "state_not_equals",
+      "path": "ipv6.Wi-Fi"
+    },
+    {
+      "expected": "automatic",
+      "kind": "state_equals",
+      "path": "ipv6.Ethernet"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "527c5019f54308dfc07960901a20cd286ba9df715c9f2055257ff9e3af09accb",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-RESTORE"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "A failed IPv6 restore must retain retryable ownership state."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-RESTORE"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "The failed service must not be represented as automatically restored."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "compatibility",
+      "finding_links": [
+        "RED-BASH-W1-IPV6-RESTORE"
+      ],
+      "requirement_links": [
+        "WVA-16"
+      ],
+      "statement": "A successful restore on another service remains effective."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-IPV6-RESTORE",
+  "fixtures": [
+    {
+      "bytes": 495,
+      "path": "wva16/restore-failure.fixture",
+      "sha256": "e779e94c8f7c66cfcdd4ce72ec6f004f86a1e1641e5997b9fbcc52ab92488299"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva16-ipv6-restore-failure-truthful"
+}

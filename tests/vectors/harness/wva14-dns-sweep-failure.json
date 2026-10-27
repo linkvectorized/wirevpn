@@ -1,0 +1,66 @@
+{
+  "acceptance_ids": [
+    "WVA-14"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The matching networksetup -setdnsservers operation fails while later cache commands remain reachable."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.failure_reported"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "48c92519b0a117d3456f7613a3b1ccd069f63f1f2bb53476c385e5cc16be5262",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-DNS-SWEEP-FAILURE"
+      ],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "A failed networksetup DNS sweep must not be reported as successful restoration."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-DNS-SWEEP-FAILURE"
+      ],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "Sweep failure must produce a failing contractual exit class."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-DNS-SWEEP-FAILURE",
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva14/sweep-failure.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva14-dns-sweep-failure"
+}

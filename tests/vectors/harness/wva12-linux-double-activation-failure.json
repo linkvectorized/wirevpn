@@ -1,0 +1,80 @@
+{
+  "acceptance_ids": [
+    "WVA-12"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Linux managed start succeeds and the redundant raw activation is rejected by the synthetic WireGuard state."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "activation.raw_attempted"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "activation.count"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "5332518fda529837d7f6cb7ddbe1624101df1525a062e498ee7582d0ec0b2ef1",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "A live managed tunnel must be recognized without a raw duplicate attempt."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "The existing managed activation remains the only activation."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "Duplicate rejection must not turn successful managed setup into a failed setup."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": "RED-BASH-W1-CLIENT-ACTIVATION",
+  "fixtures": [
+    {
+      "bytes": 425,
+      "path": "wva12/client.fixture",
+      "sha256": "005a4062b5b9a1b9cab2a9851b51d6baca49ed2ee3d5fbb072d287f6c99b1fac"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva12-linux-double-activation-failure"
+}

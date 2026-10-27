@@ -1,0 +1,1111 @@
+{
+  "checks": [
+    {
+      "check_id": "WVH-01",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "check-inventory",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "source-manifest",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-01",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-02",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "public-report-policy"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "path-policy-negative",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-02",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-03",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fake-model",
+        "fixtures"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "fake-command-negative",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-03",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-04",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "embedded-payload-static",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-04",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-05",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "vector-schema",
+        "vector-bundle",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "vector-schema-negative",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-05",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-06",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "instrumentation-profile",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "instrumentation",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-06",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-07",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "public-report-policy"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "evidence-integrity",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-07",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-08",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "fixtures",
+        "schedules"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "interruption-recovery",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-08",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-09",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "containment-profile",
+        "toolchain",
+        "fixtures"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "containment-conformance",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-09",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVH-10",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "check-inventory",
+        "public-report-policy",
+        "fixtures"
+      ],
+      "output_schema": "wirevpn.infrastructure-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "evidence-root-policy",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVH-10",
+          "mode": "runner-self-test"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-01",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "public-ip-characterization",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-01",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-12",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "instrumentation-profile",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "client-activation-characterization",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-12",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-13",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "dns-parsing-characterization",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-13",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-14",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "dns-restoration-characterization",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-14",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-15",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "dns-health-contract",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-15",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-16",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "macos-ipv6-contract",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-16",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-17",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "fake-model",
+        "containment-profile",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "linux-ipv6-contract",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-17",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-19",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "public-report-policy",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "secret-canary",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-19",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-20",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "vector-bundle",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "documentation-history-inventory",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-20",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-21",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "instrumentation-profile",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "embedded-source-inventory",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-21",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-26",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "accepted-specification",
+        "runner",
+        "vector-bundle",
+        "toolchain"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "external-code-inventory",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-26",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-27",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "product-sources",
+        "runner",
+        "vector-bundle",
+        "fixtures",
+        "public-report-policy"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "ignore-public-output-inventory",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-27",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    },
+    {
+      "check_id": "WVA-28",
+      "check_version": "1.0.0",
+      "invalidation_dependencies": [
+        "runner",
+        "vector-schema",
+        "vector-bundle",
+        "schedules",
+        "fixtures",
+        "check-inventory"
+      ],
+      "output_schema": "wirevpn.characterization-result/1.0",
+      "phase": "W1",
+      "requirement": "required",
+      "runner": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "061eacaec7ba6b99dd89921973e27259922c1365064de769a8b4e6636ef0837a",
+          "state": "content-bound"
+        },
+        "path": "tests/harness/run.py",
+        "version": "wirevpn.python-runner/1.0"
+      },
+      "suite": "concurrency-schedule-negative",
+      "toolchain": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "3c7e0fb5898342b0f3ad9b16a28af61ed873b1537187407e9d3e79e20e914d79",
+          "state": "content-bound"
+        },
+        "identity": "wirevpn-w1-toolchain",
+        "path": "tests/toolchain.json",
+        "version": "wirevpn.toolchain/1.0"
+      },
+      "vectors": {
+        "digest": {
+          "algorithm": "sha-256",
+          "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+          "state": "content-bound"
+        },
+        "path": "tests/vectors/vectors.json",
+        "selection": {
+          "acceptance_id": "WVA-28",
+          "mode": "all-current-vectors-for-acceptance"
+        },
+        "version": "wirevpn.semantic-vectors/1.0"
+      }
+    }
+  ],
+  "inventory_version": "1.0.0",
+  "kind": "named-installed-check-inventory",
+  "project_binding": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "kind": "validated-external-project-configuration",
+    "schema": "wirevpn.external-project-config/1.0",
+    "spec_commit": "d5dbe8378c813d1c687f75bfec8223cc5e5b3409",
+    "spec_sha256": "d7e2bba1491c1cf7dcb0f7913bdf51ca116cc4a8d76fb970f1f5f04e7e11c2d5"
+  },
+  "schema": "wirevpn.check-inventory/1.0",
+  "schema_version": "1.0.0",
+  "vector_bundle": {
+    "digest": {
+      "algorithm": "sha-256",
+      "sha256": "bf54e3aa2d4eff4f80d067035e81761a01bf5e3449fe1507c8923bc35e101e58",
+      "state": "content-bound"
+    },
+    "path": "tests/vectors/vectors.json",
+    "version": "wirevpn.semantic-vectors/1.0"
+  }
+}

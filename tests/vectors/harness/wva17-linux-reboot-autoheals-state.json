@@ -1,0 +1,62 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "A reboot has removed /run state and restored synthetic kernel all/default=0 before a successful service stop."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": 0,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    },
+    {
+      "kind": "file_absent",
+      "path": "run/wirevpn_v6.state",
+      "root": "case"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "e3a18fd4d4ab1df52c33e2fc05b212ffe9ebcbfc749563c9579228dbb54030ea",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "After reboot, absent volatile state leaves the kernel's enabled all/default baseline unchanged."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "No stale run-state file survives the reboot model."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 392,
+      "path": "wva17/reboot.fixture",
+      "sha256": "94bd249569948d24e2a38d00586cfa25c2e4b276a6811be0bf6e3be3cd67e3c9"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-reboot-autoheals-state"
+}

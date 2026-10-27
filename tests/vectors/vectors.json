@@ -1,0 +1,310 @@
+{
+  "content_sha256": "554e11c405a16f498de7c5128913e6e94e9116511833b691d9e0d6505779bb03",
+  "schema": "wirevpn.vector-index/1.0",
+  "vectors": [
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-valid.json",
+      "bash_binding_sha256": "73f68bf26b8d48729ca99acec91f42079e65cc1f93f8f75a975855ff9307f70e",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-valid.json",
+      "semantic_sha256": "4a81369bf26f3f842c40915adc9b91b70b156f6b4571e46e468bc7f64c3935f0",
+      "vector_id": "wva01-public-ip-valid"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-malformed-retry.json",
+      "bash_binding_sha256": "079c3c265c1696a11f456501b87a0d49470bd9db2eb192f37fc573f33f154844",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-malformed-retry.json",
+      "semantic_sha256": "222cf20187af4701ab94f4774c66d310e73aded0884c383f0b4e6ae23a7b6080",
+      "vector_id": "wva01-public-ip-malformed-retry"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-html-retry.json",
+      "bash_binding_sha256": "43797242dcabacc65c7dac542ad30d73608bb1068c18635187347905f2e629ac",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-html-retry.json",
+      "semantic_sha256": "79485fbe4e60d929f1ace420823240b1ca87410a7689d2671bbed8a227fd3050",
+      "vector_id": "wva01-public-ip-html-retry"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-empty-retry.json",
+      "bash_binding_sha256": "5b1e2ea86a5ea912517caa8a50a4c68f414c11f70374703bad647ea7ccb75679",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-empty-retry.json",
+      "semantic_sha256": "af924260a891f55a32f52e224aa1bb257d33d9ebdd5a69d022e60b02ee680ea3",
+      "vector_id": "wva01-public-ip-empty-retry"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-timeout-retry.json",
+      "bash_binding_sha256": "675c277423e896340c9e47385f2c116dee219b900b61eefe75f4cb8254495427",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-timeout-retry.json",
+      "semantic_sha256": "7bee6d1b3efa187b4648aebeff29b9998199d7dd98126ed3e495b25ccf7e32fb",
+      "vector_id": "wva01-public-ip-timeout-retry"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-out-of-range.json",
+      "bash_binding_sha256": "2cbace415ebcbd7253e45ae1c9f60cc242cfd2353fdacea4550b1a7d0ee25bf6",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-out-of-range.json",
+      "semantic_sha256": "de2756b06a63348ce030d6d9a5dd7bc6a376c1e0a77fa79ca8a970989e5dbfd0",
+      "vector_id": "wva01-public-ip-out-of-range"
+    },
+    {
+      "acceptance_id": "WVA-01",
+      "bash_binding_path": "tests/vectors/bash/wva01-public-ip-retry-exhaustion.json",
+      "bash_binding_sha256": "b775e13be100419029b767e3a79abf7a696d4aa54d6e53c84b0d30192d6d6fc4",
+      "semantic_path": "tests/vectors/harness/wva01-public-ip-retry-exhaustion.json",
+      "semantic_sha256": "89d33561b6a079084726554d0c1ede12cc0aa8df6f052c14aa8471b8b01815b6",
+      "vector_id": "wva01-public-ip-retry-exhaustion"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-adguard.json",
+      "bash_binding_sha256": "f75b50e37eeea6fd239b96cf8fec918739a927e2c640aff8557322a5994f7ee6",
+      "semantic_path": "tests/vectors/harness/wva13-dns-adguard.json",
+      "semantic_sha256": "b2c260162b3701b9b91b1746fb88513fcfff4d669835a0b34278b58439c8e2cb",
+      "vector_id": "wva13-dns-adguard"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-public.json",
+      "bash_binding_sha256": "dd72165b9505b9e637765508aca4fa1cdf705b00df15e56f89b9f157ed9c0da6",
+      "semantic_path": "tests/vectors/harness/wva13-dns-public.json",
+      "semantic_sha256": "3ad06671a32fca9ec89f9fd5cfa0be618cb3ac6d1330a34f0632764e700dc63e",
+      "vector_id": "wva13-dns-public"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-comma-list.json",
+      "bash_binding_sha256": "cab73fbd992270d3cef93da911e042ca8fc7508ba538ec82fe235787078f5d69",
+      "semantic_path": "tests/vectors/harness/wva13-dns-comma-list.json",
+      "semantic_sha256": "f56b93f3a06158ba5ed6506c023800882a3949f5904e9e5c92b1558058c7829d",
+      "vector_id": "wva13-dns-comma-list"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-inline-comment.json",
+      "bash_binding_sha256": "386a22846cc86e910157f9c5e5e5651c24a988df5262c53bbe375b139334cc27",
+      "semantic_path": "tests/vectors/harness/wva13-dns-inline-comment.json",
+      "semantic_sha256": "3ec9874b164561b3eb239ec4883dfad270443a57c2be1068dc77788027928ee2",
+      "vector_id": "wva13-dns-inline-comment"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-missing-fallback.json",
+      "bash_binding_sha256": "2fccbb99b909f1b9ecdf6817affc5fb04f3e3ac0090efde62b6810a48be420df",
+      "semantic_path": "tests/vectors/harness/wva13-dns-missing-fallback.json",
+      "semantic_sha256": "9ec08f17d0ce8f4f6b86b7f9ce9d69fbd4749bf4d302796fc3c792e0f98c6f05",
+      "vector_id": "wva13-dns-missing-fallback"
+    },
+    {
+      "acceptance_id": "WVA-13",
+      "bash_binding_path": "tests/vectors/bash/wva13-dns-invalid-rejected.json",
+      "bash_binding_sha256": "fed99034ecae8f4df94bbf2b4b7ec5c6119556bcb8187f49c0ff4570e58d2a8c",
+      "semantic_path": "tests/vectors/harness/wva13-dns-invalid-rejected.json",
+      "semantic_sha256": "f29051d0d508a54ba99fc1f45be7fb72ab7ffbe34188fb6c1dfcc85274ada543",
+      "vector_id": "wva13-dns-invalid-rejected"
+    },
+    {
+      "acceptance_id": "WVA-14",
+      "bash_binding_path": "tests/vectors/bash/wva14-stale-dns-swept.json",
+      "bash_binding_sha256": "1ec914afab2c36989730948bb7091c9e8d192cebe9f856616c6ced9949ec0022",
+      "semantic_path": "tests/vectors/harness/wva14-stale-dns-swept.json",
+      "semantic_sha256": "8ed56301bd24b7154c1d844d0cefcc1c77217baca49470d40123f891d9c796ab",
+      "vector_id": "wva14-stale-dns-swept"
+    },
+    {
+      "acceptance_id": "WVA-14",
+      "bash_binding_path": "tests/vectors/bash/wva14-changed-dns-old-server-remains.json",
+      "bash_binding_sha256": "bb2a19e8ee469e19818d7313b8b4011c94786a32da0795ad3d38938683cc8455",
+      "semantic_path": "tests/vectors/harness/wva14-changed-dns-old-server-remains.json",
+      "semantic_sha256": "bb6383b2a82ae8fe12f66a97d1f57edab924d51431eb7dcf17e2ecc214181eb0",
+      "vector_id": "wva14-changed-dns-old-server-remains"
+    },
+    {
+      "acceptance_id": "WVA-14",
+      "bash_binding_path": "tests/vectors/bash/wva14-dns-sweep-failure.json",
+      "bash_binding_sha256": "b3815262664971360d4d8c4494db1fa44a6a63143b89db10d0fa689bd549cdb9",
+      "semantic_path": "tests/vectors/harness/wva14-dns-sweep-failure.json",
+      "semantic_sha256": "3dd1b00247510bf3f2b61f67c8077d8098d89a6642e70df3e5f28374d9864eb6",
+      "vector_id": "wva14-dns-sweep-failure"
+    },
+    {
+      "acceptance_id": "WVA-14",
+      "bash_binding_path": "tests/vectors/bash/wva14-cache-flush-failure.json",
+      "bash_binding_sha256": "2ec6116c3d97c13cc721ef68ba914347aec9dff0af175b7103477f017e545d33",
+      "semantic_path": "tests/vectors/harness/wva14-cache-flush-failure.json",
+      "semantic_sha256": "27ed8c4be20c4055afd7084f5e4cbe5b6929f415a905102a05c7064572f2860d",
+      "vector_id": "wva14-cache-flush-failure"
+    },
+    {
+      "acceptance_id": "WVA-15",
+      "bash_binding_path": "tests/vectors/bash/wva15-dns-health-success.json",
+      "bash_binding_sha256": "fced1e8dcad4838effa4f35acdc6e573935258b029e3da21bd7d34e7024d850e",
+      "semantic_path": "tests/vectors/harness/wva15-dns-health-success.json",
+      "semantic_sha256": "f015bedf5b00c3a354ad656d4be0d6b125512de2ea49156412fef80d74bf9d82",
+      "vector_id": "wva15-dns-health-success"
+    },
+    {
+      "acceptance_id": "WVA-15",
+      "bash_binding_path": "tests/vectors/bash/wva15-dns-health-failure.json",
+      "bash_binding_sha256": "5101606101ff176b53bb363297d7387cc47fcd06208b3463fd92a939aa3f5828",
+      "semantic_path": "tests/vectors/harness/wva15-dns-health-failure.json",
+      "semantic_sha256": "56a7ab471c41b5110fb4ecc2db696dd4b09899694cb80c944a66773283c98a41",
+      "vector_id": "wva15-dns-health-failure"
+    },
+    {
+      "acceptance_id": "WVA-15",
+      "bash_binding_path": "tests/vectors/bash/wva15-dns-health-timeout.json",
+      "bash_binding_sha256": "f21d8ec2699d656ab7811424546eec4268a9203c02905ea905399a4e35d87a34",
+      "semantic_path": "tests/vectors/harness/wva15-dns-health-timeout.json",
+      "semantic_sha256": "832d4f76d7ebd2b250626e5bdacb144d4747e4d80f05be0bc3b74bf03d692049",
+      "vector_id": "wva15-dns-health-timeout"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-service-enumeration.json",
+      "bash_binding_sha256": "1ff81465852789295c84f457a0520186062537026276624d473dde98bc441b71",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-service-enumeration.json",
+      "semantic_sha256": "6cf4f8c353cdc698fe7464be2d6fa5860ebf21e5dd8775c0ba2d1fce656b9954",
+      "vector_id": "wva16-ipv6-service-enumeration"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-partial-disable-fails-closed.json",
+      "bash_binding_sha256": "322d7f371958e47783eb7f7fe7a1281388f0d3dfeb416143d9eb32af30dc562c",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-partial-disable-fails-closed.json",
+      "semantic_sha256": "c65b2f013334d75dc28f2da0114726e3f53bfb6286387112bd28fa90db3420e1",
+      "vector_id": "wva16-ipv6-partial-disable-fails-closed"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-prior-off-preserved.json",
+      "bash_binding_sha256": "9899df532eecb47e57eec7cb449ff9989a5fd28e1442f9e1cb7358cbe9b4edc7",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-prior-off-preserved.json",
+      "semantic_sha256": "a5dc2cbf34385adc07eb7a3c145df57ad83e4d2c86d287b9954360130c4f9802",
+      "vector_id": "wva16-ipv6-prior-off-preserved"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-state-write-failure.json",
+      "bash_binding_sha256": "56a89b11df94164510dbf4a6a533d2d3167bb4fb62885dd1f6c2689960777f48",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-state-write-failure.json",
+      "semantic_sha256": "39c191d56b834ab3bd0d0d7be676904b2ea1e69301d3ebf3b6724b905aa63782",
+      "vector_id": "wva16-ipv6-state-write-failure"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-enumeration-failure.json",
+      "bash_binding_sha256": "09d0780f67d76687fe62584b1b3ae2c24dfc4093f1d82256216cad0a79398163",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-enumeration-failure.json",
+      "semantic_sha256": "f8bb1e9ba3d4bf3308a4083e6c1f442d220f7cf74744a82e1dabc0980f2fa350",
+      "vector_id": "wva16-ipv6-enumeration-failure"
+    },
+    {
+      "acceptance_id": "WVA-16",
+      "bash_binding_path": "tests/vectors/bash/wva16-ipv6-restore-failure-truthful.json",
+      "bash_binding_sha256": "74e12db0652b4864d618ab77809119490fa3cb942b4ea391e93b4118685c3918",
+      "semantic_path": "tests/vectors/harness/wva16-ipv6-restore-failure-truthful.json",
+      "semantic_sha256": "e678f3341c56de07bb5040828552fbbd04a85c5ad7b5c57a27a9384a1ad7b069",
+      "vector_id": "wva16-ipv6-restore-failure-truthful"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-all-default-disable.json",
+      "bash_binding_sha256": "8ed84c8533bb67304a4a791d5bfd5b5f306cb2357038723793874d591490dfaa",
+      "semantic_path": "tests/vectors/harness/wva17-linux-all-default-disable.json",
+      "semantic_sha256": "21bed85f3ef58bdcc2c1516a9220ec184f8e18e031d78dee0c878f034bb22c3a",
+      "vector_id": "wva17-linux-all-default-disable"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-restore-prior-enabled.json",
+      "bash_binding_sha256": "3667bd2288ebe996064a4c075b640a4d8f7b4ae27148e953dd9a3c88bdd59b64",
+      "semantic_path": "tests/vectors/harness/wva17-linux-restore-prior-enabled.json",
+      "semantic_sha256": "b4bcf635570d1fe1f473d93894ed0a82f3b8fa24d6bf1ce25d92c41db94379fd",
+      "vector_id": "wva17-linux-restore-prior-enabled"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-restore-prior-disabled.json",
+      "bash_binding_sha256": "2817e5f1b0b5c24283403bee7bcdb1bf703d95b9f84c7a67cf760fd45ebe1f5b",
+      "semantic_path": "tests/vectors/harness/wva17-linux-restore-prior-disabled.json",
+      "semantic_sha256": "759ba79e2f30912025fba150023630363f8e504a81ae5d9f320dba80602ba841",
+      "vector_id": "wva17-linux-restore-prior-disabled"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-divergent-default-prior-state.json",
+      "bash_binding_sha256": "3222215a8da4a6665eb452e5a39a9fa2d60808620496d5714759fa3a328c66fe",
+      "semantic_path": "tests/vectors/harness/wva17-linux-divergent-default-prior-state.json",
+      "semantic_sha256": "2aa2eaa64a09c1bb426d6592b257147171d37324dcf5e8d105423d3a0806ce91",
+      "vector_id": "wva17-linux-divergent-default-prior-state"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-sysctl-up-failure.json",
+      "bash_binding_sha256": "97ca297ad21e7915e8cc559f4ac4ff44ecd330622841243ec218be9d0d8cda8a",
+      "semantic_path": "tests/vectors/harness/wva17-linux-sysctl-up-failure.json",
+      "semantic_sha256": "40368711b1888a9d759c2bbe3a7f82238ab57102d0239d77266c25751fdc59c0",
+      "vector_id": "wva17-linux-sysctl-up-failure"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-reboot-autoheals-state.json",
+      "bash_binding_sha256": "da57f73f750b8908595ffd9c9ca5b5dcd16b39c7eb274e801faab353f660fadb",
+      "semantic_path": "tests/vectors/harness/wva17-linux-reboot-autoheals-state.json",
+      "semantic_sha256": "7540073e6508b25cefd8c825c8c892681e7c46c20262fa8a3c1153a0133f0046",
+      "vector_id": "wva17-linux-reboot-autoheals-state"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-stop-failure-keeps-leak-protection.json",
+      "bash_binding_sha256": "50eb1645f5027007deeb024c591e5ea8f929269d742835631b991d34a6b5f298",
+      "semantic_path": "tests/vectors/harness/wva17-linux-stop-failure-keeps-leak-protection.json",
+      "semantic_sha256": "316a41feec2884b916d649f258543427824b4449ba1dc1ba3e3a893d2a9447c4",
+      "vector_id": "wva17-linux-stop-failure-keeps-leak-protection"
+    },
+    {
+      "acceptance_id": "WVA-17",
+      "bash_binding_path": "tests/vectors/bash/wva17-linux-sysctl-restore-failure.json",
+      "bash_binding_sha256": "2e6ba4659caef08bff739cd1e0e9a6d20b1f217a150aa04a95b80c6ed6295cc6",
+      "semantic_path": "tests/vectors/harness/wva17-linux-sysctl-restore-failure.json",
+      "semantic_sha256": "1c8daa185a4e0fc31f2a6c106d0bb2fc1e173a52ac75580a98805d647fd0bca8",
+      "vector_id": "wva17-linux-sysctl-restore-failure"
+    },
+    {
+      "acceptance_id": "WVA-12",
+      "bash_binding_path": "tests/vectors/bash/wva12-macos-raw-immediate-activation.json",
+      "bash_binding_sha256": "b37a2cd6386b9f7123a3767bec112842bcec004f75c74cf1d0e1b10e23ff0243",
+      "semantic_path": "tests/vectors/harness/wva12-macos-raw-immediate-activation.json",
+      "semantic_sha256": "5a24b44afc9cbcb090503113fc1279ee268d14b4c8a8a54382cdafcbd6a1c98a",
+      "vector_id": "wva12-macos-raw-immediate-activation"
+    },
+    {
+      "acceptance_id": "WVA-12",
+      "bash_binding_path": "tests/vectors/bash/wva12-macos-double-activation.json",
+      "bash_binding_sha256": "bff3247be5820aa800b4865d3eb33c1890aadfec100929c32f41cafeeee44342",
+      "semantic_path": "tests/vectors/harness/wva12-macos-double-activation.json",
+      "semantic_sha256": "efb85e0af96c4c387f027b9afa3b97c85c88acf2b04e18c1447812a674f04276",
+      "vector_id": "wva12-macos-double-activation"
+    },
+    {
+      "acceptance_id": "WVA-12",
+      "bash_binding_path": "tests/vectors/bash/wva12-linux-raw-double-activation.json",
+      "bash_binding_sha256": "da725739acb76ec538b2074111dce174fa7fc5df510df0f40af7167f25bf2f46",
+      "semantic_path": "tests/vectors/harness/wva12-linux-raw-double-activation.json",
+      "semantic_sha256": "aee656d27a0d205e0f085073086fd6973dfcbd210756e1b680ef02d1924fe904",
+      "vector_id": "wva12-linux-raw-double-activation"
+    },
+    {
+      "acceptance_id": "WVA-12",
+      "bash_binding_path": "tests/vectors/bash/wva12-linux-double-activation-failure.json",
+      "bash_binding_sha256": "82ad5d6f365cb7ca486cde238f219fcd64607b78abb71f53ff9dbb7b7d304690",
+      "semantic_path": "tests/vectors/harness/wva12-linux-double-activation-failure.json",
+      "semantic_sha256": "993e7f62ca403b95b63e526e7d4d7c9c2e17998b2c0447702a2798a14ec9b177",
+      "vector_id": "wva12-linux-double-activation-failure"
+    }
+  ]
+}

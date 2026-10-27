@@ -1,0 +1,50 @@
+{
+  "acceptance_ids": [
+    "WVA-14"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The configuration now names 1.1.1.1 while Wi-Fi retains stale AdGuard DNS 10.0.0.1 from the previous configuration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "ff2ef4dae8ae3f293ca57f848dc847de4008abffd8ba86eb518276913587b135",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-STALE-DNS"
+      ],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "Changing the configured DNS server must not strand the previous VPN DNS server on an interface."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-STALE-DNS",
+  "fixtures": [
+    {
+      "bytes": 379,
+      "path": "wva14/changed.fixture",
+      "sha256": "59b2aeeb166547aaf6f91da075b6e1937dcbf0b80c1ae349cafb28ee8ff3f84e"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva14-changed-dns-old-server-remains"
+}

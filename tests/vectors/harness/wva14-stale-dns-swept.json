@@ -1,0 +1,62 @@
+{
+  "acceptance_ids": [
+    "WVA-14"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "Wi-Fi retains the same AdGuard DNS server named by the synthetic client configuration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.cache_flush_verified"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "7250a882ca3b134aa2fa1f0b0360367bca2c303037cf26d51dd65faca4bb12fc",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "Managed teardown removes a stale configured VPN DNS server."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "A real sweep triggers cache invalidation."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva14/stale.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva14-stale-dns-swept"
+}

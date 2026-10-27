@@ -1,0 +1,146 @@
+{
+  "arguments": [
+    "down"
+  ],
+  "baseline_observation": {
+    "authority": "non-authoritative",
+    "statement": "Baseline ignores the sweep status, flushes caches, and exits 0 while the stale server remains."
+  },
+  "binding_id": "bash-wva14-dns-sweep-failure",
+  "commands": [
+    {
+      "argv": [
+        "uname",
+        "-s"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "Darwin\n"
+    },
+    {
+      "argv": [
+        "sudo",
+        "launchctl",
+        "list"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "sudo",
+        "wg",
+        "show"
+      ],
+      "exit": 1,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-listallnetworkservices"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "An asterisk (*) denotes that a network service is disabled.\nWi-Fi\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-getdnsservers",
+        "Wi-Fi"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "stdout": "10.0.0.1\n"
+    },
+    {
+      "argv": [
+        "networksetup",
+        "-setdnsservers",
+        "Wi-Fi",
+        "empty"
+      ],
+      "exit": 1,
+      "state": [
+        {
+          "op": "set",
+          "path": "dns.clear_attempted",
+          "value": true
+        }
+      ],
+      "stderr": "synthetic DNS sweep failure\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "dscacheutil",
+        "-flushcache"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "dns.cache_flush_attempted",
+          "value": true
+        },
+        {
+          "op": "set",
+          "path": "dns.cache_flush_verified",
+          "value": true
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "killall",
+        "-HUP",
+        "mDNSResponder"
+      ],
+      "exit": 0,
+      "state": [
+        {
+          "op": "set",
+          "path": "dns.responder_flush_attempted",
+          "value": true
+        }
+      ],
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "containment_profile": "wirevpn-darwin-seatbelt/1",
+  "content_sha256": "8b64745f40711bfe88523a5840cc38b74de171a40b0079026d89472be300fb45",
+  "entrypoint": "wirevpn.sh",
+  "initial_state": {
+    "dns": {
+      "cache_flush_attempted": false,
+      "cache_flush_verified": false,
+      "clear_attempted": false,
+      "failure_reported": false,
+      "responder_flush_attempted": false,
+      "safe_rejection": false,
+      "stale_remaining": true,
+      "swept_server": null
+    },
+    "ipv6": {},
+    "packages": {},
+    "peers": {},
+    "services": {},
+    "tunnel": {
+      "active": false
+    },
+    "virtual_time": {
+      "seconds": 0
+    }
+  },
+  "instrumentation_profile": "wirevpn-bash-instrumentation/1.0",
+  "schema": "wirevpn.bash-execution-binding/1.0",
+  "timeout_seconds": 10,
+  "vector_id": "wva14-dns-sweep-failure",
+  "vector_sha256": "48c92519b0a117d3456f7613a3b1ccd069f63f1f2bb53476c385e5cc16be5262"
+}

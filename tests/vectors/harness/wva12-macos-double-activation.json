@@ -1,0 +1,80 @@
+{
+  "acceptance_ids": [
+    "WVA-12"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "macOS launchd load models an active managed tunnel before client_setup reaches its final activation step; raw duplicate activation fails."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "activation.raw_attempted"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "activation.count"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "3e5b017d7ca278f3e421f18ade3c5fc57965a5e0bc0e8d28ef394b115c7fc696",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "An already active managed tunnel must not receive a second raw activation attempt."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "Exactly one managed activation is permitted."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "The managed tunnel remains active without a duplicate raw up."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": "RED-BASH-W1-CLIENT-ACTIVATION",
+  "fixtures": [
+    {
+      "bytes": 425,
+      "path": "wva12/client.fixture",
+      "sha256": "005a4062b5b9a1b9cab2a9851b51d6baca49ed2ee3d5fbb072d287f6c99b1fac"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva12-macos-double-activation"
+}

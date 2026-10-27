@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-14"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The DNS sweep succeeds, dscacheutil fails, and mDNSResponder HUP succeeds."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.stale_remaining"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "dns.responder_flush_attempted"
+    },
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "dns.cache_flush_verified"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "7b09f1e612a0f2ce5d0866227a323bc296fe71398e014320a612a72e223477cf",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "The stale DNS server itself is cleared even when dscacheutil fails."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "Both cache-invalidation mechanisms are attempted after a sweep."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "compatibility",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-14"
+      ],
+      "statement": "The characterization records that dscacheutil did not verify a flush."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 380,
+      "path": "wva14/cache-flush-failure.fixture",
+      "sha256": "ccaa6f98d009095ee9362938d268fd4d7a0a47048a8a647779d45d0837cfaf82"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva14-cache-flush-failure"
+}

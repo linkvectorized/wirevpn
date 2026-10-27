@@ -1,0 +1,58 @@
+{
+  "acceptance_ids": [
+    "WVA-01"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "The sole candidate is 999.1.1.1; baseline acceptance is allowed to reach the deliberately failing apt call so the contract can fail completely."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": "999.1.1.1",
+      "kind": "state_not_equals",
+      "path": "server.ip_accepted"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "server.out_of_range_rejected"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "dc352840f87412f709fe58d2b18b354b4c69593f473b1e94c39ce3984b2f3c87",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-PUBLIC-IP-VALIDATION"
+      ],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "An IPv4-shaped value with an octet above 255 must not be accepted."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-PUBLIC-IP-VALIDATION"
+      ],
+      "requirement_links": [
+        "WVA-01"
+      ],
+      "statement": "Out-of-range input must be recognized as rejected rather than merely matching the dotted-decimal regex."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": "RED-BASH-W1-PUBLIC-IP-VALIDATION",
+  "fixtures": [],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva01-public-ip-out-of-range"
+}

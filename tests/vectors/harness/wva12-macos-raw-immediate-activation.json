@@ -1,0 +1,80 @@
+{
+  "acceptance_ids": [
+    "WVA-12"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "macOS launchd installation succeeds but the boot connector has not activated yet; the final raw wg-quick call succeeds."
+  },
+  "arguments": [],
+  "assertions": [
+    {
+      "expected": false,
+      "kind": "state_equals",
+      "path": "activation.raw_attempted"
+    },
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "activation.managed_immediate"
+    },
+    {
+      "kind": "file_exists",
+      "path": "etc/wireguard/client.conf",
+      "root": "case"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "ed2a0396b6b46de7582434144e79728c35311dfb59724774c48fd76184712109",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "Immediate activation must use the managed DNS/IPv6-safe path, never raw wg-quick."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "Immediate activation must establish the managed safety wrapper."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "compatibility",
+      "finding_links": [
+        "RED-BASH-W1-CLIENT-ACTIVATION"
+      ],
+      "requirement_links": [
+        "WVA-12"
+      ],
+      "statement": "Client configuration installation still completes before the activation contract is judged."
+    }
+  ],
+  "exit_codes": [
+    0
+  ],
+  "finding_id": "RED-BASH-W1-CLIENT-ACTIVATION",
+  "fixtures": [
+    {
+      "bytes": 425,
+      "path": "wva12/client.fixture",
+      "sha256": "005a4062b5b9a1b9cab2a9851b51d6baca49ed2ee3d5fbb072d287f6c99b1fac"
+    }
+  ],
+  "platform": "macos",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva12-macos-raw-immediate-activation"
+}

@@ -1,0 +1,76 @@
+{
+  "acceptance_ids": [
+    "WVA-17"
+  ],
+  "applicability": {
+    "baseline_commit": "01143e05ce105ab42fec5fd7b0bacaac49ad2405",
+    "condition": "systemctl stop fails before any IPv6 restoration."
+  },
+  "arguments": [
+    "down"
+  ],
+  "assertions": [
+    {
+      "expected": true,
+      "kind": "state_equals",
+      "path": "tunnel.active"
+    },
+    {
+      "expected": 1,
+      "kind": "state_equals",
+      "path": "ipv6.default"
+    },
+    {
+      "kind": "file_exists",
+      "path": "run/wirevpn_v6.state",
+      "root": "case"
+    }
+  ],
+  "concurrency": {
+    "mode": "single-actor"
+  },
+  "content_sha256": "1a9e294b1e01addfa2190a6d64327ce99153e6f0caafb49c24cf5939f51bb101",
+  "contracts": [
+    {
+      "assertion_id": "assert-1",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "A failed service stop leaves the tunnel modeled active."
+    },
+    {
+      "assertion_id": "assert-2",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "IPv6 leak protection remains in force when the tunnel could not be stopped."
+    },
+    {
+      "assertion_id": "assert-3",
+      "basis": "safety",
+      "finding_links": [],
+      "requirement_links": [
+        "WVA-17"
+      ],
+      "statement": "Volatile restoration state is retained for a later truthful teardown."
+    }
+  ],
+  "exit_codes": [
+    1
+  ],
+  "finding_id": null,
+  "fixtures": [
+    {
+      "bytes": 469,
+      "path": "wva17/stop-failure.fixture",
+      "sha256": "d3269c124103339ffc407668bc0e5b2bbe1e3654f59f738e416262db59f90a28"
+    }
+  ],
+  "platform": "linux",
+  "schema": "wirevpn.semantic-vector/1.0",
+  "vector_id": "wva17-linux-stop-failure-keeps-leak-protection"
+}
